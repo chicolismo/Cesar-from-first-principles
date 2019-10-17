@@ -1,0 +1,768 @@
+
+
+;----------------------------------------------------------------------------------------------------
+;
+;	APP do cronometro
+;
+;----------------------------------------------------------------------------------------------------
+;
+
+;------------------------------------------------------------------------------
+; Endereï¿½os das vï¿½rias ï¿½reas do boot e do PP
+;------------------------------------------------------------------------------
+_INICIO:	equ	h0100		; inï¿½cio do programa de aplicaï¿½ï¿½o
+
+_AVR:		equ	h8000
+
+_ARI:		equ	h8100
+
+_ATI:		equ	h8400
+
+_APR:		equ	hFF80
+_IOAREA16:	equ	hFF80		; area de perifericos, acessada na base 16 bits
+_IOAREA08:	equ	hFFC0		; area de perifericos, acessada na base 8 bits
+
+;
+;------------------------------------------------------------------------------
+;	ï¿½rea reservada para os perifï¿½ricos
+;------------------------------------------------------------------------------
+
+; Acesso em 16 bits
+	org	_IOAREA16
+	daw	[31]
+IVET:	dw	0		; Vetor de interrupï¿½ï¿½o
+
+; Acesso em 8 bits
+	org	_IOAREA08
+	dab	[23]
+TIMDT:	db	0		; Registro de programaï¿½ï¿½o do timer
+INTS:	db	0		; INTERRUPT STATUS: IP x x x . x x IPStec IPStim
+INTE:	db	0		; INTERRUPT ENABLE: IE x x x . x x IEStec IEStim
+TECST:	db	0		; Status do teclado
+TECDT:	db	0		; Dado do teclado
+VISOR:	dab	[36]		; Portas de acesso ao visor
+
+
+;
+;----------------------------------------------------------------------------------------------------
+;	Funï¿½ï¿½es usadas para ler/escrever no relï¿½gio
+;----------------------------------------------------------------------------------------------------
+_ROTINAS:	equ	h0080
+SET_TIME:	equ	0
+GET_TIME:	equ	1
+
+
+;
+;------------------------------------------------------------------------------
+;	Variï¿½veis de comunicaï¿½ï¿½o entre o programa principal e a rotina de atendimento de interrupï¿½ï¿½es
+;------------------------------------------------------------------------------
+	org	_AVR
+HORA:	DW	0
+MINUTO:	DW	0
+SEGUNDO:DW	0
+TECLA:	DW	0
+
+
+;
+;----------------------------------------------------------------------------------------------------
+;	Aplicaï¿½ï¿½o de exemplo
+;----------------------------------------------------------------------------------------------------
+	org	_INICIO
+
+	desloc: dw 29 	;;Local a inserir o novo digito, nao pode apagar se for 29 e nem adicionar se for 32 
+
+
+	mov #'I', VISOR
+	mov #'n', VISOR+1
+	mov #'f', VISOR+2
+	mov #'o', VISOR+3
+	mov #'r', VISOR+4
+	mov #'m', VISOR+5
+	mov #'e', VISOR+6
+	mov #' ', VISOR+7
+	mov #'h', VISOR+8
+	mov #'o', VISOR+9
+	mov #'r', VISOR+10
+	mov #'a', VISOR+11
+	mov #' ', VISOR+12
+	mov #'i', VISOR+13
+	mov #'n', VISOR+14
+	mov #'i', VISOR+15
+	mov #'c', VISOR+16
+	mov #'i', VISOR+17
+	mov #'a', VISOR+18
+	mov #'l', VISOR+19
+	mov #' ', VISOR+20
+	mov #'(', VISOR+21
+	mov #'H', VISOR+22
+	mov #'H', VISOR+23
+	mov #'M', VISOR+24
+	mov #'M', VISOR+25
+	mov #')', VISOR+26
+	mov #':', VISOR+27
+	mov #' ', VISOR+28
+	mov #'_', VISOR+29
+
+
+	mov desloc, r4	;; SALVANDO A VARIAVEL DESLOCAMENTO EM R4 
+;;Loop da entrada de dados
+Loop:
+	mov TECLA, r5	;; Coloca a tecla no r5 para testar seu valor
+	bpl TemTecla	;; Se o numero nao for negativo quer dizer que eh um dado relevante
+	jmp Loop
+
+
+TemTecla:
+	cmp r5, #8 		;; Compara a tecla em r5 com h0008 que equivale a tecla backspace
+	beq TrataBackspace	;; Se nao for igual a zero vai pro teste que ve se eh enter
+	cmp r5, #h000D		;; Compara a tecla em r5 com h000D - a tecla ENTER
+	beq TrataEnter
+	jmp TestaNumero		;; Testa se a entrada eh um numero e depois volta para o loop esperando input
+
+
+TrataBackspace:
+	cmp #29, r4
+	bne EhBackspace
+	jmp FimTecla ;;Se o r4 (desloc) estiver na posicao 29, vai para o fim do tratamento de tecla, ie, ignora o backspace
+EhBackspace:
+	;;Aqui apaga a ultima tecla digitada
+	mov #0, VISOR(r4)  	;;apaga
+	dec r4		;;subtrai 1 de desloc
+	mov #'_', VISOR(r4)	;;coloca o '_' na nova posicao de desloc
+	jmp FimTecla		;;da um jump pro fim do tratamento de tecla
+
+;-------------------------------------------------------------------------------------------------------------------------------------
+;;Testando se eh enter e se a entrada eh valida
+TrataEnter:
+	cmp #33, r4		;;Confere se tem 4 digitos na entrada
+	bne InputCurto		;;Se r4 (desloc) != 32 entao nao tem 4 digitos na entrada ou seja vai pra uma funcao que avisa disso 
+
+	;;Testando o MSB da hora
+	mov VISOR+29, r3 	;;Coloca o MSB da hora no r3 para testar
+	cmp r3, #h30		;;faz r3 - 30
+	bmi ErroNaHora		;; erro se < 0
+	cmp #h32, r3
+	bmi ErroNaHora		;; erro se > 2
+	
+	;;Testando o LSB da hora
+	mov VISOR+30, r3 	;;Coloca o LSB da hora no r3 para testar
+	cmp r3, #h30		;;faz r3 - 30
+	bmi ErroNaHora		;; erro se < 0
+	cmp #h33, r3
+	bmi ErroNaHora		;; erro se > 3
+
+	jmp TestaMinutos
+
+ErroNaHora:	jmp ErroHorario
+
+TestaMinutos:
+
+	;;Testando o MSB do minuto
+	mov VISOR+31, r3 	;;Coloca o MSB da do minuto no r3 para testar
+	cmp r3, #h30		;;faz r3 - 30
+	bmi ErroNoMinuto	;; erro se < 0
+	cmp #h35, r3
+	bmi ErroNoMinuto	;; erro se > 5
+	
+	;;Testando o LSB do minuto
+	mov VISOR+32, r3 	;;Coloca o MSB da hora no r3 para testar
+	cmp r3, #h30		;;faz r3 - 30
+	bmi ErroNoMinuto	;; erro se < 0
+	cmp #h39, r3
+	bmi ErroNoMinuto	;; erro se > 9
+
+	jmp InputCerto		;; Se passou por todos os comecao cronometro mesmo
+
+ErroNoMinuto:	jmp ErroMinuto
+
+
+InputCurto:
+	mov #'t', VISOR
+	mov #'e', VISOR+1
+	mov #'m', VISOR+2
+	mov #'p', VISOR+3
+	mov #'o', VISOR+4
+	mov #' ', VISOR+5
+	mov #'i', VISOR+6
+	mov #'n', VISOR+7
+	mov #'i', VISOR+8
+	mov #'c', VISOR+9
+	mov #'i', VISOR+10
+	mov #'a', VISOR+11
+	mov #'l', VISOR+12
+	mov #' ', VISOR+13
+	mov #'i', VISOR+14
+	mov #'n', VISOR+15
+	mov #'c', VISOR+16
+	mov #'o', VISOR+17
+	mov #'m', VISOR+18
+	mov #'p', VISOR+19
+	mov #'l', VISOR+20
+	mov #'e', VISOR+21
+	mov #'t', VISOR+22
+	mov #'o', VISOR+23
+	mov #' ', VISOR+24
+	mov #' ', VISOR+25
+	mov #' ', VISOR+26
+	mov #' ', VISOR+27
+	mov #' ', VISOR+28
+	mov #' ', VISOR+29
+	mov #' ', VISOR+30
+	mov #' ', VISOR+31
+	mov #' ', VISOR+32
+	mov #' ', VISOR+33
+	mov #' ', VISOR+34
+
+	jmp Reset		;;loop que fica aguardando o usuario digitar enter
+
+ErroHorario:
+	mov #'H', VISOR
+	mov #'o', VISOR+1
+	mov #'r', VISOR+2
+	mov #'a', VISOR+3
+	mov #'r', VISOR+4
+	mov #'i', VISOR+5
+	mov #'o', VISOR+6
+	mov #' ', VISOR+7
+	mov #'i', VISOR+8
+	mov #'n', VISOR+9
+	mov #'v', VISOR+10
+	mov #'a', VISOR+11
+	mov #'l', VISOR+12
+	mov #'i', VISOR+13
+	mov #'d', VISOR+14
+	mov #'o', VISOR+15
+	mov #' ', VISOR+16
+	mov #' ', VISOR+17
+	mov #' ', VISOR+18
+	mov #' ', VISOR+19
+	mov #' ', VISOR+20
+	mov #' ', VISOR+21
+	mov #' ', VISOR+22
+	mov #' ', VISOR+23
+	mov #' ', VISOR+24
+	mov #' ', VISOR+25
+	mov #' ', VISOR+26
+	mov #' ', VISOR+27
+	mov #' ', VISOR+28
+	mov #' ', VISOR+29
+	mov #' ', VISOR+30
+	mov #' ', VISOR+31
+	mov #' ', VISOR+32
+	mov #' ', VISOR+33
+	mov #' ', VISOR+34
+
+	jmp Reset		;;loop que fica aguardando o usuario digitar enter
+
+ErroMinuto:
+	mov #'M', VISOR
+	mov #'i', VISOR+1
+	mov #'n', VISOR+2
+	mov #'u', VISOR+3
+	mov #'t', VISOR+4
+	mov #'o', VISOR+5
+	mov #' ', VISOR+6
+	mov #'i', VISOR+7
+	mov #'n', VISOR+8
+	mov #'v', VISOR+9
+	mov #'a', VISOR+10
+	mov #'l', VISOR+11
+	mov #'i', VISOR+12
+	mov #'d', VISOR+13
+	mov #'o', VISOR+14
+	mov #' ', VISOR+15
+	mov #' ', VISOR+16
+	mov #' ', VISOR+17
+	mov #' ', VISOR+18
+	mov #' ', VISOR+19
+	mov #' ', VISOR+20
+	mov #' ', VISOR+21
+	mov #' ', VISOR+22
+	mov #' ', VISOR+23
+	mov #' ', VISOR+24
+	mov #' ', VISOR+25
+	mov #' ', VISOR+26
+	mov #' ', VISOR+27
+	mov #' ', VISOR+28
+	mov #' ', VISOR+29
+	mov #' ', VISOR+30
+	mov #' ', VISOR+31
+	mov #' ', VISOR+32
+	mov #' ', VISOR+33
+	mov #' ', VISOR+34
+
+Reset:
+	mov #-1, TECLA	;; Reseta a tecla pois o loop nao usou a tecla antiga
+
+	;;loop que fica aguardando o usuario digitar enter
+LoopReset:
+	mov TECLA, r5	;; Coloca a tecla no r5 para testar seu valor
+	bpl AlgoUtil	;; Tem um numero nao negativo na tecla
+	jmp LoopReset
+
+AlgoUtil:
+	cmp r5, #h000D	;; Compara a tecla em r5 com h000D - a tecla ENTER
+	beq Reseta
+	tst TECLA	;;testa se tecla tem um valor positivo
+	bpl Reset	;;Se tiver um valor nao negativo e nao for enter coloca o -1 na tecla novamente
+	jmp LoopReset
+
+Reseta:	
+	mov #-1, TECLA	;; Reseta a tecla e volta para o inicio do programa
+	jmp _INICIO 	;; Volta para o comeco do programa
+
+;-------------------------------------------------------------------------------------------------------------------------------------
+
+TestaNumero:
+
+	;Comeca testando se esta entre 0-9
+	cmp r5, #h30
+	bmi FimTecla	;; Se for negativo quer dizer que eh < 0, portanto deve ignorar
+	cmp #h39, r5
+	bmi FimTecla	;; Se for negativo quer dizer que eh > 9, portanto deve ignorar
+
+	;Agora testa se ja tem 4 digitos no visor
+	cmp #33, r4	;;Confere se tem 4 digitos na entrada
+	beq FimTecla	;;Se ja tiver 4 digitos ele simplesmente ignora a entrada de outro
+
+	;Finalmente, insere a tecla depois de todos os teste
+	mov r5, VISOR(r4)	;;Coloca a tecla na posicao atual do desloc
+	inc r4		;;incrementa o deslocamento
+	mov #'_', VISOR(r4)	;;coloca '_' na outra posicao
+
+	jmp FimTecla ;
+
+
+FimTecla:
+	mov #-1, TECLA	;;Coloca -1 na tecla??
+	jmp Loop	;;Volta pro loop de input
+
+
+;---------------------------------------************************-----------------------------------------------------------------------
+;				Fim do Setup do Cronometro e começo da contagem
+;---------------------------------------************************-----------------------------------------------------------------------
+
+InputCerto:
+	mov #-1, TECLA	;Limpando a tecla ************************************** PRECISA MESMO?
+	count:	dw 4	;;contador para multiplicar por 5 (usado para juntar e separar os digitos)
+
+	;Colocando os digitos de hora em r3 e r4 para uni-los, o que sera retornado em r5
+	mov VISOR+29, r3
+	mov VISOR+30, r4
+	jsr r7, JuntaDigitos	;Chama a funcao que une os digitos e os coloca em r5
+	mov r5, r0		;Passa a hora de r5 para r0
+	;Juntando os digitos dos minutos
+	mov VISOR+31, r3
+	mov VISOR+32, r4
+	jsr r7, JuntaDigitos
+	mov r5, r1
+	mov #0, r3
+	;;Agora que setou os r0,r1,r2 para hora,minuto,segundo chama a funcao para salvar esses valores 
+	mov #0, r5 ;; Coloca 0 em r5 para chamar a funçao SET_TIME
+	jsr r7, _ROTINAS
+
+	;; Atualiza o visor
+	mov VISOR+29, VISOR
+	mov VISOR+30, VISOR+1
+	mov #':', VISOR+2
+	mov VISOR+31, VISOR+3
+	mov VISOR+32, VISOR+4
+	mov #':', VISOR+5
+	mov #'0', VISOR+6
+	mov #'0', VISOR+7
+	mov #' ', VISOR+8
+	mov #'I', VISOR+9
+	mov #'=', VISOR+10
+	mov #' ', VISOR+11
+	mov #' ', VISOR+12
+	mov #' ', VISOR+13
+	mov #' ', VISOR+14
+	mov #' ', VISOR+15
+	mov #' ', VISOR+16
+	mov #' ', VISOR+17
+	mov #' ', VISOR+18
+	mov #' ', VISOR+19
+	mov #'F', VISOR+20
+	mov #'=', VISOR+21
+	mov #' ', VISOR+22
+	mov #' ', VISOR+23
+	mov #' ', VISOR+24
+	mov #' ', VISOR+25
+	mov #' ', VISOR+26
+	mov #' ', VISOR+27
+	mov #' ', VISOR+28
+	mov #' ', VISOR+29
+	mov #' ', VISOR+30
+	mov #'T', VISOR+31
+	mov #'=', VISOR+32
+	mov #' ', VISOR+33
+	mov #' ', VISOR+34
+	mov #' ', VISOR+35
+
+	countSD: 	dw 0
+	numSD: 	dw 0
+	tempSD:	dw 0
+	cronometroOn: dw 0
+
+	;;Essa funcao deve - PEGAR AS VARIAVEIS, SEPARA-LAS E COLOCAR NA TELA
+		;	   - TESTAR E CHAMAR SUAS FUNCOES ESPECIFICAS
+CronometroTela:
+	mov #1, r5 		;; Coloca 0 em r5 para chamar a funçao SET_TIME
+	jsr r7, _ROTINAS	;; Coloca os valores de hora, minuto e segundo em r0, r1 e r2
+
+	;Atualiza segundos
+	mov r2, r3		;; Poe r2 (segundos) em r3 para separar os digitos e imprimir na tela
+	jsr r7, SeparaDigitos
+	mov r4, VISOR+6
+	mov r5, VISOR+7
+
+	;Atualiza minutos
+	mov r1, r3		;; Poe r1 (minutos) em r3 para separar os digitos e imprimir na tela
+	jsr r7, SeparaDigitos
+	mov r4, VISOR+3
+	mov r5, VISOR+4
+
+	;Atualiza horas
+	mov r0, r3		;; Poe r0 (horas) em r3 para separar os digitos e imprimir na tela
+	jsr r7, SeparaDigitos
+	mov r4, VISOR
+	mov r5, VISOR+1
+
+	;**************** INSERIR AQUI O TRATADOR DE TECLAS *****************
+
+	mov TECLA, r5		;; Coloca a tecla no r5 para testar seu valor
+	bmi CronometroTela	;; Tem um numero negativo na tecla, ie, ja fez tudo que tinha que fazer e volta para o Loop
+
+	;Tem algo que pode ser util na tecla
+	cmp r5, #h001B	;; Compara a tecla em r5 com a tecla ESCAPE
+	beq VaiFim
+	
+	cmp r5, #h005A	;; Testa para a funcao de limpar o visor
+	beq VaiApaga	;; Vai para o jmp que chama a funcao de apagar a tecla
+	cmp r5, #h007a
+	beq VaiApaga
+
+	cmp r5, #h0049	;;Testa para a funcao de comecar o cronometro
+	beq VaiInicio	;;Vai para o jmp que testa se a flag de cronometro esta desligada e, se estiver, comeca a cronometragem
+	cmp r5, #h0069
+	beq VaiInicio
+
+	cmp r5, #h0046
+	beq VaiParar
+	cmp r5, #h0066
+	beq VaiParar
+
+	;*************** FIM DO TRATADOR DE TECLAS **************************
+FimTratadorTeclas:	
+	mov #-1, TECLA
+	jmp CronometroTela
+
+
+VaiFim: jmp EncerraPrograma 	;;Vai pra finalizacao do programa
+VaiApaga: jmp ApagaVisor	;;Apaga o I e/ou F do visor
+
+VaiInicio: 	
+	mov #-1, TECLA		;ResetaTecla
+	tst cronometroOn
+	bne CronometroTela	;Se a flag cronometroOn estiver ligada deve ignorar o I e entao volta para o cronometro inicial
+	jmp InicioCronometro
+
+VaiParar:
+	mov #-1, Tecla		;ResetaTecla
+	tst cronometroOn
+	beq FimTratadorTeclas	;Se a flag estiver desligada a tecla F deve ser ignorara
+	jmp ParaCronometro
+
+
+SeparaDigitos:
+	mov #0, countSD
+	mov #0, numSD
+	mov #0, tempSD
+
+	mov r3, numSD
+	mov numSD, tempSD
+LoopSepara:
+	sub #10, tempSD
+	bmi Separou
+	inc countSD
+	mov tempSD, numSD
+	jmp LoopSepara
+Separou:
+	mov countSD, r4
+	add #h30, r4		;Somando h30 para ficar no formato certo a se colocar no visor
+	mov numSD, r5
+	add #h30, r5
+	rts r7
+	
+
+;-----------------------------------------------------------------------------------------------------------------------
+	;A funcao tem os parametros de MSB no r3, LSB no r4 e retorna o valor no r5
+JuntaDigitos:
+	mov r0, -(r6) ; Salvando o registrador r0 pois o mesmo sera reutilizado
+
+	mov #4, count
+	sub #h30, r3	;;Muda os valores de 3x para apenas x, isto eh, do seu valor asc para o seu valor matematico
+	sub #h30, r4
+	;; A PARTIR DE AQUI COMECAR A TRABALHAR COMO DECIMAL POIS SAO VALORES MATEMATICOS
+	asl r3		;;SHL no MSB
+	mov r3, r0	;;Salva a variavel MSB em r0 para ir somando ela na hora de multiplicar por 5
+Mult_5:
+	add r0, r3	
+	dec count
+	beq SomaLSB	;;Se count = 0 entao ja fez 4 somas
+	jmp Mult_5
+somaLSB:
+	ADD r4, r3
+	mov r3, r5
+
+	mov (r6)+, r0
+	rts r7
+;------------------------------------------------------------------------------------------------------------------------
+
+EncerraPrograma:
+	mov #'*', VISOR
+	mov #'*', VISOR+1
+	mov #' ', VISOR+2
+	mov #'E', VISOR+3
+	mov #'x', VISOR+4
+	mov #'e', VISOR+5
+	mov #'c', VISOR+6
+	mov #'u', VISOR+7
+	mov #'c', VISOR+8
+	mov #'a', VISOR+9
+	mov #'o', VISOR+10
+	mov #' ', VISOR+11
+	mov #'d', VISOR+12
+	mov #'o', VISOR+13
+	mov #' ', VISOR+14
+	mov #'p', VISOR+15
+	mov #'r', VISOR+16
+	mov #'o', VISOR+17
+	mov #'g', VISOR+18
+	mov #'r', VISOR+19
+	mov #'a', VISOR+20
+	mov #'m', VISOR+21
+	mov #'a', VISOR+22
+	mov #' ', VISOR+23
+	mov #'e', VISOR+24
+	mov #'n', VISOR+25
+	mov #'c', VISOR+26
+	mov #'e', VISOR+27
+	mov #'r', VISOR+28
+	mov #'r', VISOR+29
+	mov #'a', VISOR+30
+	mov #'d', VISOR+31
+	mov #'a', VISOR+32
+	mov #' ', VISOR+33
+	mov #'*', VISOR+34
+	mov #'*', VISOR+35
+	hlt
+
+ApagaVisor:
+	mov #' ', VISOR+11
+	mov #' ', VISOR+12
+	mov #' ', VISOR+13
+	mov #' ', VISOR+14
+	mov #' ', VISOR+15
+	mov #' ', VISOR+16
+	mov #' ', VISOR+17
+	mov #' ', VISOR+18
+	mov #' ', VISOR+19
+	mov #' ', VISOR+22
+	mov #' ', VISOR+23
+	mov #' ', VISOR+24
+	mov #' ', VISOR+25
+	mov #' ', VISOR+26
+	mov #' ', VISOR+27
+	mov #' ', VISOR+28
+	mov #' ', VISOR+29
+	mov #' ', VISOR+30
+	mov #' ', VISOR+33
+	mov #' ', VISOR+34
+	mov #' ', VISOR+35
+	mov #-1, TECLA		;;SEMPRE resetar a tecla depois de usala
+	mov #0, cronometroOn	;;Seta a flag de cronometro para 0, para que a tecla I seja habilitada novamente
+	jmp CronometroTela 	;;Volta para a funcao que mantem o cronometro atualizado
+
+InicioCronometro:
+	mov VISOR, VISOR+11
+	mov VISOR+1, VISOR+12
+	mov #':', VISOR+13
+	mov VISOR+3, VISOR+14
+	mov VISOR+4, VISOR+15
+	mov #':', VISOR+16
+	mov VISOR+6, VISOR+17
+	mov VISOR+7, VISOR+18
+	mov #1, cronometroOn	;;Seta a flag de cronometro para 1, o que faz com que a tecla I nao funcione novamente
+	jmp CronometroTela
+
+ParaCronometro:
+	;; Coloca os valores do cronometro parado na variavel F
+	mov VISOR, VISOR+22
+	mov VISOR+1, VISOR+23
+	mov #':', VISOR+24
+	mov VISOR+3, VISOR+25
+	mov VISOR+4, VISOR+26
+	mov #':', VISOR+27
+	mov VISOR+6, VISOR+28
+	mov VISOR+7, VISOR+29
+
+	mov #0, somador ;;Faz com que o somador comece zerado
+
+	;Junta os horarios de I
+	mov VISOR+11, r3
+	mov VISOR+12, r4
+	jsr r7, JuntaDigitos	;A Funcao vai pegar os parametros r3 e r4 e retornar em r5
+	mov r5, r1
+
+	;Junta os horarios de F
+	mov VISOR+22, r3
+	mov VISOR+23, r4
+	jsr r7, JuntaDigitos
+	mov r5, r0
+
+	cmp r0, r1	;;Faz F-I para avaliar se deve somar ou subtrair os segundos do somador
+	bmi DecHora
+	;Se nao for no bmi cai no IncHora
+	
+	;Calcula a diferenca entre os horarios de I e F
+	sub r1, r0
+
+	jsr r7, PosVariaveis 	;PosVariaveis eh a funcao que multiplica r0 por 60
+	mov r2, r0		;Coloca r2 em r0 para usar a funcao de multiplica novamente
+	jsr r7, PosVariaveis	;Apos isso ja estara em r2 o resultado
+	mov r2, somador	
+	jmp JuntaMinutos
+
+DecHora:
+	sub r0, r1	;;Faz I-R
+	mov r1,r0 
+	jsr r7, PosVariaveis 	;PosVariaveis eh a funcao que multiplica r0 por 60
+	mov r2, r0		;Coloca r2 em r0 para usar a funcao de multiplica novamente
+	jsr r7, PosVariaveis	;Apos isso ja estara em r2 o resultado
+	sub r2, somador
+
+;------------
+
+JuntaMinutos:
+	;Junta os minutos de I
+	mov VISOR+14, r3
+	mov VISOR+15, r4
+	jsr r7, JuntaDigitos	;A Funcao vai pegar os parametros r3 e r4 e retornar em r5
+	mov r5, r1
+
+	;Junta os minutos de F
+	mov VISOR+25, r3
+	mov VISOR+26, r4
+	jsr r7, JuntaDigitos
+	mov r5, r0	
+
+	
+	cmp r0, r1	;;Faz F-I para avaliar se deve somar ou subtrair os segundos do somador
+	bmi DecMinuto
+	;Se nao for no bmi cai no IncMinuto
+	
+	;Calcula a diferenca entre os minutos de I e F
+	sub r1, r0
+
+	jsr r7, PosVariaveis 	;PosVariaveis eh a funcao que multiplica r0 por 60
+	add r2, somador
+	jmp JuntaSegundos
+
+DecMinuto:
+	sub r0,r1
+	mov r1, r0
+
+	jsr r7, PosVariaveis 	;PosVariaveis eh a funcao que multiplica r0 por 60
+	sub r2, somador
+;------------
+
+
+JuntaSegundos:
+	;Junta os segundos de I
+	mov VISOR+17, r3
+	mov VISOR+18, r4
+	jsr r7, JuntaDigitos	;A Funcao vai pegar os parametros r3 e r4 e retornar em r5
+	mov r5, r1
+
+	;Junta os segundos de F
+	mov VISOR+28, r3
+	mov VISOR+29, r4
+	jsr r7, JuntaDigitos
+	mov r5, r0
+
+	cmp r0, r1	;;Faz F-I para avaliar se deve somar ou subtrair os segundos do somador
+	bmi DecSegundo
+	;Se nao for no bmi cai no IncSegundo
+	
+	;Calcula a diferenca entre os segundos de I e F
+	sub r1, r0	
+	add r0, somador
+	jmp AvaliaEstouro
+
+
+DecSegundo:
+	sub r0,r1
+	mov r1, r0
+	sub r0, somador
+
+AvaliaEstouro:
+;Avalia se o valor nao vai estourar a representacao
+	cmp #999, somador
+	bpl processaT
+	mov #'*', VISOR+32	;;Coloca o * no lugar do =
+	sub #1000, somador
+	jmp AvaliaEstouro
+
+
+;; Funcao que coloca o calculo de segundos no visor
+processaT:
+	mov somador, numFD
+	mov somador, tempFD
+	mov #0, countFD
+LoopFinal:
+	sub #100, tempFD
+	bmi SeparouCentena
+	inc countFD
+	mov tempFD, numFD
+	jmp LoopFinal
+SeparouCentena:
+	add #h30, countFD
+	mov countFD, VISOR+33	;Coloca as centenas no lugar correto do visor
+	mov numFD, r3		;Coloca as unidades+dezenas em r3 para reaproveitar a funcao utilizada anteriormente
+	jsr r7, SeparaDigitos
+	mov r4, VISOR+34
+	mov r5, VISOR+35
+
+	jmp CronometroTela
+
+
+;---------------------------------------------------------------------------------------------------	
+	;jmp PosVariaveis
+	
+	countFD: 	dw 0
+	numFD: 	dw 0
+	tempFD:	dw 0
+	multFD: dw 0
+	somador: dw 0
+
+PosVariaveis:
+	mov #14, countFD
+	
+	;Valores decimais a partir de agora
+	asl r0
+	asl r0
+
+	mov r0, r2
+Loop_Mult_15:
+	add r0, r2
+	dec countFD
+	beq FimLoop15
+	jmp Loop_Mult_15
+FimLoop15:
+	rts r7	
+;---------------------------------------------------------------------------------------------------
+
+
+	jmp CronometroTela
+	

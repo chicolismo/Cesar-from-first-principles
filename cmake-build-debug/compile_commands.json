@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/Users/chico/tcc/cesar/cmake-build-debug",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -isystem /usr/local/lib/wx/include/osx_cocoa-unicode-3.0 -isystem /usr/local/include/wx-3.0  -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -std=gnu++1z -o CMakeFiles/cesar.dir/main.cpp.o -c /Users/chico/tcc/cesar/main.cpp",
+  "file": "/Users/chico/tcc/cesar/main.cpp"
+},
+{
+  "directory": "/Users/chico/tcc/cesar/cmake-build-debug",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -isystem /usr/local/lib/wx/include/osx_cocoa-unicode-3.0 -isystem /usr/local/include/wx-3.0  -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -std=gnu++1z -o CMakeFiles/cesar.dir/Cpu.cpp.o -c /Users/chico/tcc/cesar/Cpu.cpp",
+  "file": "/Users/chico/tcc/cesar/Cpu.cpp"
+}
+]
