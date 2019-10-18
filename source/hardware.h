@@ -7,16 +7,12 @@
 #include <cstdlib>
 #include <string>
 
-//struct Word {
-    //int16_t bytes;
-
-    //Word(const Byte &msb, const Byte &lsb) {
-        //bytes = static_cast<int16_t>((msb << 8) | (lsb));
-    //}
-
-    //Word operator+(const Word &other) const {
-    //}
-//};
+#define PC registers[7]
+#define N condition.negative
+#define Z condition.zero
+#define V condition.overflow
+#define C condition.carry
+#define NZVC condition.all
 
 class Cpu {
 public:
@@ -27,7 +23,8 @@ public:
                 Word registers[8];
                 Byte registers_bytes[16];
             };
-            // NOTE: Little Endian.
+            // NOTE: Little Endian, mas deve ser tratado
+            // como big endian.
             Byte memory[MEM_SIZE];
         };
     };
@@ -42,19 +39,16 @@ public:
         };
     } condition;
 
-    int memmory_offset;
+    static std::size_t memory_offset;
 
     bool halted = false;
 
 public:
     Cpu();
-    Byte read_byte(Word address) const;
-    Word read_word(Word address) const;
+    Byte get_byte(Word address) const;
+    Word get_word(Word address) const;
     void set_memory(const char *bytes, const std::size_t size);
     Byte *get_memory();
-    Word get_register(int register_number) const;
-    void set_register(int register_number, Word value);
-    void increment_register(int register_number, Word amount);
     void read_memory_from_binary_file(const std::string &filename);
     void execute_next_instruction();
 };

@@ -5,7 +5,7 @@
 #include <map>
 #include <string>
 
-constexpr int MEM_SIZE = 1 << 16;
+constexpr std::size_t MEM_SIZE = 1 << 16;
 
 using Byte = std::int8_t;
 using Word = std::int16_t;

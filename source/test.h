@@ -13,7 +13,7 @@
 
 
 /*
-void test_ccc(Cpu &cpu) {
+inline void test_ccc(Cpu &cpu) {
     cpu.condition.all = 0b1111;
     Byte ccc = 0b00011010;
     cpu.memory[0] = ccc;
@@ -23,7 +23,7 @@ void test_ccc(Cpu &cpu) {
     std::cout << "0101 = " << condition << "\n";
 }
 
-void test_scc(Cpu &cpu) {
+inline void test_scc(Cpu &cpu) {
     cpu.condition.all = 0b0000;
     Byte scc = 0b00101010;
     cpu.memory[0] = scc;
@@ -33,7 +33,7 @@ void test_scc(Cpu &cpu) {
     std::cout << "1010 = " << condition << "\n";
 }
 
-void test_br(Cpu &cpu) {
+inline void test_br(Cpu &cpu) {
     cpu.registers[7] = 0;
     cpu.memory[0] = 0b00110000; // br
     cpu.memory[1] = 14;
@@ -46,7 +46,7 @@ void test_br(Cpu &cpu) {
 }
 */
 
-void run_tests() {
+inline void run_tests() {
     //Cpu cpu;
     //cpu.set_register(0, 34);
     //std::cout << cpu.get_register(0) << '\n';
@@ -60,18 +60,22 @@ void run_tests() {
     //*(p + 1) = 0xf0;
     //printf("%x\n", 0xFFFF & cpu.registers[0]);
 
-    std::string filename{"test.mem"};
+    //std::string filename{"test.mem"};
     Cpu cpu;
-    Byte *memory = cpu.get_memory();
-    cpu.read_memory_from_binary_file(filename);
-    std::size_t i = 0;
+    //Byte *memory = cpu.get_memory();
+    //cpu.read_memory_from_binary_file(filename);
+    //std::size_t i = 0;
+    //while (i < MEM_SIZE) {
+        //std::cout << i << ": ";
+        //print_binary_byte(memory[i]);
+        //cpu.execute_next_instruction();
+        //std::cout << "\n";
+        //++i;
+    //}
 
-    while (i < MEM_SIZE) {
-        std::cout << i << ": ";
-        print_binary_byte(memory[i]);
-        cpu.execute_next_instruction();
-        std::cout << "\n";
-        ++i;
+    Byte *all_memory = cpu.addressable_memory;
+    for (std::size_t i = 0; i < (MEM_SIZE + 16); ++i) {
+        printf("%d\n", all_memory[i]);
     }
 }
 
