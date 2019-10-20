@@ -1,236 +1,266 @@
+/*
+ * Overflow -> quando N - N = P, ou P + P = N
+ *          Ou seja, quando a representação correta do sinal é afetada.
+ *
+ * Carry -> Quando não há mais espaço em bits para salvar o resultado.
+ *          Ex. 0b1111_1111 + 1 => 0 e Carry
+ *          Ex. 0b0000_0000 - 1 => 0b1111_1111 e Carry
+ *
+ */
+
 #include "hardware.h"
 #include "util.h"
 
 #include <cstring>
 #include <fstream>
 
-std::size_t Cpu::memory_offset = offsetof(Cpu, memory);
+#define PC registers[7]
+#define N condition.negative
+#define Z condition.zero
+#define V condition.overflow
+#define C condition.carry
+#define NZVC condition.all
+#define IS_DISPLAY_ADDRESS(address)                                            \
+    (address) >= BEGIN_DISPLAY_ADDRESS && (address) <= END_DISPLAY_ADDRESS
+#define IS_REGISTER_ADDRESS(address) (address) < MEMORY_OFFSET
+#define IS_TWO_OPERAND_INSTRUCTION(inst)                                       \
+    (inst) == MOV || (inst) == ADD || (inst) == SUB || (inst) == CMP ||        \
+        (inst) == AND || (inst) == OR
+
+const std::size_t Cpu::MEMORY_OFFSET = offsetof(Cpu, memory);
+const std::size_t Cpu::BEGIN_DISPLAY_ADDRESS = 65500;
+const std::size_t Cpu::END_DISPLAY_ADDRESS = 65535;
 
 Cpu::Cpu() {
     // Limpa os registradores
     std::memset(registers_bytes, 0, 16);
     condition.all = 0b0000;
+
+    // Inicializa a Alu
+    alu = std::make_unique<Alu>(this);
 }
 
 void Cpu::set_memory(const char *bytes, const std::size_t size) {
-    const std::size_t offset{ size - MEM_SIZE };
-    const std::size_t max_size{ MEM_SIZE < size ? MEM_SIZE : size };
+    const std::size_t offset{size - MEM_SIZE};
+    const std::size_t max_size{MEM_SIZE < size ? MEM_SIZE : size};
     std::memcpy(memory, bytes + offset, max_size);
 }
 
-Byte *Cpu::get_memory() {
-    return memory;
-}
+Byte *Cpu::get_memory() { return memory; }
 
 Byte Cpu::get_byte(Word address) const {
     return memory[static_cast<uint16_t>(address)];
 }
 
+// TODO: Testar
 Word Cpu::get_word(Word address) const {
-    // TODO: Verificar se o endereço está dentro da área do display.
-    // Nesse caso apenas o byte mais significativo será colocado nos
-    // bits menos significativos da palavra retornada.
+    // A arquitetura do Cesar é Big Endian, portanto se espera que o byte
+    // mais significativo esteja no endereço menor.
+    const auto unsigned_address = static_cast<uint16_t>(address);
 
-    // A arquitetura do Cesar é Big Endian, portanto se espera que o byte mais
-    // significativo esteja no endereço menor.
-    const uint16_t unsigned_address = static_cast<uint16_t>(address);
-    const uint8_t msb = memory[unsigned_address];
-    const uint8_t lsb = memory[unsigned_address + 1];
-    const uint16_t unsigned_word = static_cast<uint16_t>((msb << 8) | lsb);
-    return static_cast<Word>(unsigned_word);
+    if (IS_DISPLAY_ADDRESS(unsigned_address)) {
+        // Se o endereço for um byte do display, retornar esse byte como
+        // os bits menos significativos da palavra
+        const uint8_t lsb = static_cast<uint8_t>(memory[unsigned_address + 1]);
+        return static_cast<Word>(0x00FF & lsb);
+    }
+    else {
+        const uint8_t msb = static_cast<uint8_t>(memory[unsigned_address]);
+        const uint8_t lsb = static_cast<uint8_t>(memory[unsigned_address + 1]);
+        return static_cast<Word>((msb << 8) | lsb);
+    }
 }
 
-
 void Cpu::read_memory_from_binary_file(const std::string &filename) {
-    std::fstream input_file(filename, std::ios::binary | std::ios::in | std::ios::ate);
+    std::fstream input_file(
+        filename, std::ios::binary | std::ios::in | std::ios::ate);
     const std::fstream::pos_type size = input_file.tellg();
 
-    char *buffer = static_cast<char *>(malloc(size));
+    char *buffer = new char[size];
 
     input_file.seekg(0);
     input_file.read(buffer, size);
 
-    set_memory((const char *) buffer, size);
+    set_memory((const char *)buffer, size);
 
-    free(buffer);
+    delete[] buffer;
 }
-
 
 void Cpu::execute_next_instruction() {
     const uint8_t byte = static_cast<uint8_t>(get_byte(PC++));
 
-    Instruction instruction = OPCODE_TO_INSTRUCTION.at(0x000F & ((0xF0 & byte) >> 4));
+    Instruction instruction =
+        OPCODE_TO_INSTRUCTION.at(0x000F & ((0xF0 & byte) >> 4));
 
-    /*
-    std::string_view instruction_name;
-    if (instruction == CONDITIONAL_BRANCH || instruction == ONE_OPERAND_INSTRUCTION) {
-        instruction_name = INSTRUCTION_NAMES[OPCODE_TO_INSTRUCTION.at(byte)];
-    }
-    else {
-        instruction_name = INSTRUCTION_NAMES[instruction];
-    }
-    std::cout << instruction_name;
-    return;
-    */
-
-    if (instruction == Instruction::NOP) {
+    if (instruction == NOP) {
         return;
     }
 
     if (instruction == CONDITIONAL_BRANCH) {
         Byte offset = get_byte(PC++);
-
         Instruction branch_instruction = OPCODE_TO_INSTRUCTION.at(byte);
-
-        switch (branch_instruction) {
-
-        case BR:
-            PC += offset;
-            break;
-        case BNE:
-            if (Z == 0) {
-                PC += offset;
-            }
-            break;
-        case BEQ:
-            if (Z == 1) {
-                PC += offset;
-            }
-            break;
-        case BPL:
-            if (N == 0) {
-                PC += offset;
-            }
-            break;
-        case BMI:
-            if (N == 1) {
-                PC += offset;
-            }
-            break;
-        case BVC:
-            if (V == 0) {
-                PC += offset;
-            }
-            break;
-        case BVS:
-            if (V == 1) {
-                PC += offset;
-            }
-            break;
-        case BCC:
-            if (C == 0) {
-                PC += offset;
-            }
-            break;
-        case BCS:
-            if (C == 1) {
-                PC += offset;
-            }
-            break;
-        case BGE:
-            if (N == V) {
-                PC += offset;
-            }
-            break;
-        case BLT:
-            if (N != V) {
-                PC += offset;
-            }
-            break;
-        case BGT:
-            if (N == V && Z == 0) {
-                PC += offset;
-            }
-            break;
-        case BLE:
-            if (N != V || Z == 1) {
-                PC += offset;
-            }
-            break;
-        case BHI:
-            if (C == 0 && Z == 0) {
-                PC += offset;
-            }
-            break;
-        case BLS:
-            if (C == 1 || Z == 1) {
-                PC += offset;
-            }
-            break;
-        default:
-            return; // NOP
-        }
+        alu->conditional_branch(branch_instruction, offset);
     }
-
-    if (instruction == ONE_OPERAND_INSTRUCTION) {
+    else if (instruction == ONE_OPERAND_INSTRUCTION) {
         Instruction one_op_instruction = OPCODE_TO_INSTRUCTION.at(byte);
 
-        switch (one_op_instruction) {
-        case CLR:
+        const Byte next_byte = get_byte(PC++);
+        const unsigned int mmm = (next_byte & 0b00111000) >> 3;
+        const unsigned int rrr = (next_byte & 0b00000111);
+        const AddressMode address_mode = INT_TO_ADDRESSMODE[mmm];
+        const std::size_t address = get_absolute_address(address_mode, rrr);
+        Word value = get_absolute_value(address);
+
+        value = alu->one_operand_instruction(one_op_instruction, value);
+        set_absolute_value(address, value);
+    }
+    else {
+        switch (instruction) {
+
+        case CCC:
+            alu->ccc(byte);
             break;
-        case NOT:
+
+        case SCC:
+            alu->scc(byte);
             break;
-        case INC:
+
+        case JMP:
+            alu->jmp();
             break;
-        case DEC:
+
+        case SOB:
+            alu->sob();
             break;
-        case NEG:
+
+        case JSR:
+            alu->jsr();
             break;
-        case TST:
+
+        case RTS:
+            alu->rts();
             break;
-        case ROR:
-            break;
-        case ROL:
-            break;
-        case ASR:
-            break;
-        case ASL:
-            break;
-        case ADC:
-            break;
-        case SBC:
-            break;
+
         default:
-            return; // NOP
+            break;
+        }
+
+        if (IS_TWO_OPERAND_INSTRUCTION(instruction)) {
+            const Byte next_byte = get_byte(PC++);
+            const uint16_t word =
+                static_cast<uint16_t>((byte << 8) | next_byte);
+            const uint16_t mmm1 = word & (0b0000111000000000) >> 9;
+            const uint16_t rrr1 = word & (0b0000000111000000) >> 6;
+            const uint16_t mmm2 = word & (0b0000000000111000) >> 3;
+            const uint16_t rrr2 = word & (0b0000000000000111);
+            AddressMode mode1 = INT_TO_ADDRESSMODE[mmm1];
+            AddressMode mode2 = INT_TO_ADDRESSMODE[mmm2];
+            const uint16_t op1_address = get_absolute_address(mode1, rrr1);
+            const uint16_t op2_address = get_absolute_address(mode2, rrr2);
+
+            [[maybe_unused]] Word op1 = get_absolute_value(op1_address);
+
+            [[maybe_unused]] Word op2 = get_absolute_value(op2_address);
+
+            Word value = alu->two_operand_instruction(instruction, op1, op2);
+
+            // TODO: Verificar se é esse mesmo o endereço
+            set_absolute_value(op1_address, value);
         }
     }
+}
 
-    // TODO: Usar ponteiros para endereçamento
-
-    switch (instruction) {
-    case NOP:
-        break;
-
-    case CCC:
-        NZVC = ~(byte & 0x0F);
-        break;
-    case SCC:
-        NZVC = (byte & 0x0F);
-        break;
-
-    case JMP:
-        break;
-    case SOB:
-        break;
-    case JSR:
-        break;
-    case RTS:
-        break;
-
-    case MOV:
-        break;
-    case ADD:
-        break;
-    case SUB:
-        break;
-    case CMP:
-        break;
-    case AND:
-        break;
-    case OR:
-        break;
-
-    default:
-        return; // NOP
+Word Cpu::get_absolute_value(const std::size_t address) {
+    if (IS_REGISTER_ADDRESS(address)) {
+        const Byte lsb = addressable_memory[address];
+        const Byte msb = addressable_memory[address + 1];
+        return static_cast<Word>((msb << 8) | lsb);
+    }
+    else if (IS_DISPLAY_ADDRESS(address)) {
+        const Byte msb = addressable_memory[address];
+        return static_cast<Word>(0x00FF & msb);
+    }
+    else {
+        const Byte msb = addressable_memory[address];
+        const Byte lsb = addressable_memory[address + 1];
+        return static_cast<Word>((msb << 8) | lsb);
     }
 }
+
+void Cpu::set_absolute_value(const std::size_t address, const Word value) {
+    const Byte msb = static_cast<Byte>((value & 0xFF00) >> 8);
+    const Byte lsb = static_cast<Byte>(value & 0x00FF);
+    if (IS_REGISTER_ADDRESS(address - MEMORY_OFFSET)) {
+        addressable_memory[address] = lsb;
+        addressable_memory[address + 1] = msb;
+    }
+    else {
+        addressable_memory[address] = msb;
+        addressable_memory[address + 1] = lsb;
+    }
+}
+
+std::size_t Cpu::get_absolute_address(
+    const AddressMode mode, const int register_number) {
+    std::size_t address;
+
+    switch (mode) {
+    case AddressMode::REGISTER:
+        address = register_number * 2;
+        break;
+
+    case AddressMode::REGISTER_POST_INCREMENTED:
+        address = registers[register_number];
+        registers[register_number] += 2;
+        break;
+
+    case AddressMode::REGISTER_PRE_DECREMENTED:
+        registers[register_number] -= 2;
+        address = registers[register_number];
+        break;
+
+    case AddressMode::INDEXED: {
+        const Word next_word = get_word(PC);
+        PC += 2;
+        address = registers[register_number] + next_word;
+    } break;
+
+    case AddressMode::REGISTER_INDIRECT: {
+        const uint16_t operand_address =
+            static_cast<uint16_t>(registers[register_number]);
+        address = get_word(operand_address);
+    } break;
+
+    case AddressMode::POST_INCREMENTED_INDIRECT: {
+        const uint16_t operand_address =
+            static_cast<uint16_t>(registers[register_number]);
+        registers[register_number] += 2;
+        address = get_word(operand_address);
+    } break;
+
+    case AddressMode::PRE_DECREMENTED_INDIRECT: {
+        registers[register_number] -= 2;
+        const uint16_t operand_address =
+            static_cast<uint16_t>(registers[register_number]);
+        address = get_word(operand_address);
+    } break;
+
+    case AddressMode::INDEXED_INDIRECT: {
+        const Word next_word = get_word(PC);
+        PC += 2;
+        const uint16_t operand_address =
+            static_cast<uint16_t>(next_word + registers[register_number]);
+        address = get_word(operand_address);
+    } break;
+    }
+    return static_cast<std::size_t>(address) + MEMORY_OFFSET;
+}
+
+#undef PC
+#undef N
+#undef Z
+#undef V
+#undef C
+#undef NZVC
+#undef IS_DISPLAY_ADDRESS
+#undef IS_REGISTER_ADDRESS

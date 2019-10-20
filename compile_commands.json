@@ -1,12 +1,22 @@
 [
 {
-  "directory": "/Users/chico/tcc/cesar",
-  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -isystem /usr/local/lib/wx/include/osx_cocoa-unicode-3.0 -isystem /usr/local/include/wx-3.0   -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/main.cpp.o -c /Users/chico/tcc/cesar/source/main.cpp",
-  "file": "/Users/chico/tcc/cesar/source/main.cpp"
+  "directory": "/home/chico/tcc/cesar",
+  "command": "/usr/bin/c++  -D_FILE_OFFSET_BITS=64 -D__WXGTK__ -isystem /usr/local/lib/wx/include/gtk3-unicode-static-3.0 -isystem /usr/local/include/wx-3.0   -pthread   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/main.cpp.o -c /home/chico/tcc/cesar/source/main.cpp",
+  "file": "/home/chico/tcc/cesar/source/main.cpp"
 },
 {
-  "directory": "/Users/chico/tcc/cesar",
-  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -isystem /usr/local/lib/wx/include/osx_cocoa-unicode-3.0 -isystem /usr/local/include/wx-3.0   -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/cpu.cpp.o -c /Users/chico/tcc/cesar/source/cpu.cpp",
-  "file": "/Users/chico/tcc/cesar/source/cpu.cpp"
+  "directory": "/home/chico/tcc/cesar",
+  "command": "/usr/bin/c++  -D_FILE_OFFSET_BITS=64 -D__WXGTK__ -isystem /usr/local/lib/wx/include/gtk3-unicode-static-3.0 -isystem /usr/local/include/wx-3.0   -pthread   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/alu.cpp.o -c /home/chico/tcc/cesar/source/alu.cpp",
+  "file": "/home/chico/tcc/cesar/source/alu.cpp"
+},
+{
+  "directory": "/home/chico/tcc/cesar",
+  "command": "/usr/bin/c++  -D_FILE_OFFSET_BITS=64 -D__WXGTK__ -isystem /usr/local/lib/wx/include/gtk3-unicode-static-3.0 -isystem /usr/local/include/wx-3.0   -pthread   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/cpu.cpp.o -c /home/chico/tcc/cesar/source/cpu.cpp",
+  "file": "/home/chico/tcc/cesar/source/cpu.cpp"
+},
+{
+  "directory": "/home/chico/tcc/cesar",
+  "command": "/usr/bin/c++  -D_FILE_OFFSET_BITS=64 -D__WXGTK__ -isystem /usr/local/lib/wx/include/gtk3-unicode-static-3.0 -isystem /usr/local/include/wx-3.0   -pthread   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/test.cpp.o -c /home/chico/tcc/cesar/source/test.cpp",
+  "file": "/home/chico/tcc/cesar/source/test.cpp"
 }
 ]

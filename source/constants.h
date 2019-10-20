@@ -10,9 +10,33 @@ constexpr std::size_t MEM_SIZE = 1 << 16;
 using Byte = std::int8_t;
 using Word = std::int16_t;
 
+enum AddressMode {
+    REGISTER                  = 0,
+    REGISTER_POST_INCREMENTED = 1,
+    REGISTER_PRE_DECREMENTED  = 2,
+    INDEXED                   = 3,
+    REGISTER_INDIRECT         = 4,
+    POST_INCREMENTED_INDIRECT = 5,
+    PRE_DECREMENTED_INDIRECT  = 6,
+    INDEXED_INDIRECT          = 7
+};
+
+constexpr AddressMode INT_TO_ADDRESSMODE[8] {
+    REGISTER,
+    REGISTER_POST_INCREMENTED,
+    REGISTER_PRE_DECREMENTED,
+    INDEXED,
+    REGISTER_INDIRECT,
+    POST_INCREMENTED_INDIRECT,
+    PRE_DECREMENTED_INDIRECT,
+    INDEXED_INDIRECT
+};
+
 enum Instruction {
-    NOP, CCC, SCC, BR, BNE, BEQ, BPL, BMI, BVC, BVS, BCC, BCS, BGE, BLT, BGT, BLE, BHI, BLS, JMP, SOB, JSR, RTS, CLR, NOT, INC, DEC, NEG, TST, ROR,
-    ROL, ASR, ASL, ADC, SBC, MOV, ADD, SUB, CMP, AND, OR, HLT, CONDITIONAL_BRANCH, ONE_OPERAND_INSTRUCTION
+    NOP, CCC, SCC, BR, BNE, BEQ, BPL, BMI, BVC, BVS, BCC, BCS, BGE, BLT, BGT,
+    BLE, BHI, BLS, JMP, SOB, JSR, RTS, CLR, NOT, INC, DEC, NEG, TST, ROR, ROL,
+    ASR, ASL, ADC, SBC, MOV, ADD, SUB, CMP, AND, OR, HLT, CONDITIONAL_BRANCH,
+    ONE_OPERAND_INSTRUCTION
 };
 
 const std::map<Byte, Instruction> OPCODE_TO_INSTRUCTION = {
@@ -37,7 +61,8 @@ const std::map<Byte, Instruction> OPCODE_TO_INSTRUCTION = {
     {0b1001, MOV},     {0b1010, ADD},
     {0b1011, SUB},     {0b1100, CMP},
     {0b1101, AND},     {0b1110, OR},
-    {0b1111, HLT}};
+    {0b1111, HLT}
+};
 
 constexpr std::string_view INSTRUCTION_NAMES[] = {
     [NOP] = "NOP",

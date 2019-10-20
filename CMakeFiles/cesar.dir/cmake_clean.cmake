@@ -1,8 +1,10 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/cesar.dir/source/cpu.cpp.o"
   "CMakeFiles/cesar.dir/source/main.cpp.o"
-  "cesar"
+  "CMakeFiles/cesar.dir/source/alu.cpp.o"
+  "CMakeFiles/cesar.dir/source/cpu.cpp.o"
+  "CMakeFiles/cesar.dir/source/test.cpp.o"
   "cesar.pdb"
+  "cesar"
 )
 
 # Per-language clean rules from dependency scanning.
