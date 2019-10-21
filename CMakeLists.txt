@@ -4,13 +4,42 @@ project(cesar)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+enable_testing()
+
 file(GLOB SOURCE_FILES "source/*.h" "source/*.cpp")
+list(REMOVE_ITEM SOURCE_FILES "sourc/main.cpp")
 find_package(wxWidgets COMPONENTS all REQUIRED)
-include(GoogleTest)
+
 if (wxWidgets_FOUND)
     include(${wxWidgets_USE_FILE})
     add_executable(cesar "source/main.cpp" ${SOURCE_FILES})
-    target_link_libraries(cesar ${wxWidgets_LIBRARIES})
-    target_link_libraries(cesar ${gtest_LIBRARIES})
+
+    find_package(Threads REQUIRED)
+    include(ExternalProject)
+    ExternalProject_Add(gtest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG master
+        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gtest
+        INSTALL_COMMAND ""
+        )
+    ExternalProject_Get_Property(gtest source_dir binary_dir)
+    add_library(libgtest IMPORTED STATIC GLOBAL)
+    add_dependencies(libgtest gtest)
+    set_target_properties(libgtest PROPERTIES
+        IMPORTED_LOCATION "gtest/src/gtest-build/lib/libgtest.a"
+        IMPORTED_LINK_INTERFACE_LIBRARIES "${CMAKE_THREAD_LIBS_INIT}"
+        )
+    add_library(libgmock IMPORTED STATIC GLOBAL)
+    set_target_properties(libgmock PROPERTIES
+        IMPORTED_LOCATION "gtest/src/gtest-build/lib/libgmock.a"
+        IMPORTED_LINK_INTERFACE_LIBRARIES "${CMAKE_THREAD_LIBS_INIT}"
+        )
+    include_directories(
+        "${source_dir}/googletest/include"
+        "${source_dir}/googlemock/include"
+        )
+
+    target_link_libraries(cesar ${wxWidgets_LIBRARIES} libgtest libgmock ${Threads_LIBRARIES})
     target_compile_options(cesar PRIVATE -g -Werror -Wall -Wextra)
 endif()
+

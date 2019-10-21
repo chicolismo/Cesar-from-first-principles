@@ -65,7 +65,10 @@ struct Alu {
     Cpu *cpu;
     Alu(Cpu *cpu);
 
-    bool is_overflow(Word a, Word b, Word result);
+    inline bool is_negative(Word value);
+    inline bool is_zero(Word value);
+    inline bool is_overflow(Word a, Word b, Word result);
+    inline bool is_carry(Word a, Word b);
 
     void conditional_branch(Instruction instruction, Byte offset);
     Word one_operand_instruction(Instruction instruction, Word value);

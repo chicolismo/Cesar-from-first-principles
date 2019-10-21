@@ -13,9 +13,9 @@
     //EXPECT_EQ(cpu.condition.all, 0b1010);
 //}
 
-int init([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
+int init_tests([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 
     //testing::InitGoogleTest(&argc, argv);
     //return RUN_ALL_TESTS();
-    return 1;
+    return EXIT_SUCCESS;
 }

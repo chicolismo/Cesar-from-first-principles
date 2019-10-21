@@ -1,22 +1,22 @@
 [
 {
   "directory": "/home/chico/tcc/cesar",
-  "command": "/usr/bin/c++  -D_FILE_OFFSET_BITS=64 -D__WXGTK__ -isystem /usr/local/lib/wx/include/gtk3-unicode-static-3.0 -isystem /usr/local/include/wx-3.0   -pthread   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/main.cpp.o -c /home/chico/tcc/cesar/source/main.cpp",
+  "command": "/usr/bin/c++  -D_FILE_OFFSET_BITS=64 -D__WXGTK__ -isystem /usr/local/lib/wx/include/gtk3-unicode-static-3.0 -isystem /usr/local/include/wx-3.0 -I/home/chico/tcc/cesar/gtest/src/gtest/googletest/include -I/home/chico/tcc/cesar/gtest/src/gtest/googlemock/include   -pthread   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/main.cpp.o -c /home/chico/tcc/cesar/source/main.cpp",
   "file": "/home/chico/tcc/cesar/source/main.cpp"
 },
 {
   "directory": "/home/chico/tcc/cesar",
-  "command": "/usr/bin/c++  -D_FILE_OFFSET_BITS=64 -D__WXGTK__ -isystem /usr/local/lib/wx/include/gtk3-unicode-static-3.0 -isystem /usr/local/include/wx-3.0   -pthread   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/alu.cpp.o -c /home/chico/tcc/cesar/source/alu.cpp",
+  "command": "/usr/bin/c++  -D_FILE_OFFSET_BITS=64 -D__WXGTK__ -isystem /usr/local/lib/wx/include/gtk3-unicode-static-3.0 -isystem /usr/local/include/wx-3.0 -I/home/chico/tcc/cesar/gtest/src/gtest/googletest/include -I/home/chico/tcc/cesar/gtest/src/gtest/googlemock/include   -pthread   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/alu.cpp.o -c /home/chico/tcc/cesar/source/alu.cpp",
   "file": "/home/chico/tcc/cesar/source/alu.cpp"
 },
 {
   "directory": "/home/chico/tcc/cesar",
-  "command": "/usr/bin/c++  -D_FILE_OFFSET_BITS=64 -D__WXGTK__ -isystem /usr/local/lib/wx/include/gtk3-unicode-static-3.0 -isystem /usr/local/include/wx-3.0   -pthread   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/cpu.cpp.o -c /home/chico/tcc/cesar/source/cpu.cpp",
+  "command": "/usr/bin/c++  -D_FILE_OFFSET_BITS=64 -D__WXGTK__ -isystem /usr/local/lib/wx/include/gtk3-unicode-static-3.0 -isystem /usr/local/include/wx-3.0 -I/home/chico/tcc/cesar/gtest/src/gtest/googletest/include -I/home/chico/tcc/cesar/gtest/src/gtest/googlemock/include   -pthread   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/cpu.cpp.o -c /home/chico/tcc/cesar/source/cpu.cpp",
   "file": "/home/chico/tcc/cesar/source/cpu.cpp"
 },
 {
   "directory": "/home/chico/tcc/cesar",
-  "command": "/usr/bin/c++  -D_FILE_OFFSET_BITS=64 -D__WXGTK__ -isystem /usr/local/lib/wx/include/gtk3-unicode-static-3.0 -isystem /usr/local/include/wx-3.0   -pthread   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/test.cpp.o -c /home/chico/tcc/cesar/source/test.cpp",
+  "command": "/usr/bin/c++  -D_FILE_OFFSET_BITS=64 -D__WXGTK__ -isystem /usr/local/lib/wx/include/gtk3-unicode-static-3.0 -isystem /usr/local/include/wx-3.0 -I/home/chico/tcc/cesar/gtest/src/gtest/googletest/include -I/home/chico/tcc/cesar/gtest/src/gtest/googlemock/include   -pthread   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/test.cpp.o -c /home/chico/tcc/cesar/source/test.cpp",
   "file": "/home/chico/tcc/cesar/source/test.cpp"
 }
 ]

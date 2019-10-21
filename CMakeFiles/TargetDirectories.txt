@@ -1,3 +1,0 @@
-/home/chico/tcc/cesar/CMakeFiles/rebuild_cache.dir
-/home/chico/tcc/cesar/CMakeFiles/cesar.dir
-/home/chico/tcc/cesar/CMakeFiles/edit_cache.dir
