@@ -9,6 +9,8 @@
 #include <memory>
 #include <string>
 
+namespace hardware {
+
 struct Cpu;
 struct Alu;
 
@@ -48,9 +50,12 @@ struct Cpu {
     bool halted = false;
 
     Cpu();
-    inline Word bytes_to_word(const Byte msb, const Byte lsb) {
-        return (msb << 8) | lsb;
-    }
+
+    inline Word bytes_to_word(const Byte msb, const Byte lsb) const { return (msb << 8) | lsb; }
+
+    Word pop();
+
+    void push(const Word value);
 
     Byte get_byte(Word address) const;
 
@@ -64,13 +69,11 @@ struct Cpu {
 
     void execute_next_instruction();
 
-    std::size_t get_absolute_address(
-        const AddressMode mode, const int register_number);
+    std::size_t get_absolute_address(const AddressMode mode, const int register_number);
 
     Word get_value_from_absolute_address(const std::size_t address);
 
-    void set_value_to_absolute_address(
-        const Word value, const std::size_t address);
+    void set_value_to_absolute_address(const Word value, const std::size_t address);
 };
 
 struct Alu {
@@ -84,8 +87,7 @@ struct Alu {
     inline bool is_zero(Word value) const { return value == 0; }
 
     inline bool is_overflow(Word a, Word b, Word c) const {
-        return ((a > 0) && (b > 0) && (c < 0)) ||
-               ((a < 0) && (b < 0) && (c > 0));
+        return ((a > 0) && (b > 0) && (c < 0)) || ((a < 0) && (b < 0) && (c > 0));
     }
 
     inline bool is_carry(Word a, Word b, CarryOperation operation) const {
@@ -103,15 +105,22 @@ struct Alu {
         return (result & 0x10000) > 0;
     }
 
-    void conditional_branch(Instruction instruction, Byte offset);
-    Word one_operand_instruction(Instruction instruction, Word value);
-    Word two_operand_instruction(Instruction instruction, Word op1, Word op2);
-    void ccc(Byte byte);
-    void scc(Byte byte);
-    void jmp(Byte byte);
-    void sob(Word word);
-    void jsr(Word word);
-    void rts(Byte word);
+    void conditional_branch(const Instruction instruction, const Byte offset);
+    Word one_operand_instruction(const Instruction instruction, const Word value);
+    Word two_operand_instruction(const Instruction instruction, const Word op1, const Word op2);
+    void ccc(const Byte byte);
+    void scc(const Byte byte);
+    void jmp(const AddressMode mode, const std::size_t absolute_address);
+    void sob(const std::size_t register_number, const Byte offset);
+    void jsr(const AddressMode mode, const std::size_t sub_address, const int register_number);
+    void rts(const Byte word);
+    Word mov(const Word src);
+    Word add(const Word src, const Word dst);
+    Word sub(const Word src, const Word dst);
+    Word cmp(const Word src, const Word dst);
+    Word bitwise_and(const Word src, const Word dst);
+    Word bitwise_or(const Word src, const Word dst);
 };
 
+} // namespace hardware
 #endif

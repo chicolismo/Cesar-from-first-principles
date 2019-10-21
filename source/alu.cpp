@@ -1,5 +1,7 @@
 #include "hardware.h"
+#include <iostream>
 
+#define SP cpu->registers[8]
 #define PC cpu->registers[7]
 #define NZVC cpu->condition.all
 #define N cpu->condition.negative
@@ -91,12 +93,14 @@ void Alu::conditional_branch(Instruction instruction, Byte offset) {
     }
 }
 
-Word Alu::one_operand_instruction(Instruction instruction, Word value) {
+Word Alu::one_operand_instruction(const Instruction instruction, const Word value) {
     // TODO. Garantir que todos as condições foram testadas.
+
+    Word result;
 
     switch (instruction) {
     case CLR:
-        value = 0;
+        result = 0;
         N = 0;
         Z = 1;
         C = 0;
@@ -104,158 +108,199 @@ Word Alu::one_operand_instruction(Instruction instruction, Word value) {
         break;
 
     case NOT:
-        value = ~value;
-        N = value < 0;
-        Z = value == 0;
+        result = ~value;
+        N = is_negative(result);
+        Z = is_zero(result);
         C = 1;
         V = 0;
         break;
 
     case INC:
+        result = value + 1;
         V = is_overflow(value, 1, value + 1);
-        C = static_cast<uint16_t>(value) == 0xFFFF;
-        value += 1;
-        N = value < 0;
-        Z = value == 0;
+        C = static_cast<uint16_t>(result) == 0xFFFFu;
+        N = is_negative(result);
+        Z = is_zero(result);
         break;
 
     case DEC:
+        result = value - 1;
         V = is_overflow(value, 1, value - 1);
         C = value == 0;
-        value -= 1;
-        N = value < 0;
-        Z = value == 0;
+        N = is_negative(result);
+        Z = is_zero(result);
         break;
 
-    case NEG:
-        V = is_overflow(value, 1, value + 1);
-        C = value == 0; // TODO: Confirmar isto!
-        value = -value;
-        N = is_negative(value);
-        Z = is_zero(value);
-        break;
+    case NEG: {
+        result = -value;
+        const uint16_t uvalue = static_cast<uint16_t>(value);
+        const uint32_t temp = ~uvalue + 1;
+        V = is_overflow(~value, 1, (~value) + 1); // TODO: Verificar isto.
+        C = (temp & 0x10000) > 0;
+        N = is_negative(result);
+        Z = is_zero(result);
+              } break;
 
     case TST:
-        N = is_negative(value);
-        Z = is_zero(value);
+        result = value;
+        N = is_negative(result);
+        Z = is_zero(result);
         C = 0;
         V = 0;
         break;
 
     case ROR: {
-        uint16_t temp = static_cast<uint16_t>(value);
-        uint16_t lsb = (temp & 0x0001);
+        const uint16_t temp = static_cast<uint16_t>(value);
+        const uint16_t lsb = (temp & 0x0001);
+        result = static_cast<Word>((lsb << 15) | (temp >> 1));
         C = lsb;
-        value = static_cast<Word>((lsb << 15) | (temp >> 1));
-        N = is_negative(value);
-        Z = is_zero(value);
+        N = is_negative(result);
+        Z = is_zero(result);
         V = N ^ C;
     } break;
 
     case ROL: {
-        uint16_t temp = static_cast<uint16_t>(value);
-        uint16_t msb = (temp & 0x8000) >> 15;
+        const uint16_t temp = static_cast<uint16_t>(value);
+        const uint16_t msb = static_cast<uint16_t>((temp & 0x8000) >> 15);
+        result = static_cast<Word>((temp << 1) | msb);
         C = msb;
-        value = static_cast<Word>((temp << 1) | msb);
-        N = is_negative(value);
-        Z = is_zero(value);
+        N = is_negative(result);
+        Z = is_zero(result);
         V = N ^ C;
     } break;
 
     case ASR: {
-        uint16_t temp = static_cast<uint16_t>(value);
-        uint16_t lsb = (temp & 0x0001);
-        uint16_t msb = (temp & 0x8000);
+        const uint16_t temp = static_cast<uint16_t>(value);
+        const uint16_t lsb = (temp & 0x0001);
+        const uint16_t msb = (temp & 0x8000);
+        result = static_cast<Word>(msb | (temp >> 1));
         C = lsb;
-        value = static_cast<Word>(msb | (temp >> 1));
-        N = is_negative(value);
-        Z = is_zero(value);
+        N = is_negative(result);
+        Z = is_zero(result);
         V = N ^ C;
     } break;
 
     case ASL: {
-        uint16_t temp = static_cast<uint16_t>(value);
-        uint16_t msb = (temp & 0x8000) >> 15;
+        const uint16_t temp = static_cast<uint16_t>(value);
+        const uint16_t msb = (temp & 0x8000) >> 15;
+        result = static_cast<Word>(temp << 1);
         C = msb;
-        value = static_cast<Word>(temp << 1);
-        N = is_negative(value);
-        Z = is_zero(value);
+        N = is_negative(result);
+        Z = is_zero(result);
         V = N ^ C;
     } break;
 
     case ADC: {
+        result = value + C;
+        N = is_negative(result);
+        Z = is_zero(result);
         V = is_overflow(value, C, value + C);
-        int temp = C;
-        C = is_carry(value, temp, Alu::Plus);
-        value += temp;
-        N = is_negative(value);
-        Z = is_zero(value);
+        C = is_carry(value, C, Alu::Plus);
     } break;
 
     case SBC: {
+        result = value + C;
+        N = is_negative(result);
+        Z = is_zero(result);
         V = is_overflow(value, C, value - C);
-        int temp = C;
-        C = is_carry(value, temp, Alu::Minus);
-        value -= temp;
-        N = value < 0;
-        Z = value == 0;
+        C = is_carry(value, C, Alu::Minus);
     } break;
 
     default:
+        result = value;
         break;
     }
 
-    return value;
+    return result;
 }
 
-void Alu::ccc(Byte byte) { NZVC &= ~(byte & 0x0F); }
+void Alu::ccc(const Byte byte) { NZVC &= ~(byte & 0x0F); }
 
-void Alu::scc(Byte byte) { NZVC |= (byte & 0x0F); }
+void Alu::scc(const Byte byte) { NZVC |= (byte & 0x0F); }
 
-void Alu::jmp(Byte next_byte) {
-    //// TODO Testar JMP
-    std::size_t mmm = (next_byte & 0b00111000) >> 3;
-    std::size_t rrr = (next_byte & 0b00000111);
-    AddressMode mode = INT_TO_ADDRESSMODE[mmm];
-    std::size_t address = cpu->get_absolute_address(mode, rrr) - MEM_SIZE;
-    PC = address;
+void Alu::jmp(const AddressMode mode, const std::size_t absolute_address) {
+    if (mode != REGISTER) {
+        auto address = absolute_address - Cpu::MEMORY_OFFSET;
+        PC = address;
+    }
 }
 
-void Alu::sob([[maybe_unused]] Word word) {}
+void Alu::sob(const std::size_t register_number, const Byte offset) {
+    if ((--cpu->registers[register_number]) != 0) {
+        PC -= offset;
+    }
+}
 
-void Alu::jsr([[maybe_unused]] Word word) {}
+void Alu::jsr(const AddressMode mode, const std::size_t sub_address, const int register_number) {
+    if (mode != REGISTER) {
+        auto temp = sub_address - Cpu::MEMORY_OFFSET;
+        cpu->push(cpu->registers[register_number]);
+        cpu->registers[register_number] = PC;
+        PC = static_cast<Word>(temp);
+    }
+}
 
-void Alu::rts([[maybe_unused]] Byte byte) {}
+void Alu::rts(const Byte byte) {
+    std::size_t rrr = (byte & 0b00000111);
+    PC = cpu->registers[rrr];
+    cpu->registers[rrr] = cpu->pop();
+}
 
-/*
-Word Alu::mov(Word src, Word dst) {
+Word Alu::mov(const Word src) {
+    N = is_negative(src);
+    Z = is_zero(src);
+    V = 0;
+    return src;
 }
 
 Word Alu::add(Word src, Word dst) {
-
+    Word result = dst + src;
+    N = is_negative(result);
+    Z = is_zero(result);
+    V = is_overflow(dst, src, result);
+    C = is_carry(dst, src, CarryOperation::Plus);
+    return result;
 }
 
-Word Alu::sub(Word src, Word dst) {
-
+Word Alu::sub(const Word src, const Word dst) {
+    Word result = dst - src;
+    N = is_negative(result);
+    Z = is_zero(result);
+    V = is_overflow(dst, src, result);
+    C = is_carry(dst, src, CarryOperation::Minus);
+    return result;
 }
 
-Word Alu::cmp(Word src, Word dst) {
-
+Word Alu::cmp(const Word src, const Word dst) {
+    Word result = src - dst;
+    N = is_negative(result);
+    Z = is_zero(result);
+    V = is_overflow(src, dst, result);
+    C = is_carry(src, dst, CarryOperation::Minus);
+    return dst;
 }
 
-Word Alu::bitwise_and(Word src, Word dst) {
-
+Word Alu::bitwise_and(const Word src, const Word dst) {
+    Word result = src & dst;
+    N = is_negative(result);
+    Z = is_zero(result);
+    V = 0;
+    return result;
 }
 
-Word Alu::bitwise_or(Word src, Word dst) {
-
+Word Alu::bitwise_or(const Word src, const Word dst) {
+    Word result = src | dst;
+    N = is_negative(result);
+    Z = is_zero(result);
+    V = 0;
+    return result;
 }
-*/
 
-Word Alu::two_operand_instruction(Instruction instruction, Word src, Word dst) {
+Word Alu::two_operand_instruction(const Instruction instruction, const Word src, const Word dst) {
+
     switch (instruction) {
     case MOV:
-        return mov(src, dst);
+        return mov(src);
     case ADD:
         return add(src, dst);
     case SUB:
@@ -267,7 +312,8 @@ Word Alu::two_operand_instruction(Instruction instruction, Word src, Word dst) {
     case OR:
         return bitwise_or(src, dst);
     default:
-        return dst; // NOP
+        std::cerr << __FILE__ << ':' << __LINE__ << " Código não pode chegar aqui!\n";
+        std::exit(1);
     }
 }
 
