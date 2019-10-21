@@ -1,4 +1,5 @@
 cesar
+run_tests
 gtest/*
 CMakeCache.txt
 CMakeFiles/*

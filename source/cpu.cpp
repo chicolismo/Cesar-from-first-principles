@@ -1,13 +1,3 @@
-/*
- * Overflow -> quando N - N = P, ou P + P = N
- *          Ou seja, quando a representação correta do sinal é afetada.
- *
- * Carry -> Quando não há mais espaço em bits para salvar o resultado.
- *          Ex. 0b1111_1111 + 1 => 0 e Carry
- *          Ex. 0b0000_0000 - 1 => 0b1111_1111 e Carry
- *
- */
-
 #include "hardware.h"
 #include "util.h"
 
@@ -26,6 +16,8 @@
 #define IS_TWO_OPERAND_INSTRUCTION(inst)                                       \
     (inst) == MOV || (inst) == ADD || (inst) == SUB || (inst) == CMP ||        \
         (inst) == AND || (inst) == OR
+
+namespace hardware {
 
 const std::size_t Cpu::MEMORY_OFFSET = offsetof(Cpu, memory);
 const std::size_t Cpu::BEGIN_DISPLAY_ADDRESS = 65500;
@@ -109,10 +101,10 @@ void Cpu::execute_next_instruction() {
         const unsigned int rrr = (next_byte & 0b00000111);
         const AddressMode address_mode = INT_TO_ADDRESSMODE[mmm];
         const std::size_t address = get_absolute_address(address_mode, rrr);
-        Word value = get_absolute_value(address);
+        Word value = get_value_from_absolute_address(address);
 
         value = alu->one_operand_instruction(one_op_instruction, value);
-        set_absolute_value(address, value);
+        set_value_to_absolute_address(value, address);
     }
     else {
         switch (instruction) {
@@ -126,19 +118,23 @@ void Cpu::execute_next_instruction() {
             break;
 
         case JMP:
-            alu->jmp();
+            alu->jmp(get_byte(PC++));
             break;
 
-        case SOB:
-            alu->sob();
-            break;
+        case SOB: {
+            Byte next_byte = get_byte(PC++);
+            Word word = bytes_to_word(byte, next_byte);
+            alu->sob(word);
+        } break;
 
-        case JSR:
-            alu->jsr();
-            break;
+        case JSR: {
+            Byte next_byte = get_byte(PC++);
+            Word word = ((byte << 8) | next_byte);
+            alu->jsr(word);
+        } break;
 
         case RTS:
-            alu->rts();
+            alu->rts(byte);
             break;
 
         default:
@@ -155,22 +151,18 @@ void Cpu::execute_next_instruction() {
             const uint16_t rrr2 = word & (0b0000000000000111);
             AddressMode mode1 = INT_TO_ADDRESSMODE[mmm1];
             AddressMode mode2 = INT_TO_ADDRESSMODE[mmm2];
-            const uint16_t op1_address = get_absolute_address(mode1, rrr1);
-            const uint16_t op2_address = get_absolute_address(mode2, rrr2);
+            const uint16_t src_address = get_absolute_address(mode1, rrr1);
+            const uint16_t dst_address = get_absolute_address(mode2, rrr2);
 
-            [[maybe_unused]] Word op1 = get_absolute_value(op1_address);
-
-            [[maybe_unused]] Word op2 = get_absolute_value(op2_address);
-
-            Word value = alu->two_operand_instruction(instruction, op1, op2);
-
-            // TODO: Verificar se é esse mesmo o endereço
-            set_absolute_value(op1_address, value);
+            Word src = get_value_from_absolute_address(src_address);
+            Word dst = get_value_from_absolute_address(dst_address);
+            Word value = alu->two_operand_instruction(instruction, src, dst);
+            set_value_to_absolute_address(value, dst_address);
         }
     }
 }
 
-Word Cpu::get_absolute_value(const std::size_t address) {
+Word Cpu::get_value_from_absolute_address(const std::size_t address) {
     if (IS_REGISTER_ADDRESS(address)) {
         const Byte lsb = addressable_memory[address];
         const Byte msb = addressable_memory[address + 1];
@@ -187,7 +179,8 @@ Word Cpu::get_absolute_value(const std::size_t address) {
     }
 }
 
-void Cpu::set_absolute_value(const std::size_t address, const Word value) {
+void Cpu::set_value_to_absolute_address(
+    const Word value, const std::size_t address) {
     const Byte msb = static_cast<Byte>((value & 0xFF00) >> 8);
     const Byte lsb = static_cast<Byte>(value & 0x00FF);
     if (IS_REGISTER_ADDRESS(address - MEMORY_OFFSET)) {
@@ -255,6 +248,8 @@ std::size_t Cpu::get_absolute_address(
     }
     return static_cast<std::size_t>(address) + MEMORY_OFFSET;
 }
+
+} // namespace hardware
 
 #undef PC
 #undef N

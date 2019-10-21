@@ -67,17 +67,6 @@ edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
-
 # Special rule for the target test
 test:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
@@ -88,6 +77,17 @@ test:
 test/fast: test
 
 .PHONY : test/fast
+
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -122,17 +122,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named cesar
+# Target rules for targets named run_tests
 
 # Build rule for target.
-cesar: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 cesar
-.PHONY : cesar
+run_tests: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 run_tests
+.PHONY : run_tests
 
 # fast build rule for target.
-cesar/fast:
-	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/build
-.PHONY : cesar/fast
+run_tests/fast:
+	$(MAKE) -f CMakeFiles/run_tests.dir/build.make CMakeFiles/run_tests.dir/build
+.PHONY : run_tests/fast
 
 #=============================================================================
 # Target rules for targets named gtest
@@ -147,12 +147,26 @@ gtest/fast:
 	$(MAKE) -f CMakeFiles/gtest.dir/build.make CMakeFiles/gtest.dir/build
 .PHONY : gtest/fast
 
+#=============================================================================
+# Target rules for targets named cesar
+
+# Build rule for target.
+cesar: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 cesar
+.PHONY : cesar
+
+# fast build rule for target.
+cesar/fast:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/build
+.PHONY : cesar/fast
+
 source/alu.o: source/alu.cpp.o
 
 .PHONY : source/alu.o
 
 # target to build an object file
 source/alu.cpp.o:
+	$(MAKE) -f CMakeFiles/run_tests.dir/build.make CMakeFiles/run_tests.dir/source/alu.cpp.o
 	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/alu.cpp.o
 .PHONY : source/alu.cpp.o
 
@@ -162,6 +176,7 @@ source/alu.i: source/alu.cpp.i
 
 # target to preprocess a source file
 source/alu.cpp.i:
+	$(MAKE) -f CMakeFiles/run_tests.dir/build.make CMakeFiles/run_tests.dir/source/alu.cpp.i
 	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/alu.cpp.i
 .PHONY : source/alu.cpp.i
 
@@ -171,6 +186,7 @@ source/alu.s: source/alu.cpp.s
 
 # target to generate assembly for a file
 source/alu.cpp.s:
+	$(MAKE) -f CMakeFiles/run_tests.dir/build.make CMakeFiles/run_tests.dir/source/alu.cpp.s
 	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/alu.cpp.s
 .PHONY : source/alu.cpp.s
 
@@ -180,6 +196,7 @@ source/cpu.o: source/cpu.cpp.o
 
 # target to build an object file
 source/cpu.cpp.o:
+	$(MAKE) -f CMakeFiles/run_tests.dir/build.make CMakeFiles/run_tests.dir/source/cpu.cpp.o
 	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/cpu.cpp.o
 .PHONY : source/cpu.cpp.o
 
@@ -189,6 +206,7 @@ source/cpu.i: source/cpu.cpp.i
 
 # target to preprocess a source file
 source/cpu.cpp.i:
+	$(MAKE) -f CMakeFiles/run_tests.dir/build.make CMakeFiles/run_tests.dir/source/cpu.cpp.i
 	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/cpu.cpp.i
 .PHONY : source/cpu.cpp.i
 
@@ -198,6 +216,7 @@ source/cpu.s: source/cpu.cpp.s
 
 # target to generate assembly for a file
 source/cpu.cpp.s:
+	$(MAKE) -f CMakeFiles/run_tests.dir/build.make CMakeFiles/run_tests.dir/source/cpu.cpp.s
 	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/cpu.cpp.s
 .PHONY : source/cpu.cpp.s
 
@@ -234,7 +253,7 @@ source/test.o: source/test.cpp.o
 
 # target to build an object file
 source/test.cpp.o:
-	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/test.cpp.o
+	$(MAKE) -f CMakeFiles/run_tests.dir/build.make CMakeFiles/run_tests.dir/source/test.cpp.o
 .PHONY : source/test.cpp.o
 
 source/test.i: source/test.cpp.i
@@ -243,7 +262,7 @@ source/test.i: source/test.cpp.i
 
 # target to preprocess a source file
 source/test.cpp.i:
-	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/test.cpp.i
+	$(MAKE) -f CMakeFiles/run_tests.dir/build.make CMakeFiles/run_tests.dir/source/test.cpp.i
 .PHONY : source/test.cpp.i
 
 source/test.s: source/test.cpp.s
@@ -252,7 +271,7 @@ source/test.s: source/test.cpp.s
 
 # target to generate assembly for a file
 source/test.cpp.s:
-	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/test.cpp.s
+	$(MAKE) -f CMakeFiles/run_tests.dir/build.make CMakeFiles/run_tests.dir/source/test.cpp.s
 .PHONY : source/test.cpp.s
 
 # Help Target
@@ -262,10 +281,11 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
-	@echo "... rebuild_cache"
-	@echo "... cesar"
+	@echo "... run_tests"
 	@echo "... test"
 	@echo "... gtest"
+	@echo "... rebuild_cache"
+	@echo "... cesar"
 	@echo "... source/alu.o"
 	@echo "... source/alu.i"
 	@echo "... source/alu.s"

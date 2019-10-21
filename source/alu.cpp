@@ -7,11 +7,9 @@
 #define V cpu->condition.overflow
 #define C cpu->condition.carry
 
-Alu::Alu(Cpu *cpu) : cpu(cpu) {}
+namespace hardware {
 
-inline bool Alu::is_overflow(Word a, Word b, Word c) {
-    return ((a > 0) && (b > 0) && (c < 0)) || ((a < 0) && (b < 0) && (c > 0));
-}
+Alu::Alu(Cpu *cpu) : cpu(cpu) {}
 
 void Alu::conditional_branch(Instruction instruction, Byte offset) {
     switch (instruction) {
@@ -122,7 +120,7 @@ Word Alu::one_operand_instruction(Instruction instruction, Word value) {
         break;
 
     case DEC:
-        V = is_overflow(value, -1, value - 1);
+        V = is_overflow(value, 1, value - 1);
         C = value == 0;
         value -= 1;
         N = value < 0;
@@ -130,14 +128,16 @@ Word Alu::one_operand_instruction(Instruction instruction, Word value) {
         break;
 
     case NEG:
+        V = is_overflow(value, 1, value + 1);
+        C = value == 0; // TODO: Confirmar isto!
         value = -value;
-        N = value < 0;
-        Z = value == 0;
+        N = is_negative(value);
+        Z = is_zero(value);
         break;
 
     case TST:
-        N = value < 0;
-        Z = value == 0;
+        N = is_negative(value);
+        Z = is_zero(value);
         C = 0;
         V = 0;
         break;
@@ -147,8 +147,8 @@ Word Alu::one_operand_instruction(Instruction instruction, Word value) {
         uint16_t lsb = (temp & 0x0001);
         C = lsb;
         value = static_cast<Word>((lsb << 15) | (temp >> 1));
-        Z = value == 0;
-        N = value < 0;
+        N = is_negative(value);
+        Z = is_zero(value);
         V = N ^ C;
     } break;
 
@@ -157,8 +157,8 @@ Word Alu::one_operand_instruction(Instruction instruction, Word value) {
         uint16_t msb = (temp & 0x8000) >> 15;
         C = msb;
         value = static_cast<Word>((temp << 1) | msb);
-        N = value < 0;
-        Z = value == 0;
+        N = is_negative(value);
+        Z = is_zero(value);
         V = N ^ C;
     } break;
 
@@ -168,8 +168,8 @@ Word Alu::one_operand_instruction(Instruction instruction, Word value) {
         uint16_t msb = (temp & 0x8000);
         C = lsb;
         value = static_cast<Word>(msb | (temp >> 1));
-        N = value < 0;
-        Z = value == 0;
+        N = is_negative(value);
+        Z = is_zero(value);
         V = N ^ C;
     } break;
 
@@ -178,26 +178,28 @@ Word Alu::one_operand_instruction(Instruction instruction, Word value) {
         uint16_t msb = (temp & 0x8000) >> 15;
         C = msb;
         value = static_cast<Word>(temp << 1);
-        N = value < 0;
-        Z = value == 0;
+        N = is_negative(value);
+        Z = is_zero(value);
         V = N ^ C;
     } break;
 
-    case ADC:
-        // TODO, Determinar os código de condições.
-        V = (value > 0 && (value + C) < 0);
-        value += C;
-        N = value < 0;
-        Z = value == 0;
-        break;
+    case ADC: {
+        V = is_overflow(value, C, value + C);
+        int temp = C;
+        C = is_carry(value, temp, Alu::Plus);
+        value += temp;
+        N = is_negative(value);
+        Z = is_zero(value);
+    } break;
 
-    case SBC:
-        // TODO, Determinar os código de condições.
-        V = (value < 0 && (value - C) > 0);
-        value -= C;
+    case SBC: {
+        V = is_overflow(value, C, value - C);
+        int temp = C;
+        C = is_carry(value, temp, Alu::Minus);
+        value -= temp;
         N = value < 0;
         Z = value == 0;
-        break;
+    } break;
 
     default:
         break;
@@ -206,46 +208,67 @@ Word Alu::one_operand_instruction(Instruction instruction, Word value) {
     return value;
 }
 
-void Alu::ccc(Byte byte) { NZVC = ~(byte & 0x0F); }
+void Alu::ccc(Byte byte) { NZVC &= ~(byte & 0x0F); }
 
-void Alu::scc(Byte byte) { NZVC = (byte & 0x0F); }
+void Alu::scc(Byte byte) { NZVC |= (byte & 0x0F); }
 
-void Alu::jmp() {
-    // TODO Testar JMP
-    Byte next_byte = cpu->get_byte(PC++);
+void Alu::jmp(Byte next_byte) {
+    //// TODO Testar JMP
     std::size_t mmm = (next_byte & 0b00111000) >> 3;
     std::size_t rrr = (next_byte & 0b00000111);
     AddressMode mode = INT_TO_ADDRESSMODE[mmm];
     std::size_t address = cpu->get_absolute_address(mode, rrr) - MEM_SIZE;
-    // Word value = get_absolute_value(address);
     PC = address;
 }
 
-void Alu::sob() {}
+void Alu::sob([[maybe_unused]] Word word) {}
 
-void Alu::jsr() {}
+void Alu::jsr([[maybe_unused]] Word word) {}
 
-void Alu::rts() {}
+void Alu::rts([[maybe_unused]] Byte byte) {}
 
-Word Alu::two_operand_instruction(Instruction instruction,
-        [[maybe_unused]]Word op1, [[maybe_unused]]Word op2) {
-    // TODO: Implementar as funções
+/*
+Word Alu::mov(Word src, Word dst) {
+}
+
+Word Alu::add(Word src, Word dst) {
+
+}
+
+Word Alu::sub(Word src, Word dst) {
+
+}
+
+Word Alu::cmp(Word src, Word dst) {
+
+}
+
+Word Alu::bitwise_and(Word src, Word dst) {
+
+}
+
+Word Alu::bitwise_or(Word src, Word dst) {
+
+}
+*/
+
+Word Alu::two_operand_instruction(Instruction instruction, Word src, Word dst) {
     switch (instruction) {
     case MOV:
-        break;
+        return mov(src, dst);
     case ADD:
-        break;
+        return add(src, dst);
     case SUB:
-        break;
+        return sub(src, dst);
     case CMP:
-        break;
+        return cmp(src, dst);
     case AND:
-        break;
+        return bitwise_and(src, dst);
     case OR:
-        break;
-
+        return bitwise_or(src, dst);
     default:
-        break;
+        return dst; // NOP
     }
-    return Word{23};
 }
+
+} // namespace hardware
