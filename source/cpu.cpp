@@ -1,5 +1,4 @@
 #include "hardware.h"
-#include "util.h"
 
 #include <cstring>
 #include <fstream>
@@ -18,15 +17,13 @@
     (inst) == MOV || (inst) == ADD || (inst) == SUB || (inst) == CMP || (inst) == AND ||           \
         (inst) == OR
 
-namespace hardware {
-
-const std::size_t Cpu::MEMORY_OFFSET = offsetof(Cpu, memory);
+const std::size_t Cpu::MEMORY_OFFSET = offsetof(Cpu, memory) - offsetof(Cpu, addressable_memory);
 const std::size_t Cpu::BEGIN_DISPLAY_ADDRESS = 65500;
 const std::size_t Cpu::END_DISPLAY_ADDRESS = 65535;
 
 Cpu::Cpu() {
-    // Limpa os registradores
-    std::memset(registers_bytes, 0, 16);
+    // Limpa a memória
+    std::memset(addressable_memory, 0, ADDRESSABLE_MEMORY_SIZE);
     condition.all = 0b0000;
 
     // Inicializa a Alu
@@ -270,8 +267,6 @@ std::size_t Cpu::get_absolute_address(const AddressMode mode, const int register
 
     return static_cast<std::size_t>(address) + MEMORY_OFFSET;
 }
-
-} // namespace hardware
 
 #undef PC
 #undef N

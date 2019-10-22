@@ -28,5 +28,15 @@
   "directory": "/home/chico/tcc/cesar",
   "command": "/usr/bin/c++  -D_FILE_OFFSET_BITS=64 -D__WXGTK__ -I/home/chico/tcc/cesar/gtest/src/gtest/googletest/include -I/home/chico/tcc/cesar/gtest/src/gtest/googlemock/include -isystem /usr/local/lib/wx/include/gtk3-unicode-static-3.0 -isystem /usr/local/include/wx-3.0   -pthread   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/cpu.cpp.o -c /home/chico/tcc/cesar/source/cpu.cpp",
   "file": "/home/chico/tcc/cesar/source/cpu.cpp"
+},
+{
+  "directory": "/home/chico/tcc/cesar",
+  "command": "/usr/bin/c++  -D_FILE_OFFSET_BITS=64 -D__WXGTK__ -I/home/chico/tcc/cesar/gtest/src/gtest/googletest/include -I/home/chico/tcc/cesar/gtest/src/gtest/googlemock/include -isystem /usr/local/lib/wx/include/gtk3-unicode-static-3.0 -isystem /usr/local/include/wx-3.0   -pthread   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/gui/main_window.cpp.o -c /home/chico/tcc/cesar/source/gui/main_window.cpp",
+  "file": "/home/chico/tcc/cesar/source/gui/main_window.cpp"
+},
+{
+  "directory": "/home/chico/tcc/cesar",
+  "command": "/usr/bin/c++  -D_FILE_OFFSET_BITS=64 -D__WXGTK__ -I/home/chico/tcc/cesar/gtest/src/gtest/googletest/include -I/home/chico/tcc/cesar/gtest/src/gtest/googlemock/include -isystem /usr/local/lib/wx/include/gtk3-unicode-static-3.0 -isystem /usr/local/include/wx-3.0   -pthread   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/gui/side_window.cpp.o -c /home/chico/tcc/cesar/source/gui/side_window.cpp",
+  "file": "/home/chico/tcc/cesar/source/gui/side_window.cpp"
 }
 ]

@@ -9,25 +9,33 @@
 #include <memory>
 #include <string>
 
-namespace hardware {
-
 struct Cpu;
 struct Alu;
 
 struct Cpu {
+    static const std::size_t ADDRESSABLE_MEMORY_SIZE = MEM_SIZE + 8 * sizeof(Word);
+    // O ponto na memória total (que inclui os registradores) em que
+    // a memória do programa do Cesar começa.
+    static const std::size_t MEMORY_OFFSET;
+    static const std::size_t BEGIN_DISPLAY_ADDRESS;
+    static const std::size_t END_DISPLAY_ADDRESS;
+
+    std::unique_ptr<Alu> alu;
+
+    bool halted = false;
+
+    // Memória incluindo registradores
     union {
-        Byte addressable_memory[16 + MEM_SIZE];
+        Byte addressable_memory[ADDRESSABLE_MEMORY_SIZE];
         struct {
-            union {
-                Word registers[8];
-                Byte registers_bytes[16];
-            };
+            Word registers[8];
             // NOTE: Little Endian, mas deve ser tratado
             // como big endian.
             Byte memory[MEM_SIZE];
         };
     };
 
+    // Registrador de condições
     union {
         unsigned all : 4;
         struct {
@@ -38,16 +46,9 @@ struct Cpu {
         };
     } condition;
 
-    std::unique_ptr<Alu> alu;
-
-    // O ponto na memória total (que inclui os registradores) em que
-    // a memória do programa do Cesar começa.
-    static const std::size_t MEMORY_OFFSET;
-
-    static const std::size_t BEGIN_DISPLAY_ADDRESS;
-    static const std::size_t END_DISPLAY_ADDRESS;
-
-    bool halted = false;
+    // ==============================================================
+    // Métodos
+    // ==============================================================
 
     Cpu();
 
@@ -78,6 +79,11 @@ struct Cpu {
 
 struct Alu {
     Cpu *cpu;
+
+    // ==============================================================
+    // Métodos
+    // ==============================================================
+
     Alu(Cpu *cpu);
 
     enum CarryOperation { Plus, Minus };
@@ -107,7 +113,7 @@ struct Alu {
 
     void conditional_branch(const Instruction instruction, const Byte offset);
     Word one_operand_instruction(const Instruction instruction, const Word value);
-    Word two_operand_instruction(const Instruction instruction, const Word op1, const Word op2);
+    Word two_operand_instruction(const Instruction instruction, const Word src, const Word dst);
     void ccc(const Byte byte);
     void scc(const Byte byte);
     void jmp(const AddressMode mode, const std::size_t absolute_address);
@@ -122,5 +128,4 @@ struct Alu {
     Word bitwise_or(const Word src, const Word dst);
 };
 
-} // namespace hardware
 #endif

@@ -9,8 +9,6 @@
 #define V cpu->condition.overflow
 #define C cpu->condition.carry
 
-namespace hardware {
-
 Alu::Alu(Cpu *cpu) : cpu(cpu) {}
 
 void Alu::conditional_branch(Instruction instruction, Byte offset) {
@@ -316,5 +314,3 @@ Word Alu::two_operand_instruction(const Instruction instruction, const Word src,
         std::exit(1);
     }
 }
-
-} // namespace hardware

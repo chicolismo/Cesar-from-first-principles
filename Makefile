@@ -220,6 +220,60 @@ source/cpu.cpp.s:
 	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/cpu.cpp.s
 .PHONY : source/cpu.cpp.s
 
+source/gui/main_window.o: source/gui/main_window.cpp.o
+
+.PHONY : source/gui/main_window.o
+
+# target to build an object file
+source/gui/main_window.cpp.o:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/main_window.cpp.o
+.PHONY : source/gui/main_window.cpp.o
+
+source/gui/main_window.i: source/gui/main_window.cpp.i
+
+.PHONY : source/gui/main_window.i
+
+# target to preprocess a source file
+source/gui/main_window.cpp.i:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/main_window.cpp.i
+.PHONY : source/gui/main_window.cpp.i
+
+source/gui/main_window.s: source/gui/main_window.cpp.s
+
+.PHONY : source/gui/main_window.s
+
+# target to generate assembly for a file
+source/gui/main_window.cpp.s:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/main_window.cpp.s
+.PHONY : source/gui/main_window.cpp.s
+
+source/gui/side_window.o: source/gui/side_window.cpp.o
+
+.PHONY : source/gui/side_window.o
+
+# target to build an object file
+source/gui/side_window.cpp.o:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/side_window.cpp.o
+.PHONY : source/gui/side_window.cpp.o
+
+source/gui/side_window.i: source/gui/side_window.cpp.i
+
+.PHONY : source/gui/side_window.i
+
+# target to preprocess a source file
+source/gui/side_window.cpp.i:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/side_window.cpp.i
+.PHONY : source/gui/side_window.cpp.i
+
+source/gui/side_window.s: source/gui/side_window.cpp.s
+
+.PHONY : source/gui/side_window.s
+
+# target to generate assembly for a file
+source/gui/side_window.cpp.s:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/side_window.cpp.s
+.PHONY : source/gui/side_window.cpp.s
+
 source/main.o: source/main.cpp.o
 
 .PHONY : source/main.o
@@ -292,6 +346,12 @@ help:
 	@echo "... source/cpu.o"
 	@echo "... source/cpu.i"
 	@echo "... source/cpu.s"
+	@echo "... source/gui/main_window.o"
+	@echo "... source/gui/main_window.i"
+	@echo "... source/gui/main_window.s"
+	@echo "... source/gui/side_window.o"
+	@echo "... source/gui/side_window.i"
+	@echo "... source/gui/side_window.s"
 	@echo "... source/main.o"
 	@echo "... source/main.i"
 	@echo "... source/main.s"

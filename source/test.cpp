@@ -1,8 +1,6 @@
 #include "hardware.h"
 #include <gtest/gtest.h>
 
-using namespace hardware;
-
 Cpu cpu;
 Alu &alu = *(cpu.alu);
 

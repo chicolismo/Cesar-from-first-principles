@@ -11,6 +11,9 @@ set(ALL_SOURCE_FILES
     "source/constants.h"
     "source/cpu.cpp"
     "source/hardware.h"
+    "source/gui/gui.h"
+    "source/gui/main_window.cpp"
+    "source/gui/side_window.cpp"
     )
 
 set(TEST_SOURCE_FILES

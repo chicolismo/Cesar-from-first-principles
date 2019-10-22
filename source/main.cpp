@@ -1,8 +1,18 @@
-#include <iostream>
+#include "gui/gui.h"
 #include "hardware.h"
 #include <cstdlib>
 #include <fstream>
+#include <iostream>
 
-int main() {
-    return EXIT_SUCCESS;
+class Cesar : public wxApp {
+public:
+    virtual bool OnInit();
+};
+
+bool Cesar::OnInit() {
+    MainWindow *window = new MainWindow(_("Cesar"), wxDefaultPosition, wxSize(640, 480));
+    window->Show(true);
+    return true;
 }
+
+wxIMPLEMENT_APP(Cesar);
