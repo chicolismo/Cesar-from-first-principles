@@ -6,33 +6,83 @@
 #include <wx/wx.h>
 #endif
 
+#include "../hardware.h"
+
+#include <variant>
 #include <wx/dialog.h>
 #include <wx/event.h>
 #include <wx/filedlg.h>
+#include <wx/listctrl.h>
+#include <wx/minifram.h>
 
 enum {
-    ID_FileOpen = 1
+    ID_FileOpen = 1,
+    ID_FileSave,
 };
 
 class MainWindow;
-class SideWindow;
+class ProgramWindow;
+//class DataWindow;
+class Table;
+class ProgramTable;
+class DataTable;
 
-class MainWindow : public wxFrame {
-    SideWindow *program_window, *data_window;
+struct MainWindow : public wxFrame {
+    Cpu cpu;
 
-public:
+    ProgramWindow *program_window;
+    //DataWindow *data_window;
+
     MainWindow(const wxString &title, const wxPoint &pos, const wxSize &size);
 
     void OnFileOpen(wxCommandEvent &event);
     void OnMove(wxMoveEvent &event);
+    void OnExit(wxCommandEvent &event);
     void UpdateSubwindowsPositions();
 
     wxDECLARE_EVENT_TABLE();
 };
 
-class SideWindow : public wxDialog {
-public:
-    SideWindow(wxWindow *parent, const wxString &title, const wxPoint &pos, const wxSize &size);
+struct ProgramWindow : public wxDialog {
+    Cpu *cpu;
+    ProgramTable *table;
+    wxStaticText *label;
+    wxTextCtrl *input;
+
+    ProgramWindow(
+        wxWindow *parent, Cpu *cpu, const wxString &title, const wxPoint &pos, const wxSize &size);
+
+    void OnClose(wxCloseEvent &event);
+
+    wxDECLARE_EVENT_TABLE();
 };
+
+//struct DataWindow : public wxDialog {
+    //Cpu *cpu;
+    //DataTable *table;
+    //wxStaticText *label;
+    //wxTextCtrl *input;
+
+    //DataWindow(
+        //wxWindow *parent, Cpu *cpu, const wxString &title, const wxPoint &pos, const wxSize &size);
+
+    //void OnClose(wxCloseEvent &event);
+
+    //wxDECLARE_EVENT_TABLE();
+//};
+
+struct ProgramTable : public wxListCtrl {
+    Cpu *cpu;
+    Byte *data;
+    ProgramTable(wxWindow *parent, Cpu *cpu);
+    wxString OnGetItemText(long item, long column) const;
+};
+
+//struct DataTable : public wxListCtrl {
+    //Cpu *cpu;
+    //Byte *data;
+    //DataTable(wxWindow *parent, Cpu *cpu);
+    //wxString OnGetItemText(long item, long column) const;
+//};
 
 #endif // GUI_H

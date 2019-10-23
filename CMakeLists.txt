@@ -13,7 +13,8 @@ set(ALL_SOURCE_FILES
     "source/hardware.h"
     "source/gui/gui.h"
     "source/gui/main_window.cpp"
-    "source/gui/side_window.cpp"
+    "source/gui/side_windows.cpp"
+    "source/gui/tables.cpp"
     )
 
 set(TEST_SOURCE_FILES

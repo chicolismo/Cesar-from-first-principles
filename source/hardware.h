@@ -66,7 +66,7 @@ struct Cpu {
 
     Byte *get_memory();
 
-    void read_memory_from_binary_file(const std::string &filename);
+    bool read_memory_from_binary_file(const std::string &filename);
 
     void execute_next_instruction();
 

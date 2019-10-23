@@ -247,32 +247,59 @@ source/gui/main_window.cpp.s:
 	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/main_window.cpp.s
 .PHONY : source/gui/main_window.cpp.s
 
-source/gui/side_window.o: source/gui/side_window.cpp.o
+source/gui/side_windows.o: source/gui/side_windows.cpp.o
 
-.PHONY : source/gui/side_window.o
+.PHONY : source/gui/side_windows.o
 
 # target to build an object file
-source/gui/side_window.cpp.o:
-	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/side_window.cpp.o
-.PHONY : source/gui/side_window.cpp.o
+source/gui/side_windows.cpp.o:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/side_windows.cpp.o
+.PHONY : source/gui/side_windows.cpp.o
 
-source/gui/side_window.i: source/gui/side_window.cpp.i
+source/gui/side_windows.i: source/gui/side_windows.cpp.i
 
-.PHONY : source/gui/side_window.i
+.PHONY : source/gui/side_windows.i
 
 # target to preprocess a source file
-source/gui/side_window.cpp.i:
-	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/side_window.cpp.i
-.PHONY : source/gui/side_window.cpp.i
+source/gui/side_windows.cpp.i:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/side_windows.cpp.i
+.PHONY : source/gui/side_windows.cpp.i
 
-source/gui/side_window.s: source/gui/side_window.cpp.s
+source/gui/side_windows.s: source/gui/side_windows.cpp.s
 
-.PHONY : source/gui/side_window.s
+.PHONY : source/gui/side_windows.s
 
 # target to generate assembly for a file
-source/gui/side_window.cpp.s:
-	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/side_window.cpp.s
-.PHONY : source/gui/side_window.cpp.s
+source/gui/side_windows.cpp.s:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/side_windows.cpp.s
+.PHONY : source/gui/side_windows.cpp.s
+
+source/gui/tables.o: source/gui/tables.cpp.o
+
+.PHONY : source/gui/tables.o
+
+# target to build an object file
+source/gui/tables.cpp.o:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/tables.cpp.o
+.PHONY : source/gui/tables.cpp.o
+
+source/gui/tables.i: source/gui/tables.cpp.i
+
+.PHONY : source/gui/tables.i
+
+# target to preprocess a source file
+source/gui/tables.cpp.i:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/tables.cpp.i
+.PHONY : source/gui/tables.cpp.i
+
+source/gui/tables.s: source/gui/tables.cpp.s
+
+.PHONY : source/gui/tables.s
+
+# target to generate assembly for a file
+source/gui/tables.cpp.s:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/tables.cpp.s
+.PHONY : source/gui/tables.cpp.s
 
 source/main.o: source/main.cpp.o
 
@@ -349,9 +376,12 @@ help:
 	@echo "... source/gui/main_window.o"
 	@echo "... source/gui/main_window.i"
 	@echo "... source/gui/main_window.s"
-	@echo "... source/gui/side_window.o"
-	@echo "... source/gui/side_window.i"
-	@echo "... source/gui/side_window.s"
+	@echo "... source/gui/side_windows.o"
+	@echo "... source/gui/side_windows.i"
+	@echo "... source/gui/side_windows.s"
+	@echo "... source/gui/tables.o"
+	@echo "... source/gui/tables.i"
+	@echo "... source/gui/tables.s"
 	@echo "... source/main.o"
 	@echo "... source/main.i"
 	@echo "... source/main.s"

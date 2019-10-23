@@ -59,9 +59,18 @@ Word Cpu::get_word(Word address) const {
     }
 }
 
-void Cpu::read_memory_from_binary_file(const std::string &filename) {
+bool Cpu::read_memory_from_binary_file(const std::string &filename) {
     std::fstream input_file(filename, std::ios::binary | std::ios::in | std::ios::ate);
+
+    if (!input_file.is_open()) {
+        return false;
+    }
+
     const std::fstream::pos_type size = input_file.tellg();
+
+    if (static_cast<unsigned>(size) < MEM_SIZE) {
+        return false;
+    }
 
     char *buffer = new char[size];
 
@@ -71,6 +80,8 @@ void Cpu::read_memory_from_binary_file(const std::string &filename) {
     set_memory((const char *)buffer, size);
 
     delete[] buffer;
+
+    return true;
 }
 
 void Cpu::push(const Word word) {
