@@ -13,8 +13,6 @@
 -- Detecting CXX compiler ABI info - done
 -- Detecting CXX compile features
 -- Detecting CXX compile features - done
--- Looking for pthread_create
--- Looking for pthread_create - found
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /Users/chico/tcc/cesar

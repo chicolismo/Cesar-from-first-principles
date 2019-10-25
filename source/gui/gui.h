@@ -2,23 +2,19 @@
 #define GUI_H
 
 #include <wx/wxprec.h>
+
 #ifndef WX_PRECOMP
+
 #include <wx/wx.h>
+
 #endif
 
 #include "../hardware.h"
 
-#include <wx/dialog.h>
 #include <wx/event.h>
-#include <wx/filedlg.h>
-#include <wx/listctrl.h>
-#include <wx/textctrl.h>
 
-enum Base { Decimal, Hexadecimal };
-
-const int BASE_VALUE[] = {
-    [Decimal] = 10,
-    [Hexadecimal] = 16
+enum Base {
+    Decimal, Hexadecimal
 };
 
 enum {

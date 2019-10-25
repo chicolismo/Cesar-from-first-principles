@@ -52,17 +52,19 @@ struct Cpu {
 
     Cpu();
 
-    inline Word bytes_to_word(const Byte msb, const Byte lsb) const { return (msb << 8) | lsb; }
+
+    [[nodiscard]] inline Word bytes_to_word(const Byte msb, const Byte lsb) const { return (msb << 8) | lsb; }
+
 
     Word pop();
 
-    void push(const Word value);
+    void push(Word value);
 
-    Byte get_byte(Word address) const;
+    [[nodiscard]] Byte get_byte(Word address) const;
 
-    Word get_word(Word address) const;
+    [[nodiscard]] Word get_word(Word address) const;
 
-    void set_memory(const char *bytes, const std::size_t size);
+    void set_memory(const char *bytes, std::size_t size);
 
     Byte *get_memory();
 
@@ -70,11 +72,11 @@ struct Cpu {
 
     void execute_next_instruction();
 
-    std::size_t get_absolute_address(const AddressMode mode, const int register_number);
+    std::size_t get_absolute_address(AddressMode mode, int register_number);
 
-    Word get_value_from_absolute_address(const std::size_t address);
+    Word get_value_from_absolute_address(std::size_t address);
 
-    void set_value_to_absolute_address(const Word value, const std::size_t address);
+    void set_value_to_absolute_address(Word value, std::size_t address);
 };
 
 struct Alu {
@@ -84,48 +86,69 @@ struct Alu {
     // Métodos
     // ==============================================================
 
-    Alu(Cpu *cpu);
+    explicit Alu(Cpu *cpu);
 
-    enum CarryOperation { Plus, Minus };
+    enum CarryOperation {
+        Plus, Minus
+    };
 
-    inline bool is_negative(Word value) const { return value < 0; };
 
-    inline bool is_zero(Word value) const { return value == 0; }
+    [[nodiscard]] inline bool is_negative(Word value) const { return value < 0; };
 
-    inline bool is_overflow(Word a, Word b, Word c) const {
+
+    [[nodiscard]] inline bool is_zero(Word value) const { return value == 0; }
+
+
+    [[nodiscard]] inline bool is_overflow(Word a, Word b, Word c) const {
         return ((a > 0) && (b > 0) && (c < 0)) || ((a < 0) && (b < 0) && (c > 0));
     }
 
-    inline bool is_carry(Word a, Word b, CarryOperation operation) const {
-        const uint16_t ua = static_cast<uint16_t>(a);
-        const uint16_t ub = static_cast<uint16_t>(b);
-        uint32_t result;
+
+    [[nodiscard]] inline bool is_carry(Word a, Word b, CarryOperation operation) const {
+        const auto ua = static_cast<UWord>(a);
+        const auto ub = static_cast<UWord>(b);
         switch (operation) {
-        case Plus:
-            result = ua + ub;
-            break;
-        case Minus:
-            result = ua - ub;
-            break;
+        case Plus: {
+            uint32_t result = ua + ub;
+            return (result & 0x10000u) > 0;
         }
-        return (result & 0x10000) > 0;
+        case Minus: {
+            uint32_t result = ua - ub;
+            return (result & 0x10000u) > 0;
+        }
+        }
     }
 
-    void conditional_branch(const Instruction instruction, const Byte offset);
-    Word one_operand_instruction(const Instruction instruction, const Word value);
-    Word two_operand_instruction(const Instruction instruction, const Word src, const Word dst);
-    void ccc(const Byte byte);
-    void scc(const Byte byte);
-    void jmp(const AddressMode mode, const std::size_t absolute_address);
-    void sob(const std::size_t register_number, const Byte offset);
-    void jsr(const AddressMode mode, const std::size_t sub_address, const int register_number);
-    void rts(const Byte word);
-    Word mov(const Word src);
-    Word add(const Word src, const Word dst);
-    Word sub(const Word src, const Word dst);
-    Word cmp(const Word src, const Word dst);
-    Word bitwise_and(const Word src, const Word dst);
-    Word bitwise_or(const Word src, const Word dst);
+
+    void conditional_branch(Instruction instruction, Byte offset);
+
+    Word one_operand_instruction(Instruction instruction, Word value);
+
+    Word two_operand_instruction(Instruction instruction, Word src, Word dst);
+
+    void ccc(Byte byte);
+
+    void scc(Byte byte);
+
+    void jmp(AddressMode mode, std::size_t absolute_address);
+
+    void sob(std::size_t register_number, Byte offset);
+
+    void jsr(AddressMode mode, std::size_t sub_address, int register_number);
+
+    void rts(Byte word);
+
+    Word mov(Word src);
+
+    Word add(Word src, Word dst);
+
+    Word sub(Word src, Word dst);
+
+    Word cmp(Word src, Word dst);
+
+    Word bitwise_and(Word src, Word dst);
+
+    Word bitwise_or(Word src, Word dst);
 };
 
 #endif

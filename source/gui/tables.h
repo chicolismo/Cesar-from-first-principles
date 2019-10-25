@@ -1,6 +1,7 @@
 #ifndef TABLES_H
 #define TABLES_H
-#include "gui.h"
+#include "../hardware.h"
+#include <wx/listctrl.h>
 
 struct ProgramTable;
 struct DataTable;

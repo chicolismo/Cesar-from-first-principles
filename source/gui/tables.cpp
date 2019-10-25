@@ -10,14 +10,16 @@
 #define LIST_STYLE wxLIST_FORMAT_RIGHT
 #endif
 
+
 //----------------------------------------------------------------------------//
 // Program Table                                                              //
 //----------------------------------------------------------------------------//
 ProgramTable::ProgramTable(wxWindow *parent, Cpu *cpu)
     : wxListCtrl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-          wxLC_VIRTUAL | wxLC_REPORT | wxLC_HRULES | wxLC_VRULES | wxLC_SINGLE_SEL) {
+                 wxLC_VIRTUAL | wxLC_REPORT | wxLC_HRULES | wxLC_VRULES | wxLC_SINGLE_SEL) {
     this->cpu = cpu;
     this->data = cpu->memory;
+    program_counter = 0;
     SetFont(wxFont(FONT_SIZE, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
     InsertColumn(0, wxT("PC"), LIST_STYLE, 36);
     InsertColumn(1, wxT("Endereço"), LIST_STYLE, 64);
@@ -60,12 +62,13 @@ void ProgramTable::SetProgramCounter(Word pc) {
     RefreshItem(program_counter);
 }
 
+
 //----------------------------------------------------------------------------//
 // Data Table                                                                 //
 //----------------------------------------------------------------------------//
 DataTable::DataTable(wxWindow *parent, Cpu *cpu)
     : wxListCtrl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-          wxLC_VIRTUAL | wxLC_REPORT | wxLC_HRULES | wxLC_VRULES | wxLC_SINGLE_SEL) {
+                 wxLC_VIRTUAL | wxLC_REPORT | wxLC_HRULES | wxLC_VRULES | wxLC_SINGLE_SEL) {
     this->cpu = cpu;
     this->data = cpu->memory;
     SetFont(wxFont(FONT_SIZE, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
@@ -74,6 +77,7 @@ DataTable::DataTable(wxWindow *parent, Cpu *cpu)
     SetScrollbar(wxHORIZONTAL, 0, 0, 0, true);
     SetItemCount(MEM_SIZE);
 }
+
 
 wxString DataTable::OnGetItemText(long item, long column) const {
     wxString buffer;
@@ -87,6 +91,7 @@ wxString DataTable::OnGetItemText(long item, long column) const {
     }
     return buffer;
 }
+
 
 #undef FONT_SIZE
 #undef LIST_STYLE

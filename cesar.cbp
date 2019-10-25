@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="cesar"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\gtest\;CMake Files\gtest\tmp\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/chico/tcc/cesar"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/Users/chico/tcc/cesar"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="test">
+				<Option working_dir="/Users/chico/tcc/cesar"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 test"/>
+					<CompileFile command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="run_tests">
+				<Option output="/Users/chico/tcc/cesar/run_tests" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/chico/tcc/cesar"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-D_FILE_OFFSET_BITS=64"/>
+					<Add option="-DWXUSINGDLL"/>
+					<Add option="-D__WXMAC__"/>
+					<Add option="-D__WXOSX__"/>
+					<Add option="-D__WXOSX_COCOA__"/>
+					<Add directory="/Users/chico/tcc/cesar/gtest/src/gtest/googletest/include"/>
+					<Add directory="/Users/chico/tcc/cesar/gtest/src/gtest/googlemock/include"/>
+					<Add directory="/usr/local/lib/wx/include/osx_cocoa-unicode-3.0"/>
+					<Add directory="/usr/local/include/wx-3.0"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 run_tests"/>
+					<CompileFile command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="run_tests/fast">
+				<Option output="/Users/chico/tcc/cesar/run_tests" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/chico/tcc/cesar"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-D_FILE_OFFSET_BITS=64"/>
+					<Add option="-DWXUSINGDLL"/>
+					<Add option="-D__WXMAC__"/>
+					<Add option="-D__WXOSX__"/>
+					<Add option="-D__WXOSX_COCOA__"/>
+					<Add directory="/Users/chico/tcc/cesar/gtest/src/gtest/googletest/include"/>
+					<Add directory="/Users/chico/tcc/cesar/gtest/src/gtest/googlemock/include"/>
+					<Add directory="/usr/local/lib/wx/include/osx_cocoa-unicode-3.0"/>
+					<Add directory="/usr/local/include/wx-3.0"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 run_tests/fast"/>
+					<CompileFile command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/Users/chico/tcc/cesar"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="cesar">
+				<Option output="/Users/chico/tcc/cesar/cesar" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/chico/tcc/cesar"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-D_FILE_OFFSET_BITS=64"/>
+					<Add option="-DWXUSINGDLL"/>
+					<Add option="-D__WXMAC__"/>
+					<Add option="-D__WXOSX__"/>
+					<Add option="-D__WXOSX_COCOA__"/>
+					<Add directory="/Users/chico/tcc/cesar/gtest/src/gtest/googletest/include"/>
+					<Add directory="/Users/chico/tcc/cesar/gtest/src/gtest/googlemock/include"/>
+					<Add directory="/usr/local/lib/wx/include/osx_cocoa-unicode-3.0"/>
+					<Add directory="/usr/local/include/wx-3.0"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 cesar"/>
+					<CompileFile command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="cesar/fast">
+				<Option output="/Users/chico/tcc/cesar/cesar" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/chico/tcc/cesar"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-D_FILE_OFFSET_BITS=64"/>
+					<Add option="-DWXUSINGDLL"/>
+					<Add option="-D__WXMAC__"/>
+					<Add option="-D__WXOSX__"/>
+					<Add option="-D__WXOSX_COCOA__"/>
+					<Add directory="/Users/chico/tcc/cesar/gtest/src/gtest/googletest/include"/>
+					<Add directory="/Users/chico/tcc/cesar/gtest/src/gtest/googlemock/include"/>
+					<Add directory="/usr/local/lib/wx/include/osx_cocoa-unicode-3.0"/>
+					<Add directory="/usr/local/include/wx-3.0"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 cesar/fast"/>
+					<CompileFile command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest">
+				<Option working_dir="/Users/chico/tcc/cesar"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 gtest"/>
+					<CompileFile command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/local/bin/gmake -f &quot;/Users/chico/tcc/cesar/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/chico/tcc/cesar/source/alu.cpp">
+			<Option target="run_tests"/>
+			<Option target="cesar"/>
+		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/source/constants.h">
+			<Option target="run_tests"/>
+			<Option target="cesar"/>
+		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/source/cpu.cpp">
+			<Option target="run_tests"/>
+			<Option target="cesar"/>
+		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/source/gui/gui.h">
+			<Option target="cesar"/>
+		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/source/gui/panels/panels.cpp">
+			<Option target="cesar"/>
+		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/source/gui/panels/panels.h">
+			<Option target="cesar"/>
+		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/source/gui/tables.cpp">
+			<Option target="cesar"/>
+		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/source/gui/tables.h">
+			<Option target="cesar"/>
+		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/source/gui/windows.cpp">
+			<Option target="cesar"/>
+		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/source/gui/windows.h">
+			<Option target="cesar"/>
+		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/source/hardware.h">
+			<Option target="run_tests"/>
+			<Option target="cesar"/>
+		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/source/main.cpp">
+			<Option target="cesar"/>
+		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/source/test.cpp">
+			<Option target="run_tests"/>
+		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/gtest/tmp/gtest-cfgcmd.txt.in">
+			<Option virtualFolder="CMake Files\gtest\tmp\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

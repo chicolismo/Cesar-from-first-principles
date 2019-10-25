@@ -4,8 +4,9 @@
 #include "gui.h"
 #include "panels/panels.h"
 #include "tables.h"
-
-#include <variant>
+#include <wx/filedlg.h>
+#include <wx/dialog.h>
+#include <wx/textctrl.h>
 
 struct MainWindow;
 struct ProgramWindow;
@@ -19,6 +20,8 @@ struct MainWindow : public wxFrame {
 
     RegisterPanel *register_panels[8];
 
+    ConditionPanel *condition_panels[4];
+
     ExecutionPanel *execution_panel;
 
     Base current_base = Base::Decimal;
@@ -26,13 +29,16 @@ struct MainWindow : public wxFrame {
     MainWindow(const wxString &title, const wxPoint &pos, const wxSize &size);
 
     void OnFileOpen(wxCommandEvent &event);
+
     void OnMove(wxMoveEvent &event);
+
     void OnExit(wxCommandEvent &event);
 
     void UpdateSubwindowsPositions();
+
     void SetAddressValueAndUpdateTables(long address, Byte value);
 
-    wxDECLARE_EVENT_TABLE();
+wxDECLARE_EVENT_TABLE();
 };
 
 
@@ -45,10 +51,12 @@ struct ProgramWindow : public wxDialog {
     ProgramWindow(wxWindow *parent, Cpu *cpu, const wxString &title);
 
     void OnClose(wxCloseEvent &event);
+
     void OnItemSelected(wxListEvent &event);
+
     void OnTextInputEnter(wxCommandEvent &event);
 
-    wxDECLARE_EVENT_TABLE();
+wxDECLARE_EVENT_TABLE();
 };
 
 struct DataWindow : public wxDialog {
@@ -60,10 +68,12 @@ struct DataWindow : public wxDialog {
     DataWindow(wxWindow *parent, Cpu *cpu, const wxString &title);
 
     void OnClose(wxCloseEvent &event);
+
     void OnItemSelected(wxListEvent &event);
+
     void OnTextInputEnter(wxCommandEvent &event);
 
-    wxDECLARE_EVENT_TABLE();
+wxDECLARE_EVENT_TABLE();
 };
 
 #endif

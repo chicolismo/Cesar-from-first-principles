@@ -20,10 +20,13 @@
 #include "../images/cesar_null.xpm"
 #include "../images/mini_led_0.xpm"
 #include "../images/mini_led_1.xpm"
+#include "../images/light_on.xpm"
+#include "../images/light_off.xpm"
 
 wxBEGIN_EVENT_TABLE(DigitalDisplay, wxPanel)
-    EVT_PAINT(DigitalDisplay::OnPaint)
+        EVT_PAINT(DigitalDisplay::OnPaint)
 wxEND_EVENT_TABLE()
+
 
 DigitalDisplay::DigitalDisplay(wxWindow *parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(width, height)) {
     images[0] = wxImage(cesar_0);
@@ -48,6 +51,7 @@ DigitalDisplay::DigitalDisplay(wxWindow *parent) : wxPanel(parent, wxID_ANY, wxD
     base = Base::Decimal;
     number_of_digits = 4;
 }
+
 
 void DigitalDisplay::Render(wxDC &dc) {
     dc.SetBrush(*black_brush);
@@ -82,9 +86,10 @@ void DigitalDisplay::Render(wxDC &dc) {
     }
 }
 
-void DigitalDisplay::SetBase(Base base) {
-    this->base = base;
-    if (base == Decimal) {
+
+void DigitalDisplay::SetBase(Base new_base) {
+    this->base = new_base;
+    if (new_base == Decimal) {
         number_of_digits = 4;
     }
     else {
@@ -92,14 +97,17 @@ void DigitalDisplay::SetBase(Base base) {
     }
 }
 
-void DigitalDisplay::SetValue(const uint16_t value) {
-    this->value = value;
+
+void DigitalDisplay::SetValue(const uint16_t unsigned_word) {
+    this->value = unsigned_word;
 }
+
 
 void DigitalDisplay::PaintNow() {
     wxClientDC dc(this);
     Render(dc);
 }
+
 
 void DigitalDisplay::OnPaint(wxPaintEvent &event) {
     wxPaintDC dc(this);
@@ -111,14 +119,16 @@ void DigitalDisplay::OnPaint(wxPaintEvent &event) {
 // Binary Display
 
 wxBEGIN_EVENT_TABLE(BinaryDisplay, wxPanel)
-    EVT_PAINT(BinaryDisplay::OnPaint)
+        EVT_PAINT(BinaryDisplay::OnPaint)
 wxEND_EVENT_TABLE()
+
 
 BinaryDisplay::BinaryDisplay(wxWindow *parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(width, height)) {
     value = 0;
     images[0] = wxImage(mini_led_0);
     images[1] = wxImage(mini_led_1);
 }
+
 
 void BinaryDisplay::Render(wxDC &dc) {
     SetBackgroundColour(*wxWHITE);
@@ -133,10 +143,12 @@ void BinaryDisplay::Render(wxDC &dc) {
     }
 }
 
+
 void BinaryDisplay::PaintNow() {
     wxClientDC dc(this);
     Render(dc);
 }
+
 
 void BinaryDisplay::OnPaint(wxPaintEvent &event) {
     wxPaintDC dc(this);
@@ -144,17 +156,21 @@ void BinaryDisplay::OnPaint(wxPaintEvent &event) {
     event.Skip();
 }
 
-void BinaryDisplay::SetValue(const uint16_t value) {
-    this->value = value;
+
+void BinaryDisplay::SetValue(const uint16_t unsigned_word) {
+    this->value = unsigned_word;
 }
 
 
 // Register Panel
 
-RegisterPanel::RegisterPanel(wxWindow *parent, long id, const wxString &title) : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize) {
+RegisterPanel::RegisterPanel(wxWindow *parent, long id, const wxString &title) : wxPanel(parent, id, wxDefaultPosition,
+                                                                                         wxDefaultSize) {
     auto *box = new wxStaticBoxSizer(wxVERTICAL, this, title);
-    wxPanel *inner_panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(80, 32));
+    auto *inner_panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(80, 32));
     box->Add(inner_panel);
+    value = 0u;
+    base = Base::Decimal;
     digital_display = new DigitalDisplay(inner_panel);
     digital_display->SetPosition(wxPoint(2, 0));
     binary_display = new BinaryDisplay(inner_panel);
@@ -164,16 +180,24 @@ RegisterPanel::RegisterPanel(wxWindow *parent, long id, const wxString &title) :
     Layout();
 }
 
-void RegisterPanel::SetValue(const Word value) {
-    this->value = static_cast<uint16_t>(value);
-    digital_display->SetValue(this->value);
+
+void RegisterPanel::SetValue(const Word word) {
+    value = static_cast<uint16_t>(word);
+    digital_display->SetValue(value);
     digital_display->PaintNow();
-    binary_display->SetValue(this->value);
+    binary_display->SetValue(value);
     binary_display->PaintNow();
 }
 
+
 Word RegisterPanel::GetValue() const {
     return value;
+}
+
+
+void RegisterPanel::SetBase(Base new_base) {
+    base = new_base;
+    digital_display->SetBase(new_base);
 }
 
 
@@ -201,8 +225,54 @@ ExecutionPanel::ExecutionPanel(wxWindow *parent) : wxPanel(parent, wxID_ANY) {
     flex_grid->AddGrowableRow(1, 1);
     flex_grid->Fit(inner_panel);
 
-    sizer->Add(flex_grid);
+    sizer->Add(flex_grid, 0, wxALL , -2);
     sizer->Fit(this);
     SetSizer(sizer);
     //sizer->Fit(this);
+}
+
+
+wxBEGIN_EVENT_TABLE(Led, wxPanel)
+        EVT_PAINT(Led::OnPaint)
+wxEND_EVENT_TABLE()
+
+
+Led::Led(wxWindow *parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(15, 15)) {
+    turned_on = false;
+    images[0] = wxImage(light_off);
+    images[1] = wxImage(light_on);
+}
+
+
+void Led::Render(wxDC &dc) {
+    dc.DrawBitmap(images[turned_on ? 1 : 0], 0, 0, true);
+}
+
+
+void Led::PaintNow() {
+    wxClientDC dc(this);
+    Render(dc);
+}
+
+
+void Led::OnPaint(wxPaintEvent &event) {
+    wxPaintDC dc(this);
+    Render(dc);
+    event.Skip();
+}
+
+
+void Led::SetTurnedOn(bool should_turn_on) {
+    turned_on = should_turn_on;
+    PaintNow();
+}
+
+
+ConditionPanel::ConditionPanel(wxWindow *parent, const wxString &label) : wxPanel(parent) {
+    led_display = new Led(this);
+    auto sizer = new wxStaticBoxSizer(wxVERTICAL, this, label);
+    sizer->Add(led_display, 0, wxALIGN_CENTER_VERTICAL | wxALIGN_CENTER_HORIZONTAL | wxALL, -2);
+
+    SetSizer(sizer);
+    sizer->Fit(this);
 }

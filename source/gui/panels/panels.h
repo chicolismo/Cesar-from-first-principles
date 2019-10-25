@@ -1,8 +1,13 @@
 #ifndef PANELS_H
 #define PANELS_H
+
 #include "../gui.h"
 
 struct DigitalDisplay : public wxPanel {
+    constexpr static int BASE_VALUE[] = {
+        [Decimal] = 10,
+        [Hexadecimal] = 16
+    };
     static const std::size_t width = 76;
     static const std::size_t height = 25;
     static const std::size_t digit_width = 12;
@@ -17,14 +22,19 @@ struct DigitalDisplay : public wxPanel {
     uint16_t value;
     Base base;
 
-    DigitalDisplay(wxWindow *parent);
+    explicit DigitalDisplay(wxWindow *parent);
 
     void OnPaint(wxPaintEvent &event);
+
     void PaintNow();
+
     void Render(wxDC &dc);
-    void SetValue(const uint16_t value);
-    void SetBase(Base base);
-    wxDECLARE_EVENT_TABLE();
+
+    void SetValue(uint16_t unsigned_word);
+
+    void SetBase(Base new_base);
+
+wxDECLARE_EVENT_TABLE();
 };
 
 
@@ -33,18 +43,22 @@ struct BinaryDisplay : public wxPanel {
     static const std::size_t height = 5;
     static const std::size_t image_size = 5;
     static const std::size_t number_of_digits = 16;
-    const wxBrush brush = wxBrush(*wxWHITE);
 
     wxImage images[2];
 
     uint16_t value;
 
-    BinaryDisplay(wxWindow *parent);
+    explicit BinaryDisplay(wxWindow *parent);
+
     void OnPaint(wxPaintEvent &event);
+
     void PaintNow();
+
     void Render(wxDC &dc);
-    void SetValue(const uint16_t value);
-    wxDECLARE_EVENT_TABLE();
+
+    void SetValue(uint16_t unsigned_word);
+
+wxDECLARE_EVENT_TABLE();
 };
 
 
@@ -55,8 +69,12 @@ struct RegisterPanel : public wxPanel {
     Base base;
 
     RegisterPanel(wxWindow *parent, long id, const wxString &title);
-    void SetValue(const Word word);
+
+    void SetValue(Word word);
+
     Word GetValue() const;
+
+    void SetBase(Base new_base);
 };
 
 
@@ -64,7 +82,31 @@ struct ExecutionPanel : public wxPanel {
     DigitalDisplay *access_display;
     DigitalDisplay *instruction_display;
 
-    ExecutionPanel(wxWindow *parent);
+    explicit ExecutionPanel(wxWindow *parent);
+};
+
+
+struct Led : public wxPanel {
+    bool turned_on;
+    wxImage images[2];
+
+    explicit Led(wxWindow *parent);
+
+    void PaintNow();
+
+    void OnPaint(wxPaintEvent &event);
+
+    void Render(wxDC &dc);
+
+    void SetTurnedOn(bool should_turn_on);
+
+wxDECLARE_EVENT_TABLE();
+};
+
+struct ConditionPanel : public wxPanel {
+    Led *led_display;
+
+    ConditionPanel(wxWindow *parent, const wxString &label);
 };
 
 #endif//PANELS_H

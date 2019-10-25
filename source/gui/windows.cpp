@@ -7,7 +7,8 @@
 #include <wx/msgdlg.h>
 #include <wx/bmpbuttn.h>
 
-template <typename SideWindow>
+
+template<typename SideWindow>
 void OnTextInputEnter(SideWindow *side_window) {
     MainWindow *window = (MainWindow *) (side_window->GetParent());
     wxString label_text = side_window->label->GetLabelText();
@@ -28,10 +29,11 @@ void OnTextInputEnter(SideWindow *side_window) {
 //----------------------------------------------------------------------------//
 
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
-    EVT_MENU(ID_FileOpen, MainWindow::OnFileOpen)
-    EVT_MENU(wxID_EXIT, MainWindow::OnExit)
-    EVT_MOVE(MainWindow::OnMove)
+        EVT_MENU(ID_FileOpen, MainWindow::OnFileOpen)
+        EVT_MENU(wxID_EXIT, MainWindow::OnExit)
+        EVT_MOVE(MainWindow::OnMove)
 wxEND_EVENT_TABLE()
+
 
 MainWindow::MainWindow(const wxString &title, const wxPoint &pos, const wxSize &size)
     : wxFrame(nullptr, wxID_ANY, title, pos, size) {
@@ -50,7 +52,6 @@ MainWindow::MainWindow(const wxString &title, const wxPoint &pos, const wxSize &
     program_window->Show(true);
     data_window->Show(true);
 
-
     // Displays de registradores
     register_panels[0] = new RegisterPanel(this, ID_R0, wxT("R0:"));
     register_panels[1] = new RegisterPanel(this, ID_R1, wxT("R1:"));
@@ -60,47 +61,57 @@ MainWindow::MainWindow(const wxString &title, const wxPoint &pos, const wxSize &
     register_panels[5] = new RegisterPanel(this, ID_R5, wxT("R5:"));
     register_panels[6] = new RegisterPanel(this, ID_R6, wxT("R6: (SP)"));
     register_panels[7] = new RegisterPanel(this, ID_R7, wxT("R7: (PC)"));
-    wxGridSizer *grid = new wxGridSizer(3, 3, 0, 0);
-    grid->Add(register_panels[0], 1, wxEXPAND);
-    grid->Add(register_panels[1], 1, wxEXPAND);
-    grid->Add(register_panels[2], 1, wxEXPAND);
-    grid->Add(register_panels[3], 1, wxEXPAND);
-    grid->Add(register_panels[4], 1, wxEXPAND);
-    grid->Add(register_panels[5], 1, wxEXPAND);
-    grid->Add(register_panels[6], 1, wxEXPAND);
+
+    auto *grid = new wxGridSizer(3, 3, 0, 0);
+    grid->Add(register_panels[0], 1, wxEXPAND | wxALL, -2);
+    grid->Add(register_panels[1], 1, wxEXPAND | wxALL, -2);
+    grid->Add(register_panels[2], 1, wxEXPAND | wxALL, -2);
+    grid->Add(register_panels[3], 1, wxEXPAND | wxALL, -2);
+    grid->Add(register_panels[4], 1, wxEXPAND | wxALL, -2);
+    grid->Add(register_panels[5], 1, wxEXPAND | wxALL, -2);
+    grid->Add(register_panels[6], 1, wxEXPAND | wxALL, -2);
     grid->AddStretchSpacer();
-    grid->Add(register_panels[7], 1, wxEXPAND);
+    grid->Add(register_panels[7], 1, wxEXPAND | wxALL, -2);
+
+    // Painéis de condições
+    condition_panels[0] = new ConditionPanel(this, wxT("N"));
+    condition_panels[1] = new ConditionPanel(this, wxT("Z"));
+    condition_panels[2] = new ConditionPanel(this, wxT("V"));
+    condition_panels[3] = new ConditionPanel(this, wxT("C"));
+    auto condition_box = new wxBoxSizer(wxHORIZONTAL);
+    for (auto &cb : condition_panels) {
+        condition_box->Add(cb, 0, wxALL, -2);
+    }
 
     // Criando o menu
-    wxMenu *menu_file = new wxMenu;
+    auto *menu_file = new wxMenu;
     menu_file->Append(ID_FileOpen, "&Abrir...\tCtrl-A", "Abrir um arquivo");
     menu_file->Append(ID_FileOpen, "&Salvar\tCtrl-S", "Salva o arquivo atual");
     menu_file->Append(wxID_EXIT, "&Sair\tCtrl-x", "Termina o programa");
 
-    wxMenuBar *menu_bar = new wxMenuBar;
+    auto *menu_bar = new wxMenuBar;
     menu_bar->Append(menu_file, "&Arquivo");
     SetMenuBar(menu_bar);
 
-
-
     execution_panel = new ExecutionPanel(this);
 
-    wxBoxSizer *lower_sizer = new wxBoxSizer(wxHORIZONTAL);
+    auto *lower_sizer = new wxBoxSizer(wxHORIZONTAL);
     lower_sizer->Add(execution_panel);
+    lower_sizer->Add(condition_box);
 
-    wxBoxSizer *vbox = new wxBoxSizer(wxVERTICAL);
-
-    vbox->Add(grid);
-    vbox->Add(lower_sizer);
-    vbox->Fit(this);
-    SetSizer(vbox);
+    auto *big_box = new wxBoxSizer(wxVERTICAL);
+    big_box->Add(grid, 1, wxEXPAND);
+    big_box->Add(lower_sizer, 0);
+    big_box->Fit(this);
+    SetSizer(big_box);
     Layout();
-    vbox->Fit(this);
+    big_box->Fit(this);
     Center(wxBOTH);
 
     execution_panel->access_display->SetValue(4567u);
     execution_panel->instruction_display->SetValue(5467u);
 }
+
 
 void MainWindow::OnFileOpen(wxCommandEvent &WXUNUSED(event)) {
     // TODO: Testar se os dados do arquivo atual foram alterados e exibir diálogo apropriado.
@@ -121,13 +132,16 @@ void MainWindow::OnFileOpen(wxCommandEvent &WXUNUSED(event)) {
     }
 }
 
+
 void MainWindow::OnMove(wxMoveEvent &WXUNUSED(event)) {
     UpdateSubwindowsPositions();
 }
 
+
 void MainWindow::OnExit(wxCommandEvent &WXUNUSED(event)) {
     Close(true);
 }
+
 
 void MainWindow::UpdateSubwindowsPositions() {
     const unsigned gap = 10;
@@ -138,8 +152,9 @@ void MainWindow::UpdateSubwindowsPositions() {
     data_window->SetPosition(wxPoint(pos.x + size.GetWidth() + gap, pos.y));
 }
 
+
 void MainWindow::SetAddressValueAndUpdateTables(long address, Byte value) {
-    const std::size_t uaddress = static_cast<std::size_t>(address);
+    const auto uaddress = static_cast<std::size_t>(address);
     cpu.memory[uaddress] = value;
     program_window->table->RefreshItem(address);
     data_window->table->RefreshItem(address);
@@ -151,10 +166,11 @@ void MainWindow::SetAddressValueAndUpdateTables(long address, Byte value) {
 //----------------------------------------------------------------------------//
 
 wxBEGIN_EVENT_TABLE(ProgramWindow, wxDialog)
-    EVT_CLOSE(ProgramWindow::OnClose)
-    EVT_LIST_ITEM_SELECTED(wxID_ANY, ProgramWindow::OnItemSelected)
-    EVT_TEXT_ENTER(ID_ValueInput, ProgramWindow::OnTextInputEnter)
+        EVT_CLOSE(ProgramWindow::OnClose)
+        EVT_LIST_ITEM_SELECTED(wxID_ANY, ProgramWindow::OnItemSelected)
+        EVT_TEXT_ENTER(ID_ValueInput, ProgramWindow::OnTextInputEnter)
 wxEND_EVENT_TABLE()
+
 
 ProgramWindow::ProgramWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
     : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxCAPTION | wxRESIZE_BORDER) {
@@ -165,7 +181,8 @@ ProgramWindow::ProgramWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
         this, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(60, wxDefaultSize.GetHeight()), wxALIGN_RIGHT);
     label->Wrap(-1);
     input =
-        new wxTextCtrl(this, ID_ValueInput, wxEmptyString, wxDefaultPosition, wxSize(60, wxDefaultSize.GetHeight()), wxTE_PROCESS_ENTER);
+        new wxTextCtrl(this, ID_ValueInput, wxEmptyString, wxDefaultPosition, wxSize(60, wxDefaultSize.GetHeight()),
+                       wxTE_PROCESS_ENTER);
 
     auto *vbox = new wxBoxSizer(wxVERTICAL);
     auto *hbox = new wxBoxSizer(wxHORIZONTAL);
@@ -182,9 +199,11 @@ ProgramWindow::ProgramWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
     vbox->Fit(this);
 }
 
+
 void ProgramWindow::OnClose(wxCloseEvent &event) {
     event.StopPropagation(); // Não pode fechar as janelas laterais.
 }
+
 
 void ProgramWindow::OnItemSelected(wxListEvent &event) {
     auto row = static_cast<std::size_t>(event.GetIndex());
@@ -194,8 +213,9 @@ void ProgramWindow::OnItemSelected(wxListEvent &event) {
     input->SetSelection(-1, -1);
 }
 
+
 void ProgramWindow::OnTextInputEnter(wxCommandEvent &WXUNUSED(event)) {
-    ::OnTextInputEnter<ProgramWindow>(this);
+    ::OnTextInputEnter < ProgramWindow > (this);
 }
 
 
@@ -204,10 +224,11 @@ void ProgramWindow::OnTextInputEnter(wxCommandEvent &WXUNUSED(event)) {
 //----------------------------------------------------------------------------//
 
 wxBEGIN_EVENT_TABLE(DataWindow, wxDialog)
-    EVT_CLOSE(DataWindow::OnClose)
-    EVT_LIST_ITEM_SELECTED(wxID_ANY, DataWindow::OnItemSelected)
-    EVT_TEXT_ENTER(ID_ValueInput, DataWindow::OnTextInputEnter)
+        EVT_CLOSE(DataWindow::OnClose)
+        EVT_LIST_ITEM_SELECTED(wxID_ANY, DataWindow::OnItemSelected)
+        EVT_TEXT_ENTER(ID_ValueInput, DataWindow::OnTextInputEnter)
 wxEND_EVENT_TABLE()
+
 
 DataWindow::DataWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
     : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxCAPTION | wxRESIZE_BORDER) {
@@ -218,7 +239,8 @@ DataWindow::DataWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
         this, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(60, wxDefaultSize.GetHeight()), wxALIGN_RIGHT);
     label->Wrap(-1);
     input =
-        new wxTextCtrl(this, ID_ValueInput, wxEmptyString, wxDefaultPosition, wxSize(60, wxDefaultSize.GetHeight()), wxTE_PROCESS_ENTER);
+        new wxTextCtrl(this, ID_ValueInput, wxEmptyString, wxDefaultPosition, wxSize(60, wxDefaultSize.GetHeight()),
+                       wxTE_PROCESS_ENTER);
 
     auto *vbox = new wxBoxSizer(wxVERTICAL);
     auto *hbox = new wxBoxSizer(wxHORIZONTAL);
@@ -235,9 +257,11 @@ DataWindow::DataWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
     vbox->Fit(this);
 }
 
+
 void DataWindow::OnClose(wxCloseEvent &event) {
     event.StopPropagation(); // Não pode fechar as janelas laterais.
 }
+
 
 void DataWindow::OnItemSelected(wxListEvent &event) {
     auto row = static_cast<std::size_t>(event.GetIndex());
@@ -247,6 +271,7 @@ void DataWindow::OnItemSelected(wxListEvent &event) {
     input->SetSelection(-1, -1);
 }
 
+
 void DataWindow::OnTextInputEnter(wxCommandEvent &WXUNUSED(event)) {
-    ::OnTextInputEnter<DataWindow>(this);
+    ::OnTextInputEnter < DataWindow > (this);
 }
