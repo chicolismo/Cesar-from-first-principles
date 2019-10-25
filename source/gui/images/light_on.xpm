@@ -1,0 +1,32 @@
+/* XPM */
+const static char *light_on[] = {
+/* columns rows colors chars-per-pixel */
+"15 15 11 1 ",
+"  c None",
+". c black",
+"X c #006000",
+"o c gray25",
+"O c #606040",
+"+ c #008000",
+"@ c #00A000",
+"# c #00C000",
+"$ c green",
+"% c #A0FF80",
+"& c #FFFF80",
+/* pixels */
+"     OoooO     ",
+"   O..XXX..O   ",
+"  O.X+++++X.O  ",
+" O.X+++++++X.O ",
+" .X++&&+++++X. ",
+"O.+@+&&+@+@++.O",
+".X@@@@@@@@@@@X.",
+".X@#@#@###@#@X.",
+".X###########X.",
+"..#########%#..",
+" .X#######%#X. ",
+" O.X#$#$#%$X.O ",
+"  O.X#$$$#X.O  ",
+"   O..XXX..O   ",
+"     Oo.oO     "
+};

@@ -1,0 +1,26 @@
+/* XPM */
+const static char *cesar_0[] = {
+/* columns rows colors chars-per-pixel */
+"12 17 3 1 ",
+"  c None",
+". c #006000",
+"X c green",
+/* pixels */
+" XXXXXXXXXX ",
+"X XXXXXXXX X",
+"XX XXXXXX XX",
+"XXX      XXX",
+"XXX      XXX",
+"XXX      XXX",
+"XXX      XXX",
+"XX ...... XX",
+"  ........  ",
+"XX ...... XX",
+"XXX      XXX",
+"XXX      XXX",
+"XXX      XXX",
+"XXX      XXX",
+"XX XXXXXX XX",
+"X XXXXXXXX X",
+" XXXXXXXXXX "
+};

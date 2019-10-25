@@ -1,0 +1,30 @@
+/* XPM */
+const static char *tools[] = {
+/* columns rows colors chars-per-pixel */
+"16 16 8 1 ",
+"  c None",
+". c black",
+"X c gray50",
+"o c #800000",
+"O c red",
+"+ c #808000",
+"@ c #D4D0C8",
+"# c white",
+/* pixels */
+"  ++ .....      ",
+"  +....X   X.X  ",
+"  .....    X.X  ",
+"......+    X.X  ",
+".@...+++    .   ",
+" .@. .+++   .   ",
+"  ..  .+++  .   ",
+"       .+++ .   ",
+"  ...X  .+++.   ",
+"  X.#.X  .ooooo ",
+".X@@.#.   OOOOO ",
+"..@@.#.    OoO+ ",
+".#..##.    OoO++",
+"X.####.    OoO++",
+" X...##.   OoO.+",
+"     .##.  OoO ."
+};

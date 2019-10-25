@@ -12,9 +12,12 @@ set(ALL_SOURCE_FILES
     "source/cpu.cpp"
     "source/hardware.h"
     "source/gui/gui.h"
-    "source/gui/main_window.cpp"
-    "source/gui/side_windows.cpp"
+    "source/gui/windows.h"
+    "source/gui/windows.cpp"
+    "source/gui/tables.h"
     "source/gui/tables.cpp"
+    "source/gui/panels/panels.h"
+    "source/gui/panels/panels.cpp"
     )
 
 set(TEST_SOURCE_FILES

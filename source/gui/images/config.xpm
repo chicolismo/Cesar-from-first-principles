@@ -1,0 +1,27 @@
+/* XPM */
+const static char *config[] = {
+/* columns rows colors chars-per-pixel */
+"16 16 5 1 ",
+"  c None",
+". c black",
+"X c gray50",
+"o c gray75",
+"O c #D4D0C8",
+/* pixels */
+".Xo...XX.       ",
+".o.XoX.X...     ",
+"Xo.o.X.XXX.     ",
+".o.XXX.X...    .",
+".XX...XX.  X.X .",
+"..XXXXX..X .X...",
+"X...X...X. X..Xo",
+".X .X. X.X  .Xo.",
+"   ...    ...o.X",
+"..        .XXo.o",
+"X. X.X    ...o.X",
+"X...X.      .XX.",
+"ooX..X     X..XX",
+"..XX.      .X...",
+"oX.X...    X.X .",
+"OX.XXX.        ."
+};

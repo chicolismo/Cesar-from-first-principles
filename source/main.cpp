@@ -1,8 +1,6 @@
 #include "gui/gui.h"
+#include "gui/windows.h"
 #include "hardware.h"
-#include <cstdlib>
-#include <fstream>
-#include <iostream>
 
 class Cesar : public wxApp {
 public:
@@ -10,7 +8,8 @@ public:
 };
 
 bool Cesar::OnInit() {
-    MainWindow *window = new MainWindow(_("Cesar"), wxDefaultPosition, wxSize(640, 480));
+    MainWindow *window = new MainWindow(wxT("Cesar"), wxDefaultPosition, wxSize(640, 480));
+    window->Center(wxBOTH);
     window->Show(true);
     SetTopWindow(window);
     return true;

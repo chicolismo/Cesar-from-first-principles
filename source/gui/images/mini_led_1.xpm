@@ -1,0 +1,14 @@
+/* XPM */
+const static char *mini_led_1[] = {
+/* columns rows colors chars-per-pixel */
+"5 5 3 1 ",
+"  c None",
+". c black",
+"X c green",
+/* pixels */
+" ... ",
+".XXX.",
+".XXX.",
+".XXX.",
+" ... "
+};
