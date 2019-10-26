@@ -1,14 +1,14 @@
 #include "windows.h"
-#include "panels/panels.h"
 
 #include "images/config.xpm"
+#include "panels.h"
 
 #include <iostream>
-#include <wx/msgdlg.h>
 #include <wx/bmpbuttn.h>
+#include <wx/msgdlg.h>
 
 
-template<typename SideWindow>
+template <typename SideWindow>
 void OnTextInputEnter(SideWindow *side_window) {
     MainWindow *window = (MainWindow *) (side_window->GetParent());
     wxString label_text = side_window->label->GetLabelText();
@@ -29,9 +29,9 @@ void OnTextInputEnter(SideWindow *side_window) {
 //----------------------------------------------------------------------------//
 
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
-        EVT_MENU(ID_FileOpen, MainWindow::OnFileOpen)
-        EVT_MENU(wxID_EXIT, MainWindow::OnExit)
-        EVT_MOVE(MainWindow::OnMove)
+    EVT_MENU(ID_FileOpen, MainWindow::OnFileOpen)
+    EVT_MENU(wxID_EXIT, MainWindow::OnExit)
+    EVT_MOVE(MainWindow::OnMove)
 wxEND_EVENT_TABLE()
 
 
@@ -63,15 +63,15 @@ MainWindow::MainWindow(const wxString &title, const wxPoint &pos, const wxSize &
     register_panels[7] = new RegisterPanel(this, ID_R7, wxT("R7: (PC)"));
 
     auto *grid = new wxGridSizer(3, 3, 0, 0);
-    grid->Add(register_panels[0], 1, wxEXPAND | wxALL, -2);
-    grid->Add(register_panels[1], 1, wxEXPAND | wxALL, -2);
-    grid->Add(register_panels[2], 1, wxEXPAND | wxALL, -2);
-    grid->Add(register_panels[3], 1, wxEXPAND | wxALL, -2);
-    grid->Add(register_panels[4], 1, wxEXPAND | wxALL, -2);
-    grid->Add(register_panels[5], 1, wxEXPAND | wxALL, -2);
-    grid->Add(register_panels[6], 1, wxEXPAND | wxALL, -2);
+    grid->Add(register_panels[0], 0, wxALL, -2);
+    grid->Add(register_panels[1], 0, wxALL, -2);
+    grid->Add(register_panels[2], 0, wxALL, -2);
+    grid->Add(register_panels[3], 0, wxALL, -2);
+    grid->Add(register_panels[4], 0, wxALL, -2);
+    grid->Add(register_panels[5], 0, wxALL, -2);
+    grid->Add(register_panels[6], 0, wxALL, -2);
     grid->AddStretchSpacer();
-    grid->Add(register_panels[7], 1, wxEXPAND | wxALL, -2);
+    grid->Add(register_panels[7], 0, wxALL, -2);
 
     // Painéis de condições
     condition_panels[0] = new ConditionPanel(this, wxT("N"));
@@ -83,6 +83,11 @@ MainWindow::MainWindow(const wxString &title, const wxPoint &pos, const wxSize &
         condition_box->Add(cb, 0, wxALL, -2);
     }
 
+    // Painel de execuções
+    execution_panel = new ExecutionPanel(this);
+    // Painel de botões
+    button_panel = new ButtonPanel(this);
+
     // Criando o menu
     auto *menu_file = new wxMenu;
     menu_file->Append(ID_FileOpen, "&Abrir...\tCtrl-A", "Abrir um arquivo");
@@ -93,19 +98,20 @@ MainWindow::MainWindow(const wxString &title, const wxPoint &pos, const wxSize &
     menu_bar->Append(menu_file, "&Arquivo");
     SetMenuBar(menu_bar);
 
-    execution_panel = new ExecutionPanel(this);
+    auto *middle_right_sizer = new wxBoxSizer(wxVERTICAL);
+    middle_right_sizer->Add(condition_box);
+    middle_right_sizer->AddStretchSpacer();
+    middle_right_sizer->Add(button_panel);
 
-    auto *lower_sizer = new wxBoxSizer(wxHORIZONTAL);
-    lower_sizer->Add(execution_panel);
-    lower_sizer->Add(condition_box);
+    auto *middle_sizer = new wxBoxSizer(wxHORIZONTAL);
+    middle_sizer->Add(execution_panel);
+    middle_sizer->Add(middle_right_sizer, 1, wxEXPAND);
 
-    auto *big_box = new wxBoxSizer(wxVERTICAL);
-    big_box->Add(grid, 1, wxEXPAND);
-    big_box->Add(lower_sizer, 0);
-    big_box->Fit(this);
-    SetSizer(big_box);
-    Layout();
-    big_box->Fit(this);
+    auto *top_sizer = new wxBoxSizer(wxVERTICAL);
+    top_sizer->Add(grid);
+    top_sizer->Add(middle_sizer);
+    SetSizerAndFit(top_sizer);
+
     Center(wxBOTH);
 
     execution_panel->access_display->SetValue(4567u);
@@ -116,8 +122,8 @@ MainWindow::MainWindow(const wxString &title, const wxPoint &pos, const wxSize &
 void MainWindow::OnFileOpen(wxCommandEvent &WXUNUSED(event)) {
     // TODO: Testar se os dados do arquivo atual foram alterados e exibir diálogo apropriado.
 
-    wxFileDialog dialog(
-        this, _("Abrir arquivos .MEM do Cesar"), "", "", "Arquivos MEM (*.mem)|*mem", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+    wxFileDialog dialog(this, _("Abrir arquivos .MEM do Cesar"), "", "",
+        "Arquivos MEM (*.mem)|*mem", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
     if (dialog.ShowModal() == wxID_CANCEL) {
         return; // Abertura de arquivo cancelada.
@@ -166,23 +172,23 @@ void MainWindow::SetAddressValueAndUpdateTables(long address, Byte value) {
 //----------------------------------------------------------------------------//
 
 wxBEGIN_EVENT_TABLE(ProgramWindow, wxDialog)
-        EVT_CLOSE(ProgramWindow::OnClose)
-        EVT_LIST_ITEM_SELECTED(wxID_ANY, ProgramWindow::OnItemSelected)
-        EVT_TEXT_ENTER(ID_ValueInput, ProgramWindow::OnTextInputEnter)
+    EVT_CLOSE(ProgramWindow::OnClose)
+    EVT_LIST_ITEM_SELECTED(wxID_ANY, ProgramWindow::OnItemSelected)
+    EVT_TEXT_ENTER(ID_ValueInput, ProgramWindow::OnTextInputEnter)
 wxEND_EVENT_TABLE()
 
 
 ProgramWindow::ProgramWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
-    : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxCAPTION | wxRESIZE_BORDER) {
+    : wxDialog(
+          parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxCAPTION | wxRESIZE_BORDER) {
 
     this->cpu = cpu;
     table = new ProgramTable(this, cpu);
-    label = new wxStaticText(
-        this, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(60, wxDefaultSize.GetHeight()), wxALIGN_RIGHT);
+    label = new wxStaticText(this, wxID_ANY, wxT("0"), wxDefaultPosition,
+        wxSize(60, wxDefaultSize.GetHeight()), wxALIGN_RIGHT);
     label->Wrap(-1);
-    input =
-        new wxTextCtrl(this, ID_ValueInput, wxEmptyString, wxDefaultPosition, wxSize(60, wxDefaultSize.GetHeight()),
-                       wxTE_PROCESS_ENTER);
+    input = new wxTextCtrl(this, ID_ValueInput, wxEmptyString, wxDefaultPosition,
+        wxSize(60, wxDefaultSize.GetHeight()), wxTE_PROCESS_ENTER);
 
     auto *vbox = new wxBoxSizer(wxVERTICAL);
     auto *hbox = new wxBoxSizer(wxHORIZONTAL);
@@ -215,7 +221,7 @@ void ProgramWindow::OnItemSelected(wxListEvent &event) {
 
 
 void ProgramWindow::OnTextInputEnter(wxCommandEvent &WXUNUSED(event)) {
-    ::OnTextInputEnter < ProgramWindow > (this);
+    ::OnTextInputEnter<ProgramWindow>(this);
 }
 
 
@@ -224,23 +230,23 @@ void ProgramWindow::OnTextInputEnter(wxCommandEvent &WXUNUSED(event)) {
 //----------------------------------------------------------------------------//
 
 wxBEGIN_EVENT_TABLE(DataWindow, wxDialog)
-        EVT_CLOSE(DataWindow::OnClose)
-        EVT_LIST_ITEM_SELECTED(wxID_ANY, DataWindow::OnItemSelected)
-        EVT_TEXT_ENTER(ID_ValueInput, DataWindow::OnTextInputEnter)
+    EVT_CLOSE(DataWindow::OnClose)
+    EVT_LIST_ITEM_SELECTED(wxID_ANY, DataWindow::OnItemSelected)
+    EVT_TEXT_ENTER(ID_ValueInput, DataWindow::OnTextInputEnter)
 wxEND_EVENT_TABLE()
 
 
 DataWindow::DataWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
-    : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxCAPTION | wxRESIZE_BORDER) {
+    : wxDialog(
+          parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxCAPTION | wxRESIZE_BORDER) {
     this->cpu = cpu;
 
     table = new DataTable(this, cpu);
-    label = new wxStaticText(
-        this, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(60, wxDefaultSize.GetHeight()), wxALIGN_RIGHT);
+    label = new wxStaticText(this, wxID_ANY, wxT("0"), wxDefaultPosition,
+        wxSize(60, wxDefaultSize.GetHeight()), wxALIGN_RIGHT);
     label->Wrap(-1);
-    input =
-        new wxTextCtrl(this, ID_ValueInput, wxEmptyString, wxDefaultPosition, wxSize(60, wxDefaultSize.GetHeight()),
-                       wxTE_PROCESS_ENTER);
+    input = new wxTextCtrl(this, ID_ValueInput, wxEmptyString, wxDefaultPosition,
+        wxSize(60, wxDefaultSize.GetHeight()), wxTE_PROCESS_ENTER);
 
     auto *vbox = new wxBoxSizer(wxVERTICAL);
     auto *hbox = new wxBoxSizer(wxHORIZONTAL);
@@ -273,5 +279,5 @@ void DataWindow::OnItemSelected(wxListEvent &event) {
 
 
 void DataWindow::OnTextInputEnter(wxCommandEvent &WXUNUSED(event)) {
-    ::OnTextInputEnter < DataWindow > (this);
+    ::OnTextInputEnter<DataWindow>(this);
 }

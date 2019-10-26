@@ -13,9 +13,7 @@
 
 #include <wx/event.h>
 
-enum Base {
-    Decimal, Hexadecimal
-};
+enum Base { Decimal, Hexadecimal };
 
 enum {
     ID_FileOpen = 1,
@@ -29,5 +27,7 @@ enum {
     ID_R5,
     ID_R6,
     ID_R7,
+    ID_ChangeBase,
+    ID_Run,
 };
 #endif // GUI_H

@@ -16,8 +16,10 @@ set(ALL_SOURCE_FILES
     "source/gui/windows.cpp"
     "source/gui/tables.h"
     "source/gui/tables.cpp"
-    "source/gui/panels/panels.h"
-    "source/gui/panels/panels.cpp"
+    "source/gui/panels.h"
+    "source/gui/panels.cpp"
+    "source/gui/buttons.h"
+    "source/gui/buttons.cpp"
     )
 
 set(TEST_SOURCE_FILES

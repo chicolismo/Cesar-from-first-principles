@@ -1,4 +1,5 @@
 #include "hardware.h"
+
 #include <iostream>
 
 #define SP cpu->registers[8]
@@ -139,8 +140,7 @@ Word Alu::one_operand_instruction(const Instruction instruction, const Word valu
         C = (temp & 0x10000) > 0;
         N = is_negative(result);
         Z = is_zero(result);
-    }
-        break;
+    } break;
 
     case TST:
         result = value;
@@ -158,8 +158,7 @@ Word Alu::one_operand_instruction(const Instruction instruction, const Word valu
         N = is_negative(result);
         Z = is_zero(result);
         V = N ^ C;
-    }
-        break;
+    } break;
 
     case ROL: {
         const auto temp = static_cast<UWord>(value);
@@ -169,8 +168,7 @@ Word Alu::one_operand_instruction(const Instruction instruction, const Word valu
         N = is_negative(result);
         Z = is_zero(result);
         V = N ^ C;
-    }
-        break;
+    } break;
 
     case ASR: {
         const auto temp = static_cast<UWord>(value);
@@ -181,8 +179,7 @@ Word Alu::one_operand_instruction(const Instruction instruction, const Word valu
         N = is_negative(result);
         Z = is_zero(result);
         V = N ^ C;
-    }
-        break;
+    } break;
 
     case ASL: {
         const auto temp = static_cast<UWord>(value);
@@ -192,8 +189,7 @@ Word Alu::one_operand_instruction(const Instruction instruction, const Word valu
         N = is_negative(result);
         Z = is_zero(result);
         V = N ^ C;
-    }
-        break;
+    } break;
 
     case ADC: {
         result = value + C;
@@ -201,8 +197,7 @@ Word Alu::one_operand_instruction(const Instruction instruction, const Word valu
         Z = is_zero(result);
         V = is_overflow(value, C, value + C);
         C = is_carry(value, C, Alu::Plus);
-    }
-        break;
+    } break;
 
     case SBC: {
         result = value + C;
@@ -210,8 +205,7 @@ Word Alu::one_operand_instruction(const Instruction instruction, const Word valu
         Z = is_zero(result);
         V = is_overflow(value, C, value - C);
         C = is_carry(value, C, Alu::Minus);
-    }
-        break;
+    } break;
 
     default:
         result = value;
@@ -222,10 +216,14 @@ Word Alu::one_operand_instruction(const Instruction instruction, const Word valu
 }
 
 
-void Alu::ccc(const Byte byte) { NZVC &= ~(static_cast<UByte>(byte) & 0x0Fu); }
+void Alu::ccc(const Byte byte) {
+    NZVC &= ~(static_cast<UByte>(byte) & 0x0Fu);
+}
 
 
-void Alu::scc(const Byte byte) { NZVC |= (static_cast<UByte>(byte) & 0x0Fu); }
+void Alu::scc(const Byte byte) {
+    NZVC |= (static_cast<UByte>(byte) & 0x0Fu);
+}
 
 
 void Alu::jmp(const AddressMode mode, const std::size_t absolute_address) {
@@ -254,7 +252,7 @@ void Alu::jsr(const AddressMode mode, const std::size_t sub_address, const int r
 
 
 void Alu::rts(const Byte byte) {
-    std::size_t rrr = (static_cast<UByte>(byte) & 0b00000111);
+    std::size_t rrr = (static_cast<std::size_t>(byte) & 0b00000111);
     PC = cpu->registers[rrr];
     cpu->registers[rrr] = cpu->pop();
 }

@@ -2,7 +2,7 @@
 #define WINDOWS_H
 
 #include "gui.h"
-#include "panels/panels.h"
+#include "panels.h"
 #include "tables.h"
 #include <wx/filedlg.h>
 #include <wx/dialog.h>
@@ -23,6 +23,8 @@ struct MainWindow : public wxFrame {
     ConditionPanel *condition_panels[4];
 
     ExecutionPanel *execution_panel;
+
+    ButtonPanel *button_panel;
 
     Base current_base = Base::Decimal;
 

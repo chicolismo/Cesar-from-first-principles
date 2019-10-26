@@ -1,13 +1,11 @@
 #ifndef PANELS_H
 #define PANELS_H
 
-#include "../gui.h"
+#include "gui.h"
+#include "buttons.h"
 
 struct DigitalDisplay : public wxPanel {
-    constexpr static int BASE_VALUE[] = {
-        [Decimal] = 10,
-        [Hexadecimal] = 16
-    };
+    constexpr static int BASE_VALUE[] = {[Decimal] = 10, [Hexadecimal] = 16};
     static const std::size_t width = 76;
     static const std::size_t height = 25;
     static const std::size_t digit_width = 12;
@@ -34,9 +32,8 @@ struct DigitalDisplay : public wxPanel {
 
     void SetBase(Base new_base);
 
-wxDECLARE_EVENT_TABLE();
+    wxDECLARE_EVENT_TABLE();
 };
-
 
 struct BinaryDisplay : public wxPanel {
     static const std::size_t width = 80;
@@ -58,9 +55,8 @@ struct BinaryDisplay : public wxPanel {
 
     void SetValue(uint16_t unsigned_word);
 
-wxDECLARE_EVENT_TABLE();
+    wxDECLARE_EVENT_TABLE();
 };
-
 
 struct RegisterPanel : public wxPanel {
     DigitalDisplay *digital_display;
@@ -77,14 +73,12 @@ struct RegisterPanel : public wxPanel {
     void SetBase(Base new_base);
 };
 
-
 struct ExecutionPanel : public wxPanel {
     DigitalDisplay *access_display;
     DigitalDisplay *instruction_display;
 
     explicit ExecutionPanel(wxWindow *parent);
 };
-
 
 struct Led : public wxPanel {
     bool turned_on;
@@ -100,7 +94,7 @@ struct Led : public wxPanel {
 
     void SetTurnedOn(bool should_turn_on);
 
-wxDECLARE_EVENT_TABLE();
+    wxDECLARE_EVENT_TABLE();
 };
 
 struct ConditionPanel : public wxPanel {
@@ -109,4 +103,13 @@ struct ConditionPanel : public wxPanel {
     ConditionPanel(wxWindow *parent, const wxString &label);
 };
 
-#endif//PANELS_H
+struct ButtonPanel : public wxPanel {
+    //wxBitmapButton *btn_decimal;
+    //wxBitmapButton *btn_hexadecimal;
+    //wxBitmapButton *btn_run;
+    BaseToggleButton *base_button;
+
+    ButtonPanel(wxWindow *parent);
+};
+
+#endif // PANELS_H

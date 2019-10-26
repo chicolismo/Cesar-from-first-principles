@@ -1,34 +1,36 @@
 #include "panels.h"
 
-#include "../gui.h"
-#include "../images/cesar_0.xpm"
-#include "../images/cesar_1.xpm"
-#include "../images/cesar_2.xpm"
-#include "../images/cesar_3.xpm"
-#include "../images/cesar_4.xpm"
-#include "../images/cesar_5.xpm"
-#include "../images/cesar_6.xpm"
-#include "../images/cesar_7.xpm"
-#include "../images/cesar_8.xpm"
-#include "../images/cesar_9.xpm"
-#include "../images/cesar_a.xpm"
-#include "../images/cesar_b.xpm"
-#include "../images/cesar_c.xpm"
-#include "../images/cesar_d.xpm"
-#include "../images/cesar_e.xpm"
-#include "../images/cesar_f.xpm"
-#include "../images/cesar_null.xpm"
-#include "../images/mini_led_0.xpm"
-#include "../images/mini_led_1.xpm"
-#include "../images/light_on.xpm"
-#include "../images/light_off.xpm"
+#include "images/cesar_0.xpm"
+#include "images/cesar_1.xpm"
+#include "images/cesar_2.xpm"
+#include "images/cesar_3.xpm"
+#include "images/cesar_4.xpm"
+#include "images/cesar_5.xpm"
+#include "images/cesar_6.xpm"
+#include "images/cesar_7.xpm"
+#include "images/cesar_8.xpm"
+#include "images/cesar_9.xpm"
+#include "images/cesar_a.xpm"
+#include "images/cesar_b.xpm"
+#include "images/cesar_c.xpm"
+#include "images/cesar_d.xpm"
+#include "images/cesar_e.xpm"
+#include "images/cesar_f.xpm"
+#include "images/cesar_null.xpm"
+#include "images/config.xpm"
+#include "images/light_off.xpm"
+#include "images/light_on.xpm"
+#include "images/mini_led_0.xpm"
+#include "images/mini_led_1.xpm"
+#include "images/dechex10.xpm"
 
 wxBEGIN_EVENT_TABLE(DigitalDisplay, wxPanel)
-        EVT_PAINT(DigitalDisplay::OnPaint)
+    EVT_PAINT(DigitalDisplay::OnPaint)
 wxEND_EVENT_TABLE()
 
 
-DigitalDisplay::DigitalDisplay(wxWindow *parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(width, height)) {
+DigitalDisplay::DigitalDisplay(wxWindow *parent)
+    : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(width, height)) {
     images[0] = wxImage(cesar_0);
     images[1] = wxImage(cesar_1);
     images[2] = wxImage(cesar_2);
@@ -119,11 +121,12 @@ void DigitalDisplay::OnPaint(wxPaintEvent &event) {
 // Binary Display
 
 wxBEGIN_EVENT_TABLE(BinaryDisplay, wxPanel)
-        EVT_PAINT(BinaryDisplay::OnPaint)
+    EVT_PAINT(BinaryDisplay::OnPaint)
 wxEND_EVENT_TABLE()
 
 
-BinaryDisplay::BinaryDisplay(wxWindow *parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(width, height)) {
+BinaryDisplay::BinaryDisplay(wxWindow *parent)
+    : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(width, height)) {
     value = 0;
     images[0] = wxImage(mini_led_0);
     images[1] = wxImage(mini_led_1);
@@ -164,8 +167,8 @@ void BinaryDisplay::SetValue(const uint16_t unsigned_word) {
 
 // Register Panel
 
-RegisterPanel::RegisterPanel(wxWindow *parent, long id, const wxString &title) : wxPanel(parent, id, wxDefaultPosition,
-                                                                                         wxDefaultSize) {
+RegisterPanel::RegisterPanel(wxWindow *parent, long id, const wxString &title)
+    : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize) {
     auto *box = new wxStaticBoxSizer(wxVERTICAL, this, title);
     auto *inner_panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(80, 32));
     box->Add(inner_panel);
@@ -209,13 +212,10 @@ ExecutionPanel::ExecutionPanel(wxWindow *parent) : wxPanel(parent, wxID_ANY) {
     instruction_display = new DigitalDisplay(this);
     instruction_display->number_of_digits = 5;
 
-    auto *sizer = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Execução:"));
-    auto *inner_panel = new wxPanel(this);
-    auto *flex_grid = new wxFlexGridSizer(2, 2, 0, 0);
     auto *access_label = new wxStaticText(this, wxID_ANY, wxT("Acessos: "));
     auto *instruction_label = new wxStaticText(this, wxID_ANY, wxT("Instruções: "));
 
-    inner_panel->SetSizer(flex_grid);
+    auto *flex_grid = new wxFlexGridSizer(2, 2, 0, 0);
     flex_grid->Add(access_label, 1, wxALIGN_CENTER_VERTICAL);
     flex_grid->Add(access_display);
     flex_grid->Add(instruction_label, 1, wxALIGN_CENTER_VERTICAL);
@@ -223,17 +223,15 @@ ExecutionPanel::ExecutionPanel(wxWindow *parent) : wxPanel(parent, wxID_ANY) {
     flex_grid->AddGrowableCol(0, 1);
     flex_grid->AddGrowableRow(0, 1);
     flex_grid->AddGrowableRow(1, 1);
-    flex_grid->Fit(inner_panel);
 
-    sizer->Add(flex_grid, 0, wxALL , -2);
-    sizer->Fit(this);
-    SetSizer(sizer);
-    //sizer->Fit(this);
+    auto *sizer = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Execução:"));
+    sizer->Add(flex_grid, 0, wxALL, -2);
+    SetSizerAndFit(sizer);
 }
 
 
 wxBEGIN_EVENT_TABLE(Led, wxPanel)
-        EVT_PAINT(Led::OnPaint)
+    EVT_PAINT(Led::OnPaint)
 wxEND_EVENT_TABLE()
 
 
@@ -271,8 +269,21 @@ void Led::SetTurnedOn(bool should_turn_on) {
 ConditionPanel::ConditionPanel(wxWindow *parent, const wxString &label) : wxPanel(parent) {
     led_display = new Led(this);
     auto sizer = new wxStaticBoxSizer(wxVERTICAL, this, label);
-    sizer->Add(led_display, 0, wxALIGN_CENTER_VERTICAL | wxALIGN_CENTER_HORIZONTAL | wxALL, -2);
+    sizer->Add(led_display, 1, wxALIGN_CENTER_VERTICAL | wxALIGN_CENTER_HORIZONTAL | wxALL, -2);
 
     SetSizer(sizer);
     sizer->Fit(this);
+}
+
+
+ButtonPanel::ButtonPanel(wxWindow *parent) : wxPanel(parent, wxID_ANY) {
+    base_button = new BaseToggleButton(this, ID_ChangeBase);
+    //btn_hexadecimal = new wxBitmapButton(this, ID_Hexadecimal, wxImage(config));
+    //btn_run = new wxBitmapButton(this, ID_Run, wxImage(config));
+
+    auto *hbox = new wxBoxSizer(wxHORIZONTAL);
+    hbox->Add(base_button);
+    //hbox->Add(btn_hexadecimal);
+    //hbox->Add(btn_run);
+    SetSizerAndFit(hbox);
 }

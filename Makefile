@@ -39,10 +39,10 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake
+CMAKE_COMMAND = /usr/local/Cellar/cmake/3.15.4/bin/cmake
 
 # The command to remove a file.
-RM = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E remove -f
+RM = /usr/local/Cellar/cmake/3.15.4/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /Users/chico/tcc/cesar
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/local/Cellar/cmake/3.15.4/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -70,7 +70,7 @@ rebuild_cache/fast: rebuild_cache
 # Special rule for the target test
 test:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
-	/Applications/CLion.app/Contents/bin/cmake/mac/bin/ctest --force-new-ctest-process $(ARGS)
+	/usr/local/Cellar/cmake/3.15.4/bin/ctest --force-new-ctest-process $(ARGS)
 .PHONY : test
 
 # Special rule for the target test
@@ -80,8 +80,8 @@ test/fast: test
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+	/usr/local/Cellar/cmake/3.15.4/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -220,32 +220,59 @@ source/cpu.cpp.s:
 	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/cpu.cpp.s
 .PHONY : source/cpu.cpp.s
 
-source/gui/panels/panels.o: source/gui/panels/panels.cpp.o
+source/gui/buttons.o: source/gui/buttons.cpp.o
 
-.PHONY : source/gui/panels/panels.o
+.PHONY : source/gui/buttons.o
 
 # target to build an object file
-source/gui/panels/panels.cpp.o:
-	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/panels/panels.cpp.o
-.PHONY : source/gui/panels/panels.cpp.o
+source/gui/buttons.cpp.o:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/buttons.cpp.o
+.PHONY : source/gui/buttons.cpp.o
 
-source/gui/panels/panels.i: source/gui/panels/panels.cpp.i
+source/gui/buttons.i: source/gui/buttons.cpp.i
 
-.PHONY : source/gui/panels/panels.i
+.PHONY : source/gui/buttons.i
 
 # target to preprocess a source file
-source/gui/panels/panels.cpp.i:
-	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/panels/panels.cpp.i
-.PHONY : source/gui/panels/panels.cpp.i
+source/gui/buttons.cpp.i:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/buttons.cpp.i
+.PHONY : source/gui/buttons.cpp.i
 
-source/gui/panels/panels.s: source/gui/panels/panels.cpp.s
+source/gui/buttons.s: source/gui/buttons.cpp.s
 
-.PHONY : source/gui/panels/panels.s
+.PHONY : source/gui/buttons.s
 
 # target to generate assembly for a file
-source/gui/panels/panels.cpp.s:
-	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/panels/panels.cpp.s
-.PHONY : source/gui/panels/panels.cpp.s
+source/gui/buttons.cpp.s:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/buttons.cpp.s
+.PHONY : source/gui/buttons.cpp.s
+
+source/gui/panels.o: source/gui/panels.cpp.o
+
+.PHONY : source/gui/panels.o
+
+# target to build an object file
+source/gui/panels.cpp.o:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/panels.cpp.o
+.PHONY : source/gui/panels.cpp.o
+
+source/gui/panels.i: source/gui/panels.cpp.i
+
+.PHONY : source/gui/panels.i
+
+# target to preprocess a source file
+source/gui/panels.cpp.i:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/panels.cpp.i
+.PHONY : source/gui/panels.cpp.i
+
+source/gui/panels.s: source/gui/panels.cpp.s
+
+.PHONY : source/gui/panels.s
+
+# target to generate assembly for a file
+source/gui/panels.cpp.s:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/panels.cpp.s
+.PHONY : source/gui/panels.cpp.s
 
 source/gui/tables.o: source/gui/tables.cpp.o
 
@@ -373,9 +400,12 @@ help:
 	@echo "... source/cpu.o"
 	@echo "... source/cpu.i"
 	@echo "... source/cpu.s"
-	@echo "... source/gui/panels/panels.o"
-	@echo "... source/gui/panels/panels.i"
-	@echo "... source/gui/panels/panels.s"
+	@echo "... source/gui/buttons.o"
+	@echo "... source/gui/buttons.i"
+	@echo "... source/gui/buttons.s"
+	@echo "... source/gui/panels.o"
+	@echo "... source/gui/panels.i"
+	@echo "... source/gui/panels.s"
 	@echo "... source/gui/tables.o"
 	@echo "... source/gui/tables.i"
 	@echo "... source/gui/tables.s"
