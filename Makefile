@@ -301,6 +301,33 @@ source/gui/tables.cpp.s:
 	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/tables.cpp.s
 .PHONY : source/gui/tables.cpp.s
 
+source/gui/text_display.o: source/gui/text_display.cpp.o
+
+.PHONY : source/gui/text_display.o
+
+# target to build an object file
+source/gui/text_display.cpp.o:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/text_display.cpp.o
+.PHONY : source/gui/text_display.cpp.o
+
+source/gui/text_display.i: source/gui/text_display.cpp.i
+
+.PHONY : source/gui/text_display.i
+
+# target to preprocess a source file
+source/gui/text_display.cpp.i:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/text_display.cpp.i
+.PHONY : source/gui/text_display.cpp.i
+
+source/gui/text_display.s: source/gui/text_display.cpp.s
+
+.PHONY : source/gui/text_display.s
+
+# target to generate assembly for a file
+source/gui/text_display.cpp.s:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/text_display.cpp.s
+.PHONY : source/gui/text_display.cpp.s
+
 source/gui/windows.o: source/gui/windows.cpp.o
 
 .PHONY : source/gui/windows.o
@@ -409,6 +436,9 @@ help:
 	@echo "... source/gui/tables.o"
 	@echo "... source/gui/tables.i"
 	@echo "... source/gui/tables.s"
+	@echo "... source/gui/text_display.o"
+	@echo "... source/gui/text_display.i"
+	@echo "... source/gui/text_display.s"
 	@echo "... source/gui/windows.o"
 	@echo "... source/gui/windows.i"
 	@echo "... source/gui/windows.s"

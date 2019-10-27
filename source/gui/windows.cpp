@@ -3,10 +3,13 @@
 #include "images/config.xpm"
 #include "panels.h"
 
+#include <cstdlib>
 #include <iostream>
 #include <wx/bmpbuttn.h>
 #include <wx/msgdlg.h>
 
+#define IS_DISPLAY_ADDRESS(address) \
+    (address) >= Cpu::BEGIN_DISPLAY_ADDRESS && (address) <= Cpu::END_DISPLAY_ADDRESS
 
 template <typename SideWindow>
 void OnTextInputEnter(SideWindow *side_window) {
@@ -23,10 +26,9 @@ void OnTextInputEnter(SideWindow *side_window) {
     }
 }
 
-
-//----------------------------------------------------------------------------//
-// Main Window                                                                //
-//----------------------------------------------------------------------------//
+// ===========================================================================
+// MainWindow
+// ===========================================================================
 
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_MENU(ID_FileOpen, MainWindow::OnFileOpen)
@@ -36,7 +38,8 @@ wxEND_EVENT_TABLE()
 
 
 MainWindow::MainWindow(const wxString &title, const wxPoint &pos, const wxSize &size)
-    : wxFrame(nullptr, wxID_ANY, title, pos, size) {
+    : wxFrame(nullptr, wxID_ANY, title, pos, size,
+          wxDEFAULT_FRAME_STYLE & ~(wxMAXIMIZE_BOX | wxRESIZE_BORDER)) {
 
     // Inicializando as janelas laterais
     program_window = new ProgramWindow(this, &cpu, wxT("Programa"));
@@ -51,6 +54,9 @@ MainWindow::MainWindow(const wxString &title, const wxPoint &pos, const wxSize &
 
     program_window->Show(true);
     data_window->Show(true);
+
+    text_display = new TextDisplay(this, &cpu);
+    text_display->Show(true);
 
     // Displays de registradores
     register_panels[0] = new RegisterPanel(this, ID_R0, wxT("R0:"));
@@ -101,15 +107,15 @@ MainWindow::MainWindow(const wxString &title, const wxPoint &pos, const wxSize &
     auto *middle_right_sizer = new wxBoxSizer(wxVERTICAL);
     middle_right_sizer->Add(condition_box);
     middle_right_sizer->AddStretchSpacer();
-    middle_right_sizer->Add(button_panel);
+    middle_right_sizer->Add(button_panel, 0, wxEXPAND);
 
     auto *middle_sizer = new wxBoxSizer(wxHORIZONTAL);
     middle_sizer->Add(execution_panel);
-    middle_sizer->Add(middle_right_sizer, 1, wxEXPAND);
+    middle_sizer->Add(middle_right_sizer, 0, wxEXPAND);
 
     auto *top_sizer = new wxBoxSizer(wxVERTICAL);
-    top_sizer->Add(grid);
-    top_sizer->Add(middle_sizer);
+    top_sizer->Add(grid, 0, wxLEFT | wxTOP | wxRIGHT, 10);
+    top_sizer->Add(middle_sizer, 0, wxLEFT | wxBOTTOM | wxRIGHT, 10);
     SetSizerAndFit(top_sizer);
 
     Center(wxBOTH);
@@ -133,8 +139,7 @@ void MainWindow::OnFileOpen(wxCommandEvent &WXUNUSED(event)) {
 
     // TODO: Enviar para o cpu ler os dados.
     if (cpu.read_memory_from_binary_file(filename)) {
-        program_window->table->RefreshItems(0, MEM_SIZE - 1);
-        data_window->table->RefreshItems(0, MEM_SIZE - 1);
+        UpdatePanels();
     }
 }
 
@@ -156,20 +161,42 @@ void MainWindow::UpdateSubwindowsPositions() {
     const wxSize pwsize = program_window->GetSize();
     program_window->SetPosition(wxPoint(pos.x - pwsize.GetWidth() - gap, pos.y));
     data_window->SetPosition(wxPoint(pos.x + size.GetWidth() + gap, pos.y));
+    text_display->SetPosition(wxPoint(program_window->GetPosition().x, gap + pos.y + size.GetHeight()));
+    program_window->SetSize(program_window->GetSize().GetWidth(), size.GetHeight());
+    data_window->SetSize(data_window->GetSize().GetWidth(), size.GetHeight());
 }
 
 
-void MainWindow::SetAddressValueAndUpdateTables(long address, Byte value) {
-    const auto uaddress = static_cast<std::size_t>(address);
-    cpu.memory[uaddress] = value;
+void MainWindow::UpdatePanels() {
+    program_window->table->Refresh();
+    data_window->table->Refresh();
+    text_display->PaintNow();
+}
+
+
+void MainWindow::SetAddressValueAndUpdateTables(const long address, const Byte value) {
+    const auto unsigned_address = static_cast<UWord>(address);
+    cpu.memory[unsigned_address] = value;
     program_window->table->RefreshItem(address);
     data_window->table->RefreshItem(address);
+    if (IS_DISPLAY_ADDRESS(unsigned_address)) {
+        text_display->PaintNow();
+    }
 }
 
 
-//----------------------------------------------------------------------------//
-// Program Window                                                             //
-//----------------------------------------------------------------------------//
+void MainWindow::SetBase(const Base new_base) {
+    current_base = new_base;
+    for (auto &panel : register_panels) {
+        panel->SetBase(new_base);
+    }
+    program_window->SetBase(new_base);
+    data_window->SetBase(new_base);
+}
+
+// ===========================================================================
+// ProgramWindow
+// ===========================================================================
 
 wxBEGIN_EVENT_TABLE(ProgramWindow, wxDialog)
     EVT_CLOSE(ProgramWindow::OnClose)
@@ -206,6 +233,14 @@ ProgramWindow::ProgramWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
 }
 
 
+void ProgramWindow::SetBase(Base new_base) {
+    current_base = new_base;
+    table->current_base = new_base;
+    table->Refresh();
+    // TODO: Converter o valor do label;
+}
+
+
 void ProgramWindow::OnClose(wxCloseEvent &event) {
     event.StopPropagation(); // Não pode fechar as janelas laterais.
 }
@@ -224,10 +259,9 @@ void ProgramWindow::OnTextInputEnter(wxCommandEvent &WXUNUSED(event)) {
     ::OnTextInputEnter<ProgramWindow>(this);
 }
 
-
-//----------------------------------------------------------------------------//
-// Data Window                                                                //
-//----------------------------------------------------------------------------//
+// ===========================================================================
+// DataWindow
+// ===========================================================================
 
 wxBEGIN_EVENT_TABLE(DataWindow, wxDialog)
     EVT_CLOSE(DataWindow::OnClose)
@@ -261,6 +295,14 @@ DataWindow::DataWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
     Layout();
     Fit();
     vbox->Fit(this);
+}
+
+
+void DataWindow::SetBase(Base new_base) {
+    current_base = new_base;
+    table->current_base = new_base;
+    table->Refresh();
+    // TODO: Converter o valor do label;
 }
 
 

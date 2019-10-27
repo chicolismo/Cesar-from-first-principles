@@ -3,6 +3,7 @@
 
 #include "gui.h"
 #include "buttons.h"
+#include <wx/tglbtn.h>
 
 struct DigitalDisplay : public wxPanel {
     constexpr static int BASE_VALUE[] = {[Decimal] = 10, [Hexadecimal] = 16};
@@ -18,7 +19,7 @@ struct DigitalDisplay : public wxPanel {
 
     wxBitmap images[17];
     uint16_t value;
-    Base base;
+    Base current_base;
 
     explicit DigitalDisplay(wxWindow *parent);
 
@@ -103,13 +104,19 @@ struct ConditionPanel : public wxPanel {
     ConditionPanel(wxWindow *parent, const wxString &label);
 };
 
+
 struct ButtonPanel : public wxPanel {
-    //wxBitmapButton *btn_decimal;
-    //wxBitmapButton *btn_hexadecimal;
-    //wxBitmapButton *btn_run;
-    BaseToggleButton *base_button;
+    wxBitmapToggleButton *btn_decimal;
+    wxBitmapToggleButton *btn_hexadecimal;
+    wxBitmapToggleButton *btn_run;
+    wxBitmapButton *btn_next;
 
     ButtonPanel(wxWindow *parent);
+
+
+    void OnChangeBase(wxCommandEvent &event);
+
+    wxDECLARE_EVENT_TABLE();
 };
 
 #endif // PANELS_H

@@ -1,6 +1,7 @@
 #ifndef TABLES_H
 #define TABLES_H
 #include "../hardware.h"
+#include "gui.h"
 #include <wx/listctrl.h>
 
 struct ProgramTable;
@@ -10,6 +11,7 @@ struct ProgramTable : public wxListCtrl {
     Cpu *cpu;
     Byte *data;
     uint16_t program_counter;
+    Base current_base;
 
     ProgramTable(wxWindow *parent, Cpu *cpu);
     wxString OnGetItemText(long item, long column) const;
@@ -19,6 +21,7 @@ struct ProgramTable : public wxListCtrl {
 struct DataTable : public wxListCtrl {
     Cpu *cpu;
     Byte *data;
+    Base current_base;
 
     DataTable(wxWindow *parent, Cpu *cpu);
     wxString OnGetItemText(long item, long column) const;

@@ -11,7 +11,7 @@ bool Cesar::OnInit() {
     MainWindow *window = new MainWindow(wxT("Cesar"), wxDefaultPosition, wxSize(640, 480));
     window->Center(wxBOTH);
     window->Show(true);
-    SetTopWindow(window);
+    //SetTopWindow(window);
     return true;
 }
 

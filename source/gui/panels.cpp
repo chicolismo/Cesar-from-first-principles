@@ -1,4 +1,5 @@
 #include "panels.h"
+#include "windows.h"
 
 #include "images/cesar_0.xpm"
 #include "images/cesar_1.xpm"
@@ -18,11 +19,19 @@
 #include "images/cesar_f.xpm"
 #include "images/cesar_null.xpm"
 #include "images/config.xpm"
+#include "images/decimal.xpm"
+#include "images/hexadecimal.xpm"
 #include "images/light_off.xpm"
 #include "images/light_on.xpm"
 #include "images/mini_led_0.xpm"
 #include "images/mini_led_1.xpm"
-#include "images/dechex10.xpm"
+#include "images/tools.xpm"
+
+#include <wx/msgdlg.h>
+
+// ===========================================================================
+// DigitalDisplay
+// ===========================================================================
 
 wxBEGIN_EVENT_TABLE(DigitalDisplay, wxPanel)
     EVT_PAINT(DigitalDisplay::OnPaint)
@@ -50,7 +59,7 @@ DigitalDisplay::DigitalDisplay(wxWindow *parent)
     images[16] = wxImage(cesar_null);
 
     value = 0;
-    base = Base::Decimal;
+    current_base = Base::Decimal;
     number_of_digits = 4;
 }
 
@@ -72,7 +81,7 @@ void DigitalDisplay::Render(wxDC &dc) {
     std::size_t current_digit = 0;
     uint16_t n = this->value;
 
-    const std::size_t base_value = BASE_VALUE[base];
+    const std::size_t base_value = BASE_VALUE[current_base];
     do {
         const std::size_t digit = n % base_value;
         dc.DrawBitmap(images[digit], x, y, false);
@@ -90,13 +99,14 @@ void DigitalDisplay::Render(wxDC &dc) {
 
 
 void DigitalDisplay::SetBase(Base new_base) {
-    this->base = new_base;
+    current_base = new_base;
     if (new_base == Decimal) {
-        number_of_digits = 4;
-    }
-    else {
         number_of_digits = 5;
     }
+    else {
+        number_of_digits = 4;
+    }
+    PaintNow();
 }
 
 
@@ -117,8 +127,9 @@ void DigitalDisplay::OnPaint(wxPaintEvent &event) {
     event.Skip();
 }
 
-
-// Binary Display
+// ===========================================================================
+// BinaryDisplay
+// ===========================================================================
 
 wxBEGIN_EVENT_TABLE(BinaryDisplay, wxPanel)
     EVT_PAINT(BinaryDisplay::OnPaint)
@@ -164,8 +175,9 @@ void BinaryDisplay::SetValue(const uint16_t unsigned_word) {
     this->value = unsigned_word;
 }
 
-
-// Register Panel
+// ===========================================================================
+// RegisterPanel
+// ===========================================================================
 
 RegisterPanel::RegisterPanel(wxWindow *parent, long id, const wxString &title)
     : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize) {
@@ -203,8 +215,10 @@ void RegisterPanel::SetBase(Base new_base) {
     digital_display->SetBase(new_base);
 }
 
+// ===========================================================================
+// ExecutionPanel
+// ===========================================================================
 
-// Execution panel
 ExecutionPanel::ExecutionPanel(wxWindow *parent) : wxPanel(parent, wxID_ANY) {
     access_display = new DigitalDisplay(this);
     access_display->number_of_digits = 5;
@@ -229,11 +243,13 @@ ExecutionPanel::ExecutionPanel(wxWindow *parent) : wxPanel(parent, wxID_ANY) {
     SetSizerAndFit(sizer);
 }
 
+// ===========================================================================
+// Led
+// ===========================================================================
 
 wxBEGIN_EVENT_TABLE(Led, wxPanel)
     EVT_PAINT(Led::OnPaint)
 wxEND_EVENT_TABLE()
-
 
 Led::Led(wxWindow *parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(15, 15)) {
     turned_on = false;
@@ -275,15 +291,47 @@ ConditionPanel::ConditionPanel(wxWindow *parent, const wxString &label) : wxPane
     sizer->Fit(this);
 }
 
+// ===========================================================================
+// ButtonPanel
+// ===========================================================================
+
+wxBEGIN_EVENT_TABLE(ButtonPanel, wxPanel)
+    EVT_TOGGLEBUTTON(ID_Decimal, ButtonPanel::OnChangeBase)
+    EVT_TOGGLEBUTTON(ID_Hexadecimal, ButtonPanel::OnChangeBase)
+wxEND_EVENT_TABLE()
 
 ButtonPanel::ButtonPanel(wxWindow *parent) : wxPanel(parent, wxID_ANY) {
-    base_button = new BaseToggleButton(this, ID_ChangeBase);
-    //btn_hexadecimal = new wxBitmapButton(this, ID_Hexadecimal, wxImage(config));
-    //btn_run = new wxBitmapButton(this, ID_Run, wxImage(config));
+    btn_decimal = new wxBitmapToggleButton(this, ID_Decimal, wxImage(decimal));
+    btn_hexadecimal = new wxBitmapToggleButton(this, ID_Hexadecimal, wxImage(hexadecimal));
+    btn_run = new wxBitmapToggleButton(this, ID_Run, wxImage(config));
+    btn_next = new wxBitmapButton(this, ID_Next, wxImage(tools));
+
+    btn_decimal->SetValue(true);
+    btn_hexadecimal->SetValue(false);
 
     auto *hbox = new wxBoxSizer(wxHORIZONTAL);
-    hbox->Add(base_button);
-    //hbox->Add(btn_hexadecimal);
-    //hbox->Add(btn_run);
+    hbox->Add(btn_decimal, 0, wxALIGN_CENTER_VERTICAL);
+    hbox->Add(btn_hexadecimal, 0, wxALIGN_CENTER_VERTICAL);
+    hbox->AddStretchSpacer();
+    hbox->Add(btn_run, 0, wxALIGN_RIGHT);
+    hbox->Add(btn_next, 0, wxALIGN_RIGHT);
     SetSizerAndFit(hbox);
+}
+
+void ButtonPanel::OnChangeBase(wxCommandEvent &event) {
+    MainWindow *parent = static_cast<MainWindow *>(GetParent());
+
+    switch (event.GetId()) {
+    case ID_Decimal:
+        btn_decimal->SetValue(true);
+        btn_hexadecimal->SetValue(false);
+        parent->SetBase(Base::Decimal);
+        break;
+    case ID_Hexadecimal:
+        btn_hexadecimal->SetValue(true);
+        btn_decimal->SetValue(false);
+        parent->SetBase(Base::Hexadecimal);
+    }
+
+    event.Skip();
 }

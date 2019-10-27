@@ -20,6 +20,8 @@ set(ALL_SOURCE_FILES
     "source/gui/panels.cpp"
     "source/gui/buttons.h"
     "source/gui/buttons.cpp"
+    "source/gui/text_display.h"
+    "source/gui/text_display.cpp"
     )
 
 set(TEST_SOURCE_FILES

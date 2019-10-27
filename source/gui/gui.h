@@ -27,7 +27,9 @@ enum {
     ID_R5,
     ID_R6,
     ID_R7,
-    ID_ChangeBase,
+    ID_Decimal,
+    ID_Hexadecimal,
     ID_Run,
+    ID_Next,
 };
 #endif // GUI_H
