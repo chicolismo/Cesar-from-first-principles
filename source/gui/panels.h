@@ -63,8 +63,9 @@ struct RegisterPanel : public wxPanel {
     BinaryDisplay *binary_display;
     Base current_base;
     std::int16_t current_value;
+    const int register_number;
 
-    RegisterPanel(wxWindow *parent, long id, const wxString &title);
+    RegisterPanel(wxWindow *parent, int number, const wxString &title);
 
     void Update();
 
@@ -73,6 +74,8 @@ struct RegisterPanel : public wxPanel {
     std::int16_t GetValue() const;
 
     void SetBase(Base new_base);
+
+    void OnDoubleClick(wxMouseEvent &event);
 };
 
 struct ExecutionPanel : public wxPanel {

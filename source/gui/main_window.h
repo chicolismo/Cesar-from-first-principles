@@ -30,6 +30,11 @@ struct MainWindow : public wxFrame {
 
     Base current_base = Base::Decimal;
 
+    // Determina se as janelas laterais devem ser trazidas
+    // para a frente quando a janela principal for selecionada.
+    // Esta flag evita uma recursão de OnActivate.
+    bool should_raise_windows = true;
+
     MainWindow(const wxString &title, const wxPoint &pos, const wxSize &size);
 
     void UpdateSubwindowsPositions();
@@ -48,7 +53,11 @@ struct MainWindow : public wxFrame {
 
     void OnNext(wxCommandEvent &event);
 
-wxDECLARE_EVENT_TABLE();
+    void OnRegisterPanelDoubleClick(int register_number);
+
+    void OnActivate(wxActivateEvent &event);
+
+    wxDECLARE_EVENT_TABLE();
 };
 
 

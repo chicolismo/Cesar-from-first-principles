@@ -1,5 +1,7 @@
 #include "main_window.h"
+
 #include "panels.h"
+
 #include <wx/msgdlg.h>
 
 #define IS_DISPLAY_ADDRESS(address) \
@@ -10,16 +12,19 @@
 // ===========================================================================
 
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
-        EVT_MENU(ID_FileOpen, MainWindow::OnFileOpen)
-        EVT_MENU(wxID_EXIT, MainWindow::OnExit)
-        EVT_MOVE(MainWindow::OnMove)
-        EVT_BUTTON(ID_Next, MainWindow::OnNext)
+    EVT_MENU(ID_FileOpen, MainWindow::OnFileOpen)
+    EVT_MENU(wxID_EXIT, MainWindow::OnExit)
+    EVT_MOVE(MainWindow::OnMove)
+    EVT_BUTTON(ID_Next, MainWindow::OnNext)
+    EVT_ACTIVATE(MainWindow::OnActivate)
 wxEND_EVENT_TABLE()
 
 
 MainWindow::MainWindow(const wxString &title, const wxPoint &pos, const wxSize &size)
     : wxFrame(nullptr, wxID_ANY, title, pos, size,
-              wxDEFAULT_FRAME_STYLE & ~(wxMAXIMIZE_BOX | wxRESIZE_BORDER)) {
+          wxDEFAULT_FRAME_STYLE & ~(wxMAXIMIZE_BOX | wxRESIZE_BORDER)) {
+
+    should_raise_windows = true;
 
     // Inicializando as janelas laterais
     program_window = new ProgramWindow(this, &cpu, wxT("Programa"));
@@ -39,14 +44,14 @@ MainWindow::MainWindow(const wxString &title, const wxPoint &pos, const wxSize &
     text_display->Show(true);
 
     // Displays de registradores
-    register_panels[0] = new RegisterPanel(this, ID_R0, wxT("R0:"));
-    register_panels[1] = new RegisterPanel(this, ID_R1, wxT("R1:"));
-    register_panels[2] = new RegisterPanel(this, ID_R2, wxT("R2:"));
-    register_panels[3] = new RegisterPanel(this, ID_R3, wxT("R3:"));
-    register_panels[4] = new RegisterPanel(this, ID_R4, wxT("R4:"));
-    register_panels[5] = new RegisterPanel(this, ID_R5, wxT("R5:"));
-    register_panels[6] = new RegisterPanel(this, ID_R6, wxT("R6: (SP)"));
-    register_panels[7] = new RegisterPanel(this, ID_R7, wxT("R7: (PC)"));
+    register_panels[0] = new RegisterPanel(this, 0, wxT("R0:"));
+    register_panels[1] = new RegisterPanel(this, 1, wxT("R1:"));
+    register_panels[2] = new RegisterPanel(this, 2, wxT("R2:"));
+    register_panels[3] = new RegisterPanel(this, 3, wxT("R3:"));
+    register_panels[4] = new RegisterPanel(this, 4, wxT("R4:"));
+    register_panels[5] = new RegisterPanel(this, 5, wxT("R5:"));
+    register_panels[6] = new RegisterPanel(this, 6, wxT("R6: (SP)"));
+    register_panels[7] = new RegisterPanel(this, 7, wxT("R7: (PC)"));
 
     auto *grid = new wxGridSizer(3, 3, 0, 0);
     grid->Add(register_panels[0], 0, wxALL, -2);
@@ -99,9 +104,6 @@ MainWindow::MainWindow(const wxString &title, const wxPoint &pos, const wxSize &
     SetSizerAndFit(top_sizer);
 
     Center(wxBOTH);
-
-    execution_panel->access_display->SetValue(4567u);
-    execution_panel->instruction_display->SetValue(5467u);
 }
 
 
@@ -112,7 +114,8 @@ void MainWindow::UpdateSubwindowsPositions() {
     const wxSize pwsize = program_window->GetSize();
     program_window->SetPosition(wxPoint(pos.x - pwsize.GetWidth() - gap, pos.y));
     data_window->SetPosition(wxPoint(pos.x + size.GetWidth() + gap, pos.y));
-    text_display->SetPosition(wxPoint(program_window->GetPosition().x, gap + pos.y + size.GetHeight()));
+    text_display->SetPosition(
+        wxPoint(program_window->GetPosition().x, gap + pos.y + size.GetHeight()));
     program_window->SetSize(program_window->GetSize().GetWidth(), size.GetHeight());
     data_window->SetSize(data_window->GetSize().GetWidth(), size.GetHeight());
 }
@@ -153,7 +156,7 @@ void MainWindow::OnFileOpen(wxCommandEvent &WXUNUSED(event)) {
     // TODO: Testar se os dados do arquivo atual foram alterados e exibir diálogo apropriado.
 
     wxFileDialog dialog(this, _("Abrir arquivos .MEM do Cesar"), "", "",
-                        "Arquivos MEM (*.mem)|*mem", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+        "Arquivos MEM (*.mem)|*mem", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
     if (dialog.ShowModal() == wxID_CANCEL) {
         return; // Abertura de arquivo cancelada.
@@ -183,3 +186,23 @@ void MainWindow::OnNext(wxCommandEvent &WXUNUSED(event)) {
     UpdatePanels();
 }
 
+void MainWindow::OnRegisterPanelDoubleClick(int register_number) {
+    std::cout << register_number << "\n";
+}
+
+
+void MainWindow::OnActivate(wxActivateEvent &event) {
+    if (event.GetActive()) {
+        if (should_raise_windows) {
+            should_raise_windows = false;
+            program_window->Raise();
+            data_window->Raise();
+            text_display->Raise();
+            Raise();
+        }
+        else {
+            should_raise_windows = true;
+        }
+    }
+    event.Skip();
+}

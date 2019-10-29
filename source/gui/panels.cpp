@@ -176,8 +176,12 @@ void BinaryDisplay::SetValue(const uint16_t unsigned_word) {
 // RegisterPanel
 // ===========================================================================
 
-RegisterPanel::RegisterPanel(wxWindow *parent, long id, const wxString &title)
-    : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize) {
+//wxBEGIN_EVENT_TABLE(RegisterPanel, wxPanel)
+    //EVT_LEFT_DCLICK(RegisterPanel::OnDoubleClick)
+//wxEND_EVENT_TABLE()
+
+RegisterPanel::RegisterPanel(wxWindow *parent, int number, const wxString &title)
+    : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize), register_number(number) {
 
     auto *box = new wxStaticBoxSizer(wxVERTICAL, this, title);
     auto *inner_panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(80, 32));
@@ -189,6 +193,13 @@ RegisterPanel::RegisterPanel(wxWindow *parent, long id, const wxString &title)
     digital_display->SetPosition(wxPoint(2, 0));
     binary_display = new BinaryDisplay(inner_panel);
     binary_display->SetPosition(wxPoint(0, 27));
+
+    digital_display->Bind(
+            wxEVT_LEFT_DCLICK, &RegisterPanel::OnDoubleClick, this);
+
+    binary_display->Bind(
+            wxEVT_LEFT_DCLICK, &RegisterPanel::OnDoubleClick, this);
+
     SetSizer(box);
     Fit();
     Layout();
@@ -221,6 +232,13 @@ void RegisterPanel::SetBase(Base new_base) {
     current_base = new_base;
     digital_display->SetBase(new_base);
     digital_display->PaintNow();
+}
+
+
+void RegisterPanel::OnDoubleClick(wxMouseEvent &event) {
+    auto parent = static_cast<MainWindow *>(GetParent());
+    parent->OnRegisterPanelDoubleClick(register_number);
+    event.Skip();
 }
 
 // ===========================================================================
