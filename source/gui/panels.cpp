@@ -1,5 +1,4 @@
 #include "panels.h"
-#include "windows.h"
 
 #include "images/cesar_0.xpm"
 #include "images/cesar_1.xpm"
@@ -26,8 +25,7 @@
 #include "images/mini_led_0.xpm"
 #include "images/mini_led_1.xpm"
 #include "images/tools.xpm"
-
-#include <wx/msgdlg.h>
+#include "main_window.h"
 
 // ===========================================================================
 // DigitalDisplay
@@ -106,7 +104,6 @@ void DigitalDisplay::SetBase(Base new_base) {
     else {
         number_of_digits = 4;
     }
-    PaintNow();
 }
 
 
@@ -181,11 +178,13 @@ void BinaryDisplay::SetValue(const uint16_t unsigned_word) {
 
 RegisterPanel::RegisterPanel(wxWindow *parent, long id, const wxString &title)
     : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize) {
+
     auto *box = new wxStaticBoxSizer(wxVERTICAL, this, title);
     auto *inner_panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(80, 32));
     box->Add(inner_panel);
-    value = 0u;
-    base = Base::Decimal;
+
+    current_value = 0;
+    current_base = Base::Decimal;
     digital_display = new DigitalDisplay(inner_panel);
     digital_display->SetPosition(wxPoint(2, 0));
     binary_display = new BinaryDisplay(inner_panel);
@@ -195,9 +194,17 @@ RegisterPanel::RegisterPanel(wxWindow *parent, long id, const wxString &title)
     Layout();
 }
 
+void RegisterPanel::Update() {
+    const std::uint16_t word = static_cast<std::uint16_t>(GetValue());
+    digital_display->SetValue(word);
+    digital_display->PaintNow();
+    binary_display->SetValue(word);
+    binary_display->PaintNow();
+}
 
-void RegisterPanel::SetValue(const Word word) {
-    value = static_cast<uint16_t>(word);
+void RegisterPanel::SetValue(const std::int16_t word) {
+    current_value = word;
+    std::uint16_t value = static_cast<uint16_t>(word);
     digital_display->SetValue(value);
     digital_display->PaintNow();
     binary_display->SetValue(value);
@@ -205,14 +212,15 @@ void RegisterPanel::SetValue(const Word word) {
 }
 
 
-Word RegisterPanel::GetValue() const {
-    return value;
+std::int16_t RegisterPanel::GetValue() const {
+    return current_value;
 }
 
 
 void RegisterPanel::SetBase(Base new_base) {
-    base = new_base;
+    current_base = new_base;
     digital_display->SetBase(new_base);
+    digital_display->PaintNow();
 }
 
 // ===========================================================================
@@ -250,6 +258,7 @@ ExecutionPanel::ExecutionPanel(wxWindow *parent) : wxPanel(parent, wxID_ANY) {
 wxBEGIN_EVENT_TABLE(Led, wxPanel)
     EVT_PAINT(Led::OnPaint)
 wxEND_EVENT_TABLE()
+
 
 Led::Led(wxWindow *parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(15, 15)) {
     turned_on = false;

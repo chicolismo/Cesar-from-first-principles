@@ -7,12 +7,6 @@
 
 constexpr std::size_t MEM_SIZE = 1u << 16u;
 
-using Byte = std::int8_t;
-using UByte = std::uint8_t;
-
-using Word = std::int16_t;
-using UWord = std::uint16_t;
-
 enum AddressMode {
     REGISTER = 0,
     REGISTER_POST_INCREMENTED = 1,
@@ -42,7 +36,7 @@ enum Instruction {
     ONE_OPERAND_INSTRUCTION
 };
 
-const std::map<Byte, Instruction> OPCODE_TO_INSTRUCTION = {
+const std::map<std::int8_t, Instruction> OPCODE_TO_INSTRUCTION = {
     {0b0000,     NOP},
     {0b0001,     CCC},
     {0b0010,     SCC},

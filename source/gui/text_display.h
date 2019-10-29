@@ -16,8 +16,8 @@ struct TextDisplay : public wxDialog {
 
     Cpu *cpu;
     wxImage images[images_size];
-    Byte *display_start;
-    Byte *display_end;
+    std::int8_t *display_start;
+    std::int8_t *display_end;
 
     TextDisplay(wxWindow *parent, Cpu *cpu);
 

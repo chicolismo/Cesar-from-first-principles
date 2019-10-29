@@ -21,18 +21,23 @@
 },
 {
   "directory": "/Users/chico/tcc/cesar",
-  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -I/Users/chico/tcc/cesar/gtest/src/gtest/googletest/include -I/Users/chico/tcc/cesar/gtest/src/gtest/googlemock/include -isystem /usr/local/lib/wx/include/osx_cocoa-unicode-3.0 -isystem /usr/local/include/wx-3.0  -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/alu.cpp.o -c /Users/chico/tcc/cesar/source/alu.cpp",
-  "file": "/Users/chico/tcc/cesar/source/alu.cpp"
-},
-{
-  "directory": "/Users/chico/tcc/cesar",
   "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -I/Users/chico/tcc/cesar/gtest/src/gtest/googletest/include -I/Users/chico/tcc/cesar/gtest/src/gtest/googlemock/include -isystem /usr/local/lib/wx/include/osx_cocoa-unicode-3.0 -isystem /usr/local/include/wx-3.0  -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/cpu.cpp.o -c /Users/chico/tcc/cesar/source/cpu.cpp",
   "file": "/Users/chico/tcc/cesar/source/cpu.cpp"
 },
 {
   "directory": "/Users/chico/tcc/cesar",
-  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -I/Users/chico/tcc/cesar/gtest/src/gtest/googletest/include -I/Users/chico/tcc/cesar/gtest/src/gtest/googlemock/include -isystem /usr/local/lib/wx/include/osx_cocoa-unicode-3.0 -isystem /usr/local/include/wx-3.0  -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/gui/windows.cpp.o -c /Users/chico/tcc/cesar/source/gui/windows.cpp",
-  "file": "/Users/chico/tcc/cesar/source/gui/windows.cpp"
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -I/Users/chico/tcc/cesar/gtest/src/gtest/googletest/include -I/Users/chico/tcc/cesar/gtest/src/gtest/googlemock/include -isystem /usr/local/lib/wx/include/osx_cocoa-unicode-3.0 -isystem /usr/local/include/wx-3.0  -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/alu.cpp.o -c /Users/chico/tcc/cesar/source/alu.cpp",
+  "file": "/Users/chico/tcc/cesar/source/alu.cpp"
+},
+{
+  "directory": "/Users/chico/tcc/cesar",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -I/Users/chico/tcc/cesar/gtest/src/gtest/googletest/include -I/Users/chico/tcc/cesar/gtest/src/gtest/googlemock/include -isystem /usr/local/lib/wx/include/osx_cocoa-unicode-3.0 -isystem /usr/local/include/wx-3.0  -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/gui/main_window.cpp.o -c /Users/chico/tcc/cesar/source/gui/main_window.cpp",
+  "file": "/Users/chico/tcc/cesar/source/gui/main_window.cpp"
+},
+{
+  "directory": "/Users/chico/tcc/cesar",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -I/Users/chico/tcc/cesar/gtest/src/gtest/googletest/include -I/Users/chico/tcc/cesar/gtest/src/gtest/googlemock/include -isystem /usr/local/lib/wx/include/osx_cocoa-unicode-3.0 -isystem /usr/local/include/wx-3.0  -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/gui/side_windows.cpp.o -c /Users/chico/tcc/cesar/source/gui/side_windows.cpp",
+  "file": "/Users/chico/tcc/cesar/source/gui/side_windows.cpp"
 },
 {
   "directory": "/Users/chico/tcc/cesar",
@@ -43,11 +48,6 @@
   "directory": "/Users/chico/tcc/cesar",
   "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -I/Users/chico/tcc/cesar/gtest/src/gtest/googletest/include -I/Users/chico/tcc/cesar/gtest/src/gtest/googlemock/include -isystem /usr/local/lib/wx/include/osx_cocoa-unicode-3.0 -isystem /usr/local/include/wx-3.0  -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/gui/panels.cpp.o -c /Users/chico/tcc/cesar/source/gui/panels.cpp",
   "file": "/Users/chico/tcc/cesar/source/gui/panels.cpp"
-},
-{
-  "directory": "/Users/chico/tcc/cesar",
-  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -I/Users/chico/tcc/cesar/gtest/src/gtest/googletest/include -I/Users/chico/tcc/cesar/gtest/src/gtest/googlemock/include -isystem /usr/local/lib/wx/include/osx_cocoa-unicode-3.0 -isystem /usr/local/include/wx-3.0  -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -g -Werror -Wall -Wextra -std=gnu++1z -o CMakeFiles/cesar.dir/source/gui/buttons.cpp.o -c /Users/chico/tcc/cesar/source/gui/buttons.cpp",
-  "file": "/Users/chico/tcc/cesar/source/gui/buttons.cpp"
 },
 {
   "directory": "/Users/chico/tcc/cesar",

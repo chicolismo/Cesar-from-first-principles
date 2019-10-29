@@ -1,0 +1,208 @@
+#include "side_windows.h"
+
+#include "main_window.h"
+
+#include <algorithm>
+
+
+std::int8_t TryConvertToNumber(std::string str, Base base, bool *is_number) {
+    std::int8_t value = 0;
+    const bool is_decimal = base == Base::Decimal;
+    const auto fn = is_decimal ? &isdigit : &isxdigit;
+    bool valid = std::all_of(std::begin(str), std::end(str), fn);
+    if (valid) {
+        long int number = strtol(str.data(), nullptr, is_decimal ? 10 : 16);
+        if (number > std::numeric_limits<uint8_t>::max()) {
+            valid = false;
+        }
+        else {
+            value = static_cast<std::int8_t>(number);
+        }
+    }
+    *is_number = valid;
+    return value;
+}
+
+// ===========================================================================
+// ProgramWindow
+// ===========================================================================
+
+wxBEGIN_EVENT_TABLE(ProgramWindow, wxDialog)
+        EVT_CLOSE(ProgramWindow::OnClose)
+        EVT_LIST_ITEM_SELECTED(wxID_ANY, ProgramWindow::OnItemSelected)
+        EVT_TEXT_ENTER(ID_ValueInput, ProgramWindow::OnTextInputEnter)
+wxEND_EVENT_TABLE()
+
+
+ProgramWindow::ProgramWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
+    : wxDialog(parent, wxID_ANY, title) {
+
+    this->cpu = cpu;
+    this->current_base = Base::Decimal;
+    this->current_value = 0L;
+
+    table = new ProgramTable(this, cpu);
+
+    label = new wxStaticText(this, wxID_ANY, wxT("0"), wxDefaultPosition,
+                             wxSize(60, wxDefaultSize.GetHeight()), wxALIGN_RIGHT);
+    label->Wrap(-1);
+
+    input = new wxTextCtrl(this, ID_ValueInput, wxEmptyString, wxDefaultPosition,
+                           wxSize(60, wxDefaultSize.GetHeight()), wxTE_PROCESS_ENTER);
+
+    auto *vbox = new wxBoxSizer(wxVERTICAL);
+    auto *hbox = new wxBoxSizer(wxHORIZONTAL);
+
+    hbox->Add(label, 0, wxRIGHT | wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT, 10);
+    hbox->Add(input, 0, wxALL, 0);
+
+    vbox->Add(table, 1, wxEXPAND | wxALL, 4);
+    vbox->Add(hbox, 0, wxALIGN_RIGHT | wxALL, 4);
+
+    SetSizer(vbox);
+    Layout();
+    Fit();
+    vbox->Fit(this);
+}
+
+
+void ProgramWindow::OnTextInputEnter(wxCommandEvent &WXUNUSED(event)) {
+    std::string input_text{this->input->GetValue().mb_str()};
+
+    bool is_valid_number;
+    std::int8_t value = TryConvertToNumber(input_text, this->current_base, &is_valid_number);
+
+    if (is_valid_number) {
+        ((MainWindow *) (this->GetParent()))->SetAddressValueAndUpdateTables(this->current_value, value);
+    }
+}
+
+
+void ProgramWindow::OnClose(wxCloseEvent &event) {
+    event.StopPropagation(); // Não pode fechar as janelas laterais.
+}
+
+
+void ProgramWindow::SetBase(Base new_base) {
+    current_base = new_base;
+    table->current_base = new_base;
+    table->Refresh();
+    UpdateLabelAndInputValues();
+}
+
+
+void ProgramWindow::OnItemSelected(wxListEvent &event) {
+    auto row = static_cast<std::size_t>(event.GetIndex());
+    current_value = row;
+    UpdateLabelAndInputValues();
+    input->SetFocus();
+    input->SetSelection(-1, -1);
+}
+
+
+void ProgramWindow::UpdateLabelAndInputValues() {
+    std::int8_t value = cpu->memory[current_value];
+    wxString new_label_value;
+    wxString new_input_value;
+    if (current_base == Base::Decimal) {
+        new_label_value.Printf("%ld", current_value);
+        new_input_value.Printf("%d", static_cast<std::uint8_t>(value));
+    }
+    else {
+        new_label_value.Printf("%x", static_cast<std::uint16_t>(current_value));
+        new_input_value.Printf("%x", static_cast<std::uint8_t>(value));
+    }
+    label->SetLabelText(new_label_value);
+    input->SetValue(new_input_value);
+}
+
+// ===========================================================================
+// DataWindow
+// ===========================================================================
+
+wxBEGIN_EVENT_TABLE(DataWindow, wxDialog)
+        EVT_CLOSE(DataWindow::OnClose)
+        EVT_LIST_ITEM_SELECTED(wxID_ANY, DataWindow::OnItemSelected)
+        EVT_TEXT_ENTER(ID_ValueInput, DataWindow::OnTextInputEnter)
+wxEND_EVENT_TABLE()
+
+
+DataWindow::DataWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
+    : wxDialog(parent, wxID_ANY, title) {
+
+    this->cpu = cpu;
+    this->current_base = Base::Decimal;
+    this->current_value = 0L;
+
+    table = new DataTable(this, cpu);
+
+    label = new wxStaticText(this, wxID_ANY, wxT("0"), wxDefaultPosition,
+                             wxSize(60, wxDefaultSize.GetHeight()), wxALIGN_RIGHT);
+    label->Wrap(-1);
+
+    input = new wxTextCtrl(this, ID_ValueInput, wxEmptyString, wxDefaultPosition,
+                           wxSize(60, wxDefaultSize.GetHeight()), wxTE_PROCESS_ENTER);
+
+    auto *vbox = new wxBoxSizer(wxVERTICAL);
+    auto *hbox = new wxBoxSizer(wxHORIZONTAL);
+
+    hbox->Add(label, 0, wxRIGHT | wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT, 10);
+    hbox->Add(input, 0, wxALL, 0);
+
+    vbox->Add(table, 1, wxEXPAND | wxALL, 4);
+    vbox->Add(hbox, 0, wxALIGN_RIGHT | wxALL, 4);
+
+    SetSizer(vbox);
+    Layout();
+    Fit();
+    vbox->Fit(this);
+}
+
+
+void DataWindow::OnTextInputEnter(wxCommandEvent &WXUNUSED(event)) {
+    std::string input_text{this->input->GetValue().mb_str()};
+    bool is_valid_number;
+    std::int8_t value = TryConvertToNumber(input_text, this->current_base, &is_valid_number);
+    if (is_valid_number) {
+        ((MainWindow *) (this->GetParent()))->SetAddressValueAndUpdateTables(this->current_value, value);
+    }
+}
+
+
+void DataWindow::OnClose(wxCloseEvent &event) {
+    event.StopPropagation(); // Não pode fechar as janelas laterais.
+}
+
+
+void DataWindow::SetBase(Base new_base) {
+    current_base = new_base;
+    table->current_base = new_base;
+    table->Refresh();
+    UpdateLabelAndInputValues();
+}
+
+
+void DataWindow::OnItemSelected(wxListEvent &event) {
+    auto row = static_cast<std::size_t>(event.GetIndex());
+    current_value = row;
+    UpdateLabelAndInputValues();
+    input->SetFocus();
+    input->SetSelection(-1, -1);
+}
+
+
+void DataWindow::UpdateLabelAndInputValues() {
+    std::int8_t value = cpu->memory[current_value];
+    wxString new_label_value;
+    wxString new_input_value;
+    if (current_base == Base::Decimal) {
+        new_label_value.Printf("%ld", current_value);
+        new_input_value.Printf("%d", static_cast<std::uint8_t>(value));
+    }
+    else {
+        new_label_value.Printf("%x", static_cast<std::uint16_t>(current_value));
+        new_input_value.Printf("%x", static_cast<std::uint8_t>(value));
+    }
+    label->SetLabelText(new_label_value);
+    input->SetValue(new_input_value);
+}

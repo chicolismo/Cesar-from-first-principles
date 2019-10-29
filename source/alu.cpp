@@ -14,7 +14,7 @@
 Alu::Alu(Cpu *cpu) : cpu(cpu) {}
 
 
-void Alu::conditional_branch(Instruction instruction, Byte offset) {
+void Alu::conditional_branch(Instruction instruction, std::int8_t offset) {
     switch (instruction) {
     case BR:
         PC += offset;
@@ -95,10 +95,10 @@ void Alu::conditional_branch(Instruction instruction, Byte offset) {
 }
 
 
-Word Alu::one_operand_instruction(const Instruction instruction, const Word value) {
+std::int16_t Alu::one_operand_instruction(const Instruction instruction, const std::int16_t value) {
     // TODO. Garantir que todos as condições foram testadas.
 
-    Word result;
+    std::int16_t result;
     switch (instruction) {
     case CLR:
         result = 0;
@@ -109,7 +109,7 @@ Word Alu::one_operand_instruction(const Instruction instruction, const Word valu
         break;
 
     case NOT:
-        result = ~(static_cast<UWord>(value));
+        result = ~(static_cast<std::uint16_t>(value));
         N = is_negative(result);
         Z = is_zero(result);
         C = 1;
@@ -119,7 +119,7 @@ Word Alu::one_operand_instruction(const Instruction instruction, const Word valu
     case INC:
         result = value + 1;
         V = is_overflow(value, 1, value + 1);
-        C = static_cast<UWord>(result) == 0xFFFFu;
+        C = static_cast<std::uint16_t>(result) == 0xFFFFu;
         N = is_negative(result);
         Z = is_zero(result);
         break;
@@ -134,7 +134,7 @@ Word Alu::one_operand_instruction(const Instruction instruction, const Word valu
 
     case NEG: {
         result = -value;
-        const auto uvalue = static_cast<UWord>(value);
+        const auto uvalue = static_cast<std::uint16_t>(value);
         const uint32_t temp = ~uvalue + 1;
         V = is_overflow(~value, 1, (~value) + 1); // TODO: Verificar isto.
         C = (temp & 0x10000) > 0;
@@ -151,9 +151,9 @@ Word Alu::one_operand_instruction(const Instruction instruction, const Word valu
         break;
 
     case ROR: {
-        const auto temp = static_cast<UWord>(value);
+        const auto temp = static_cast<std::uint16_t>(value);
         const auto lsb = (temp & 0x0001u);
-        result = static_cast<Word>(lsb << 15u | temp >> 1u);
+        result = static_cast<std::int16_t>(lsb << 15u | temp >> 1u);
         C = lsb;
         N = is_negative(result);
         Z = is_zero(result);
@@ -161,9 +161,9 @@ Word Alu::one_operand_instruction(const Instruction instruction, const Word valu
     } break;
 
     case ROL: {
-        const auto temp = static_cast<UWord>(value);
-        const auto msb = static_cast<UWord>((temp & 0x8000u) >> 15u);
-        result = static_cast<Word>((temp << 1u) | msb);
+        const auto temp = static_cast<std::uint16_t>(value);
+        const auto msb = static_cast<std::uint16_t>((temp & 0x8000u) >> 15u);
+        result = static_cast<std::int16_t>((temp << 1u) | msb);
         C = msb;
         N = is_negative(result);
         Z = is_zero(result);
@@ -171,10 +171,10 @@ Word Alu::one_operand_instruction(const Instruction instruction, const Word valu
     } break;
 
     case ASR: {
-        const auto temp = static_cast<UWord>(value);
+        const auto temp = static_cast<std::uint16_t>(value);
         const auto lsb = (temp & 0x0001u);
         const auto msb = (temp & 0x8000u);
-        result = static_cast<Word>(msb | (temp >> 1u));
+        result = static_cast<std::int16_t>(msb | (temp >> 1u));
         C = lsb;
         N = is_negative(result);
         Z = is_zero(result);
@@ -182,9 +182,9 @@ Word Alu::one_operand_instruction(const Instruction instruction, const Word valu
     } break;
 
     case ASL: {
-        const auto temp = static_cast<UWord>(value);
+        const auto temp = static_cast<std::uint16_t>(value);
         const auto msb = (temp & 0x8000u) >> 15u;
-        result = static_cast<Word>(temp << 1u);
+        result = static_cast<std::int16_t>(temp << 1u);
         C = msb;
         N = is_negative(result);
         Z = is_zero(result);
@@ -216,13 +216,13 @@ Word Alu::one_operand_instruction(const Instruction instruction, const Word valu
 }
 
 
-void Alu::ccc(const Byte byte) {
-    NZVC &= ~(static_cast<UByte>(byte) & 0x0Fu);
+void Alu::ccc(const std::int8_t byte) {
+    NZVC &= ~(static_cast<std::uint8_t>(byte) & 0x0Fu);
 }
 
 
-void Alu::scc(const Byte byte) {
-    NZVC |= (static_cast<UByte>(byte) & 0x0Fu);
+void Alu::scc(const std::int8_t byte) {
+    NZVC |= (static_cast<std::uint8_t>(byte) & 0x0Fu);
 }
 
 
@@ -234,7 +234,7 @@ void Alu::jmp(const AddressMode mode, const std::size_t absolute_address) {
 }
 
 
-void Alu::sob(const std::size_t register_number, const Byte offset) {
+void Alu::sob(const std::size_t register_number, const std::int8_t offset) {
     if ((--cpu->registers[register_number]) != 0) {
         PC -= offset;
     }
@@ -246,19 +246,19 @@ void Alu::jsr(const AddressMode mode, const std::size_t sub_address, const int r
         auto temp = sub_address - Cpu::MEMORY_OFFSET;
         cpu->push(cpu->registers[register_number]);
         cpu->registers[register_number] = PC;
-        PC = static_cast<Word>(temp);
+        PC = static_cast<std::int16_t>(temp);
     }
 }
 
 
-void Alu::rts(const Byte byte) {
-    std::size_t rrr = (static_cast<std::size_t>(byte) & 0b00000111);
+void Alu::rts(const std::int8_t byte) {
+    int rrr = (static_cast<std::uint8_t>(byte) & 0b00000111);
     PC = cpu->registers[rrr];
     cpu->registers[rrr] = cpu->pop();
 }
 
 
-Word Alu::mov(const Word src) {
+std::int16_t Alu::mov(const std::int16_t src) {
     N = is_negative(src);
     Z = is_zero(src);
     V = 0;
@@ -266,8 +266,8 @@ Word Alu::mov(const Word src) {
 }
 
 
-Word Alu::add(Word src, Word dst) {
-    Word result = dst + src;
+std::int16_t Alu::add(std::int16_t src, std::int16_t dst) {
+    std::int16_t result = dst + src;
     N = is_negative(result);
     Z = is_zero(result);
     V = is_overflow(dst, src, result);
@@ -276,8 +276,8 @@ Word Alu::add(Word src, Word dst) {
 }
 
 
-Word Alu::sub(const Word src, const Word dst) {
-    Word result = dst - src;
+std::int16_t Alu::sub(const std::int16_t src, const std::int16_t dst) {
+    std::int16_t result = dst - src;
     N = is_negative(result);
     Z = is_zero(result);
     V = is_overflow(dst, src, result);
@@ -286,8 +286,8 @@ Word Alu::sub(const Word src, const Word dst) {
 }
 
 
-Word Alu::cmp(const Word src, const Word dst) {
-    Word result = src - dst;
+std::int16_t Alu::cmp(const std::int16_t src, const std::int16_t dst) {
+    std::int16_t result = src - dst;
     N = is_negative(result);
     Z = is_zero(result);
     V = is_overflow(src, dst, result);
@@ -296,8 +296,8 @@ Word Alu::cmp(const Word src, const Word dst) {
 }
 
 
-Word Alu::bitwise_and(const Word src, const Word dst) {
-    Word result = src & dst;
+std::int16_t Alu::bitwise_and(const std::int16_t src, const std::int16_t dst) {
+    std::int16_t result = src & dst;
     N = is_negative(result);
     Z = is_zero(result);
     V = 0;
@@ -305,8 +305,8 @@ Word Alu::bitwise_and(const Word src, const Word dst) {
 }
 
 
-Word Alu::bitwise_or(const Word src, const Word dst) {
-    Word result = src | dst;
+std::int16_t Alu::bitwise_or(const std::int16_t src, const std::int16_t dst) {
+    std::int16_t result = src | dst;
     N = is_negative(result);
     Z = is_zero(result);
     V = 0;
@@ -314,7 +314,7 @@ Word Alu::bitwise_or(const Word src, const Word dst) {
 }
 
 
-Word Alu::two_operand_instruction(const Instruction instruction, const Word src, const Word dst) {
+std::int16_t Alu::two_operand_instruction(const Instruction instruction, const std::int16_t src, const std::int16_t dst) {
 
     switch (instruction) {
     case MOV:

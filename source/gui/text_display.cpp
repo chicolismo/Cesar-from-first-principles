@@ -223,9 +223,9 @@ void TextDisplay::Render(wxDC &dc) {
     dc.DrawRectangle(0, 0, width, height);
 
     int x = 1;
-    Byte *byte_address = display_start;
+    std::int8_t *byte_address = display_start;
     while (byte_address != display_end) {
-        UByte value = static_cast<UByte>(*byte_address) - 32;
+        std::uint8_t value = static_cast<std::uint8_t>(*byte_address) - 32;
         if (value < images_size) {
             dc.DrawBitmap(images[value], x, 2, false);
         }

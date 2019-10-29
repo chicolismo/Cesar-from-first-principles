@@ -1,12 +1,10 @@
 #ifndef GUI_H
 #define GUI_H
 
-#include <wx/wxprec.h>
-
 #ifndef WX_PRECOMP
-
 #include <wx/wx.h>
-
+#else
+#include <wx/wxprec.h>
 #endif
 
 #include "../hardware.h"

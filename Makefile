@@ -220,32 +220,32 @@ source/cpu.cpp.s:
 	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/cpu.cpp.s
 .PHONY : source/cpu.cpp.s
 
-source/gui/buttons.o: source/gui/buttons.cpp.o
+source/gui/main_window.o: source/gui/main_window.cpp.o
 
-.PHONY : source/gui/buttons.o
+.PHONY : source/gui/main_window.o
 
 # target to build an object file
-source/gui/buttons.cpp.o:
-	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/buttons.cpp.o
-.PHONY : source/gui/buttons.cpp.o
+source/gui/main_window.cpp.o:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/main_window.cpp.o
+.PHONY : source/gui/main_window.cpp.o
 
-source/gui/buttons.i: source/gui/buttons.cpp.i
+source/gui/main_window.i: source/gui/main_window.cpp.i
 
-.PHONY : source/gui/buttons.i
+.PHONY : source/gui/main_window.i
 
 # target to preprocess a source file
-source/gui/buttons.cpp.i:
-	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/buttons.cpp.i
-.PHONY : source/gui/buttons.cpp.i
+source/gui/main_window.cpp.i:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/main_window.cpp.i
+.PHONY : source/gui/main_window.cpp.i
 
-source/gui/buttons.s: source/gui/buttons.cpp.s
+source/gui/main_window.s: source/gui/main_window.cpp.s
 
-.PHONY : source/gui/buttons.s
+.PHONY : source/gui/main_window.s
 
 # target to generate assembly for a file
-source/gui/buttons.cpp.s:
-	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/buttons.cpp.s
-.PHONY : source/gui/buttons.cpp.s
+source/gui/main_window.cpp.s:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/main_window.cpp.s
+.PHONY : source/gui/main_window.cpp.s
 
 source/gui/panels.o: source/gui/panels.cpp.o
 
@@ -273,6 +273,33 @@ source/gui/panels.s: source/gui/panels.cpp.s
 source/gui/panels.cpp.s:
 	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/panels.cpp.s
 .PHONY : source/gui/panels.cpp.s
+
+source/gui/side_windows.o: source/gui/side_windows.cpp.o
+
+.PHONY : source/gui/side_windows.o
+
+# target to build an object file
+source/gui/side_windows.cpp.o:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/side_windows.cpp.o
+.PHONY : source/gui/side_windows.cpp.o
+
+source/gui/side_windows.i: source/gui/side_windows.cpp.i
+
+.PHONY : source/gui/side_windows.i
+
+# target to preprocess a source file
+source/gui/side_windows.cpp.i:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/side_windows.cpp.i
+.PHONY : source/gui/side_windows.cpp.i
+
+source/gui/side_windows.s: source/gui/side_windows.cpp.s
+
+.PHONY : source/gui/side_windows.s
+
+# target to generate assembly for a file
+source/gui/side_windows.cpp.s:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/side_windows.cpp.s
+.PHONY : source/gui/side_windows.cpp.s
 
 source/gui/tables.o: source/gui/tables.cpp.o
 
@@ -327,33 +354,6 @@ source/gui/text_display.s: source/gui/text_display.cpp.s
 source/gui/text_display.cpp.s:
 	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/text_display.cpp.s
 .PHONY : source/gui/text_display.cpp.s
-
-source/gui/windows.o: source/gui/windows.cpp.o
-
-.PHONY : source/gui/windows.o
-
-# target to build an object file
-source/gui/windows.cpp.o:
-	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/windows.cpp.o
-.PHONY : source/gui/windows.cpp.o
-
-source/gui/windows.i: source/gui/windows.cpp.i
-
-.PHONY : source/gui/windows.i
-
-# target to preprocess a source file
-source/gui/windows.cpp.i:
-	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/windows.cpp.i
-.PHONY : source/gui/windows.cpp.i
-
-source/gui/windows.s: source/gui/windows.cpp.s
-
-.PHONY : source/gui/windows.s
-
-# target to generate assembly for a file
-source/gui/windows.cpp.s:
-	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/windows.cpp.s
-.PHONY : source/gui/windows.cpp.s
 
 source/main.o: source/main.cpp.o
 
@@ -427,21 +427,21 @@ help:
 	@echo "... source/cpu.o"
 	@echo "... source/cpu.i"
 	@echo "... source/cpu.s"
-	@echo "... source/gui/buttons.o"
-	@echo "... source/gui/buttons.i"
-	@echo "... source/gui/buttons.s"
+	@echo "... source/gui/main_window.o"
+	@echo "... source/gui/main_window.i"
+	@echo "... source/gui/main_window.s"
 	@echo "... source/gui/panels.o"
 	@echo "... source/gui/panels.i"
 	@echo "... source/gui/panels.s"
+	@echo "... source/gui/side_windows.o"
+	@echo "... source/gui/side_windows.i"
+	@echo "... source/gui/side_windows.s"
 	@echo "... source/gui/tables.o"
 	@echo "... source/gui/tables.i"
 	@echo "... source/gui/tables.s"
 	@echo "... source/gui/text_display.o"
 	@echo "... source/gui/text_display.i"
 	@echo "... source/gui/text_display.s"
-	@echo "... source/gui/windows.o"
-	@echo "... source/gui/windows.i"
-	@echo "... source/gui/windows.s"
 	@echo "... source/main.o"
 	@echo "... source/main.i"
 	@echo "... source/main.s"

@@ -169,10 +169,22 @@
 		<Unit filename="/Users/chico/tcc/cesar/source/gui/gui.h">
 			<Option target="cesar"/>
 		</Unit>
-		<Unit filename="/Users/chico/tcc/cesar/source/gui/panels/panels.cpp">
+		<Unit filename="/Users/chico/tcc/cesar/source/gui/main_window.cpp">
 			<Option target="cesar"/>
 		</Unit>
-		<Unit filename="/Users/chico/tcc/cesar/source/gui/panels/panels.h">
+		<Unit filename="/Users/chico/tcc/cesar/source/gui/main_window.h">
+			<Option target="cesar"/>
+		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/source/gui/panels.cpp">
+			<Option target="cesar"/>
+		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/source/gui/panels.h">
+			<Option target="cesar"/>
+		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/source/gui/side_windows.cpp">
+			<Option target="cesar"/>
+		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/source/gui/side_windows.h">
 			<Option target="cesar"/>
 		</Unit>
 		<Unit filename="/Users/chico/tcc/cesar/source/gui/tables.cpp">
@@ -181,10 +193,10 @@
 		<Unit filename="/Users/chico/tcc/cesar/source/gui/tables.h">
 			<Option target="cesar"/>
 		</Unit>
-		<Unit filename="/Users/chico/tcc/cesar/source/gui/windows.cpp">
+		<Unit filename="/Users/chico/tcc/cesar/source/gui/text_display.cpp">
 			<Option target="cesar"/>
 		</Unit>
-		<Unit filename="/Users/chico/tcc/cesar/source/gui/windows.h">
+		<Unit filename="/Users/chico/tcc/cesar/source/gui/text_display.h">
 			<Option target="cesar"/>
 		</Unit>
 		<Unit filename="/Users/chico/tcc/cesar/source/hardware.h">

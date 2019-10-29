@@ -1,5 +1,5 @@
 #include "gui/gui.h"
-#include "gui/windows.h"
+#include "gui/main_window.h"
 #include "hardware.h"
 
 class Cesar : public wxApp {

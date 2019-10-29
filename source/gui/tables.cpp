@@ -1,7 +1,5 @@
 #include "tables.h"
 
-#include "windows.h"
-
 #ifdef _WIN32
 #define FONT_SIZE 10
 #define LIST_STYLE wxLIST_FORMAT_LEFT
@@ -16,7 +14,7 @@
 //----------------------------------------------------------------------------//
 ProgramTable::ProgramTable(wxWindow *parent, Cpu *cpu)
     : wxListCtrl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                 wxLC_VIRTUAL | wxLC_REPORT | wxLC_HRULES | wxLC_VRULES | wxLC_SINGLE_SEL) {
+          wxLC_VIRTUAL | wxLC_REPORT | wxLC_HRULES | wxLC_VRULES | wxLC_SINGLE_SEL) {
     current_base = Base::Decimal;
     this->cpu = cpu;
     this->data = cpu->memory;
@@ -47,15 +45,15 @@ wxString ProgramTable::OnGetItemText(long item, long column) const {
             buffer.Printf("%ld", item);
         }
         else {
-            buffer.Printf("%x", static_cast<UWord>(item));
+            buffer.Printf("%x", static_cast<std::uint16_t>(item));
         }
         break;
     case 2:
         if (current_base == Base::Decimal) {
-            buffer.Printf("%d", static_cast<UByte>(cpu->memory[item]));
+            buffer.Printf("%d", static_cast<std::uint8_t>(cpu->memory[item]));
         }
         else {
-            buffer.Printf("%x", static_cast<UByte>(cpu->memory[item]));
+            buffer.Printf("%x", static_cast<std::uint8_t>(cpu->memory[item]));
         }
         break;
     case 3:
@@ -65,7 +63,7 @@ wxString ProgramTable::OnGetItemText(long item, long column) const {
     return buffer;
 }
 
-void ProgramTable::SetProgramCounter(Word pc) {
+void ProgramTable::SetProgramCounter(std::int16_t pc) {
     auto old_value = program_counter;
     program_counter = static_cast<uint16_t>(pc);
     RefreshItem(old_value);
@@ -78,7 +76,7 @@ void ProgramTable::SetProgramCounter(Word pc) {
 //----------------------------------------------------------------------------//
 DataTable::DataTable(wxWindow *parent, Cpu *cpu)
     : wxListCtrl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                 wxLC_VIRTUAL | wxLC_REPORT | wxLC_HRULES | wxLC_VRULES | wxLC_SINGLE_SEL) {
+          wxLC_VIRTUAL | wxLC_REPORT | wxLC_HRULES | wxLC_VRULES | wxLC_SINGLE_SEL) {
     current_base = Base::Decimal;
     this->cpu = cpu;
     this->data = cpu->memory;
@@ -98,15 +96,15 @@ wxString DataTable::OnGetItemText(long item, long column) const {
             buffer.Printf("%ld", item);
         }
         else {
-            buffer.Printf("%x", static_cast<UWord>(item));
+            buffer.Printf("%x", static_cast<std::uint16_t>(item));
         }
         break;
     case 1:
         if (current_base == Base::Decimal) {
-            buffer.Printf("%d", static_cast<UByte>(data[item]));
+            buffer.Printf("%d", static_cast<std::uint8_t>(data[item]));
         }
         else {
-            buffer.Printf("%x", static_cast<UByte>(data[item]));
+            buffer.Printf("%x", static_cast<std::uint8_t>(data[item]));
         }
         break;
     }

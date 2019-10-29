@@ -2,7 +2,6 @@
 #define PANELS_H
 
 #include "gui.h"
-#include "buttons.h"
 #include <wx/tglbtn.h>
 
 struct DigitalDisplay : public wxPanel {
@@ -18,7 +17,7 @@ struct DigitalDisplay : public wxPanel {
     const wxPen shadow_pen = wxPen(wxColour(0, 0, 0, 100));
 
     wxBitmap images[17];
-    uint16_t value;
+    std::uint16_t value;
     Base current_base;
 
     explicit DigitalDisplay(wxWindow *parent);
@@ -29,7 +28,7 @@ struct DigitalDisplay : public wxPanel {
 
     void Render(wxDC &dc);
 
-    void SetValue(uint16_t unsigned_word);
+    void SetValue(std::uint16_t unsigned_word);
 
     void SetBase(Base new_base);
 
@@ -62,14 +61,16 @@ struct BinaryDisplay : public wxPanel {
 struct RegisterPanel : public wxPanel {
     DigitalDisplay *digital_display;
     BinaryDisplay *binary_display;
-    uint16_t value;
-    Base base;
+    Base current_base;
+    std::int16_t current_value;
 
     RegisterPanel(wxWindow *parent, long id, const wxString &title);
 
-    void SetValue(Word word);
+    void Update();
 
-    Word GetValue() const;
+    void SetValue(std::int16_t word);
+
+    std::int16_t GetValue() const;
 
     void SetBase(Base new_base);
 };

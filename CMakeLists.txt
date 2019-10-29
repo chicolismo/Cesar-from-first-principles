@@ -7,19 +7,19 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 enable_testing()
 
 set(ALL_SOURCE_FILES
-    "source/alu.cpp"
     "source/constants.h"
-    "source/cpu.cpp"
     "source/hardware.h"
+    "source/cpu.cpp"
+    "source/alu.cpp"
     "source/gui/gui.h"
-    "source/gui/windows.h"
-    "source/gui/windows.cpp"
+    "source/gui/main_window.h"
+    "source/gui/main_window.cpp"
+    "source/gui/side_windows.h"
+    "source/gui/side_windows.cpp"
     "source/gui/tables.h"
     "source/gui/tables.cpp"
     "source/gui/panels.h"
     "source/gui/panels.cpp"
-    "source/gui/buttons.h"
-    "source/gui/buttons.cpp"
     "source/gui/text_display.h"
     "source/gui/text_display.cpp"
     )
