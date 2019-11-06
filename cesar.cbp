@@ -199,6 +199,12 @@
 		<Unit filename="/Users/chico/tcc/cesar/source/gui/text_display.h">
 			<Option target="cesar"/>
 		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/source/gui/utils.cpp">
+			<Option target="cesar"/>
+		</Unit>
+		<Unit filename="/Users/chico/tcc/cesar/source/gui/utils.h">
+			<Option target="cesar"/>
+		</Unit>
 		<Unit filename="/Users/chico/tcc/cesar/source/hardware.h">
 			<Option target="run_tests"/>
 			<Option target="cesar"/>

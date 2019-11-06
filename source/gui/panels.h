@@ -4,7 +4,7 @@
 #include "gui.h"
 #include <wx/tglbtn.h>
 
-struct DigitalDisplay : public wxPanel {
+struct DigitalDisplay : public wxWindow {
     constexpr static int BASE_VALUE[] = {[Decimal] = 10, [Hexadecimal] = 16};
     static const std::size_t width = 76;
     static const std::size_t height = 25;
@@ -32,10 +32,10 @@ struct DigitalDisplay : public wxPanel {
 
     void SetBase(Base new_base);
 
-    wxDECLARE_EVENT_TABLE();
+wxDECLARE_EVENT_TABLE();
 };
 
-struct BinaryDisplay : public wxPanel {
+struct BinaryDisplay : public wxWindow {
     static const std::size_t width = 80;
     static const std::size_t height = 5;
     static const std::size_t image_size = 5;
@@ -55,7 +55,7 @@ struct BinaryDisplay : public wxPanel {
 
     void SetValue(uint16_t unsigned_word);
 
-    wxDECLARE_EVENT_TABLE();
+wxDECLARE_EVENT_TABLE();
 };
 
 struct RegisterPanel : public wxPanel {
@@ -85,7 +85,7 @@ struct ExecutionPanel : public wxPanel {
     explicit ExecutionPanel(wxWindow *parent);
 };
 
-struct Led : public wxPanel {
+struct Led : public wxWindow {
     bool turned_on;
     wxImage images[2];
 
@@ -99,7 +99,7 @@ struct Led : public wxPanel {
 
     void SetTurnedOn(bool should_turn_on);
 
-    wxDECLARE_EVENT_TABLE();
+wxDECLARE_EVENT_TABLE();
 };
 
 struct ConditionPanel : public wxPanel {
@@ -117,10 +117,9 @@ struct ButtonPanel : public wxPanel {
 
     ButtonPanel(wxWindow *parent);
 
-
     void OnChangeBase(wxCommandEvent &event);
 
-    wxDECLARE_EVENT_TABLE();
+wxDECLARE_EVENT_TABLE();
 };
 
 #endif // PANELS_H

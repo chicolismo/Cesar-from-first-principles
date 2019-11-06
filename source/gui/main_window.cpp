@@ -7,24 +7,34 @@
 #define IS_DISPLAY_ADDRESS(address) \
     (address) >= Cpu::BEGIN_DISPLAY_ADDRESS && (address) <= Cpu::END_DISPLAY_ADDRESS
 
+
 // ===========================================================================
 // MainWindow
 // ===========================================================================
+wxDEFINE_EVENT(wxEVT_THREAD_UPDATE, wxThreadEvent);
 
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_MENU(ID_FileOpen, MainWindow::OnFileOpen)
     EVT_MENU(wxID_EXIT, MainWindow::OnExit)
+    EVT_CLOSE(MainWindow::OnClose)
     EVT_MOVE(MainWindow::OnMove)
-    EVT_BUTTON(ID_Next, MainWindow::OnNext)
+    EVT_TOGGLEBUTTON(ID_Run, MainWindow::OnRunButtonToggle)
+    EVT_BUTTON(ID_Next, MainWindow::OnNextButtonClick)
     EVT_ACTIVATE(MainWindow::OnActivate)
 wxEND_EVENT_TABLE()
 
+static wxMutex *mutex = new wxMutex();
+static wxSemaphore *s = new wxSemaphore(1, 1);
 
 MainWindow::MainWindow(const wxString &title, const wxPoint &pos, const wxSize &size)
     : wxFrame(nullptr, wxID_ANY, title, pos, size,
           wxDEFAULT_FRAME_STYLE & ~(wxMAXIMIZE_BOX | wxRESIZE_BORDER)) {
 
     should_raise_windows = true;
+    thread_should_run = false;
+
+    // this->Bind(wxEVT_THREAD_UPDATE, &MainWindow::OnThreadUpdate, this);
+    this->Bind(wxEVT_THREAD, &MainWindow::OnThreadUpdate, this);
 
     // Inicializando as janelas laterais
     program_window = new ProgramWindow(this, &cpu, wxT("Programa"));
@@ -122,12 +132,13 @@ void MainWindow::UpdateSubwindowsPositions() {
 
 
 void MainWindow::UpdatePanels() {
-    program_window->table->Refresh();
-    data_window->table->Refresh();
     for (std::size_t i = 0; i < 8; ++i) {
         register_panels[i]->SetValue(cpu.registers[i]);
     }
-    text_display->PaintNow();
+    condition_panels[0]->led_display->SetTurnedOn(cpu.condition.negative == 1);
+    condition_panels[1]->led_display->SetTurnedOn(cpu.condition.zero == 1);
+    condition_panels[2]->led_display->SetTurnedOn(cpu.condition.overflow == 1);
+    condition_panels[3]->led_display->SetTurnedOn(cpu.condition.carry == 1);
 }
 
 
@@ -181,13 +192,43 @@ void MainWindow::OnExit(wxCommandEvent &WXUNUSED(event)) {
 }
 
 
-void MainWindow::OnNext(wxCommandEvent &WXUNUSED(event)) {
-    cpu.execute_next_instruction();
+void MainWindow::OnClose(wxCloseEvent &WXUNUSED(event)) {
+    while (GetThread() && GetThread()->IsRunning()) {
+        GetThread()->Pause();
+        GetThread()->Delete();
+    }
+    Destroy(); // Destroi a janela principal
+}
+
+
+void MainWindow::OnRunButtonToggle(wxCommandEvent &event) {
+    auto *button = static_cast<wxBitmapToggleButton *>(event.GetEventObject());
+    if (button->GetValue() && !thread_should_run) {
+        thread_should_run = true;
+        StartThread();
+    }
+    else {
+        thread_should_run = false;
+    }
+}
+
+
+void MainWindow::OnNextButtonClick(wxCommandEvent &WXUNUSED(event)) {
+    // wxCriticalSectionLocker lock(cpu_cs);
+    RunNextInstruction();
     UpdatePanels();
 }
 
-void MainWindow::OnRegisterPanelDoubleClick(int register_number) {
-    std::cout << register_number << "\n";
+
+void MainWindow::RunNextInstruction() {
+    cpu.execute_next_instruction();
+}
+
+
+void MainWindow::OnRegisterPanelDoubleClick([[maybe_unused]] int register_number) {
+    // TODO
+    // Exibir diálogo para ler o novo valor do registrador.
+    // Apenas valores no formato correto da base serão aceitos.
 }
 
 
@@ -205,4 +246,50 @@ void MainWindow::OnActivate(wxActivateEvent &event) {
         }
     }
     event.Skip();
+}
+
+
+void MainWindow::OnThreadUpdate(wxThreadEvent &WXUNUSED(event)) {
+    RefreshPanels();
+    s->Post();
+}
+
+void MainWindow::StartThread() {
+    if (CreateThread(wxTHREAD_JOINABLE) != wxTHREAD_NO_ERROR) {
+        wxLogError("Não foi possível criar a thread");
+        return;
+    }
+
+    if (GetThread()->Run() != wxTHREAD_NO_ERROR) {
+        wxLogError("Não foi possível executar a thread");
+        return;
+    }
+}
+
+void MainWindow::RefreshPanels() {
+    program_window->table->Refresh();
+    data_window->table->Refresh();
+    for (std::size_t i = 0; i < 8; ++i) {
+        register_panels[i]->digital_display->Refresh();
+        register_panels[i]->binary_display->Refresh();
+    }
+    condition_panels[0]->led_display->Refresh();
+    condition_panels[1]->led_display->Refresh();
+    condition_panels[2]->led_display->Refresh();
+    condition_panels[3]->led_display->Refresh();
+}
+
+wxThread::ExitCode MainWindow::Entry() {
+    while (!GetThread()->TestDestroy()) {
+        s->Wait();
+        wxMutexGuiEnter();
+        RunNextInstruction();
+        UpdatePanels();
+        wxMutexGuiLeave();
+        wxQueueEvent(GetEventHandler(), new wxThreadEvent());
+        if (!thread_should_run) {
+            break;
+        }
+    }
+    return static_cast<wxThread::ExitCode>(0);
 }

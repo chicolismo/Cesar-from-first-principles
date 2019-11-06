@@ -355,6 +355,33 @@ source/gui/text_display.cpp.s:
 	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/text_display.cpp.s
 .PHONY : source/gui/text_display.cpp.s
 
+source/gui/utils.o: source/gui/utils.cpp.o
+
+.PHONY : source/gui/utils.o
+
+# target to build an object file
+source/gui/utils.cpp.o:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/utils.cpp.o
+.PHONY : source/gui/utils.cpp.o
+
+source/gui/utils.i: source/gui/utils.cpp.i
+
+.PHONY : source/gui/utils.i
+
+# target to preprocess a source file
+source/gui/utils.cpp.i:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/utils.cpp.i
+.PHONY : source/gui/utils.cpp.i
+
+source/gui/utils.s: source/gui/utils.cpp.s
+
+.PHONY : source/gui/utils.s
+
+# target to generate assembly for a file
+source/gui/utils.cpp.s:
+	$(MAKE) -f CMakeFiles/cesar.dir/build.make CMakeFiles/cesar.dir/source/gui/utils.cpp.s
+.PHONY : source/gui/utils.cpp.s
+
 source/main.o: source/main.cpp.o
 
 .PHONY : source/main.o
@@ -442,6 +469,9 @@ help:
 	@echo "... source/gui/text_display.o"
 	@echo "... source/gui/text_display.i"
 	@echo "... source/gui/text_display.s"
+	@echo "... source/gui/utils.o"
+	@echo "... source/gui/utils.i"
+	@echo "... source/gui/utils.s"
 	@echo "... source/main.o"
 	@echo "... source/main.i"
 	@echo "... source/main.s"

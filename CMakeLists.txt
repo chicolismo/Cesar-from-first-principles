@@ -12,6 +12,8 @@ set(ALL_SOURCE_FILES
     "source/cpu.cpp"
     "source/alu.cpp"
     "source/gui/gui.h"
+    "source/gui/utils.h"
+    "source/gui/utils.cpp"
     "source/gui/main_window.h"
     "source/gui/main_window.cpp"
     "source/gui/side_windows.h"

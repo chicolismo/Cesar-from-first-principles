@@ -32,12 +32,12 @@
 // ===========================================================================
 
 wxBEGIN_EVENT_TABLE(DigitalDisplay, wxPanel)
-    EVT_PAINT(DigitalDisplay::OnPaint)
+        EVT_PAINT(DigitalDisplay::OnPaint)
 wxEND_EVENT_TABLE()
 
 
 DigitalDisplay::DigitalDisplay(wxWindow *parent)
-    : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(width, height)) {
+    : wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(width, height)) {
     images[0] = wxImage(cesar_0);
     images[1] = wxImage(cesar_1);
     images[2] = wxImage(cesar_2);
@@ -97,18 +97,22 @@ void DigitalDisplay::Render(wxDC &dc) {
 
 
 void DigitalDisplay::SetBase(Base new_base) {
-    current_base = new_base;
-    if (new_base == Decimal) {
-        number_of_digits = 5;
-    }
-    else {
-        number_of_digits = 4;
+    if (current_base != new_base) {
+        current_base = new_base;
+        if (new_base == Decimal) {
+            number_of_digits = 5;
+        }
+        else {
+            number_of_digits = 4;
+        }
+        PaintNow();
     }
 }
 
 
 void DigitalDisplay::SetValue(const uint16_t unsigned_word) {
     this->value = unsigned_word;
+    PaintNow();
 }
 
 
@@ -129,12 +133,12 @@ void DigitalDisplay::OnPaint(wxPaintEvent &event) {
 // ===========================================================================
 
 wxBEGIN_EVENT_TABLE(BinaryDisplay, wxPanel)
-    EVT_PAINT(BinaryDisplay::OnPaint)
+        EVT_PAINT(BinaryDisplay::OnPaint)
 wxEND_EVENT_TABLE()
 
 
 BinaryDisplay::BinaryDisplay(wxWindow *parent)
-    : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(width, height)) {
+    : wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(width, height)) {
     value = 0;
     images[0] = wxImage(mini_led_0);
     images[1] = wxImage(mini_led_1);
@@ -170,6 +174,7 @@ void BinaryDisplay::OnPaint(wxPaintEvent &event) {
 
 void BinaryDisplay::SetValue(const uint16_t unsigned_word) {
     this->value = unsigned_word;
+    PaintNow();
 }
 
 // ===========================================================================
@@ -177,7 +182,7 @@ void BinaryDisplay::SetValue(const uint16_t unsigned_word) {
 // ===========================================================================
 
 //wxBEGIN_EVENT_TABLE(RegisterPanel, wxPanel)
-    //EVT_LEFT_DCLICK(RegisterPanel::OnDoubleClick)
+//EVT_LEFT_DCLICK(RegisterPanel::OnDoubleClick)
 //wxEND_EVENT_TABLE()
 
 RegisterPanel::RegisterPanel(wxWindow *parent, int number, const wxString &title)
@@ -195,31 +200,31 @@ RegisterPanel::RegisterPanel(wxWindow *parent, int number, const wxString &title
     binary_display->SetPosition(wxPoint(0, 27));
 
     digital_display->Bind(
-            wxEVT_LEFT_DCLICK, &RegisterPanel::OnDoubleClick, this);
+        wxEVT_LEFT_DCLICK, &RegisterPanel::OnDoubleClick, this);
 
     binary_display->Bind(
-            wxEVT_LEFT_DCLICK, &RegisterPanel::OnDoubleClick, this);
+        wxEVT_LEFT_DCLICK, &RegisterPanel::OnDoubleClick, this);
 
     SetSizer(box);
     Fit();
     Layout();
 }
 
+
 void RegisterPanel::Update() {
     const std::uint16_t word = static_cast<std::uint16_t>(GetValue());
     digital_display->SetValue(word);
-    digital_display->PaintNow();
     binary_display->SetValue(word);
-    binary_display->PaintNow();
 }
 
+
 void RegisterPanel::SetValue(const std::int16_t word) {
-    current_value = word;
-    std::uint16_t value = static_cast<uint16_t>(word);
-    digital_display->SetValue(value);
-    digital_display->PaintNow();
-    binary_display->SetValue(value);
-    binary_display->PaintNow();
+    if (current_value != word) {
+        current_value = word;
+        std::uint16_t value = static_cast<uint16_t>(word);
+        digital_display->SetValue(value);
+        binary_display->SetValue(value);
+    }
 }
 
 
@@ -229,9 +234,10 @@ std::int16_t RegisterPanel::GetValue() const {
 
 
 void RegisterPanel::SetBase(Base new_base) {
-    current_base = new_base;
-    digital_display->SetBase(new_base);
-    digital_display->PaintNow();
+    if (current_base != new_base) {
+        current_base = new_base;
+        digital_display->SetBase(new_base);
+    }
 }
 
 
@@ -274,11 +280,11 @@ ExecutionPanel::ExecutionPanel(wxWindow *parent) : wxPanel(parent, wxID_ANY) {
 // ===========================================================================
 
 wxBEGIN_EVENT_TABLE(Led, wxPanel)
-    EVT_PAINT(Led::OnPaint)
+        EVT_PAINT(Led::OnPaint)
 wxEND_EVENT_TABLE()
 
 
-Led::Led(wxWindow *parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(15, 15)) {
+Led::Led(wxWindow *parent) : wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(15, 15)) {
     turned_on = false;
     images[0] = wxImage(light_off);
     images[1] = wxImage(light_on);
@@ -323,9 +329,10 @@ ConditionPanel::ConditionPanel(wxWindow *parent, const wxString &label) : wxPane
 // ===========================================================================
 
 wxBEGIN_EVENT_TABLE(ButtonPanel, wxPanel)
-    EVT_TOGGLEBUTTON(ID_Decimal, ButtonPanel::OnChangeBase)
-    EVT_TOGGLEBUTTON(ID_Hexadecimal, ButtonPanel::OnChangeBase)
+        EVT_TOGGLEBUTTON(ID_Decimal, ButtonPanel::OnChangeBase)
+        EVT_TOGGLEBUTTON(ID_Hexadecimal, ButtonPanel::OnChangeBase)
 wxEND_EVENT_TABLE()
+
 
 ButtonPanel::ButtonPanel(wxWindow *parent) : wxPanel(parent, wxID_ANY) {
     btn_decimal = new wxBitmapToggleButton(this, ID_Decimal, wxImage(decimal));
@@ -344,6 +351,7 @@ ButtonPanel::ButtonPanel(wxWindow *parent) : wxPanel(parent, wxID_ANY) {
     hbox->Add(btn_next, 0, wxALIGN_RIGHT);
     SetSizerAndFit(hbox);
 }
+
 
 void ButtonPanel::OnChangeBase(wxCommandEvent &event) {
     MainWindow *parent = static_cast<MainWindow *>(GetParent());

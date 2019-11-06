@@ -104,22 +104,22 @@ std::int16_t Alu::one_operand_instruction(const Instruction instruction, const s
         result = 0;
         N = 0;
         Z = 1;
-        C = 0;
         V = 0;
+        C = 0;
         break;
 
     case NOT:
         result = ~(static_cast<std::uint16_t>(value));
         N = is_negative(result);
         Z = is_zero(result);
-        C = 1;
         V = 0;
+        C = 1;
         break;
 
     case INC:
         result = value + 1;
         V = is_overflow(value, 1, value + 1);
-        C = static_cast<std::uint16_t>(result) == 0xFFFFu;
+        C = static_cast<std::uint16_t>(value) == 0xFFFFu;
         N = is_negative(result);
         Z = is_zero(result);
         break;
@@ -146,8 +146,8 @@ std::int16_t Alu::one_operand_instruction(const Instruction instruction, const s
         result = value;
         N = is_negative(result);
         Z = is_zero(result);
-        C = 0;
         V = 0;
+        C = 0;
         break;
 
     case ROR: {
@@ -200,7 +200,7 @@ std::int16_t Alu::one_operand_instruction(const Instruction instruction, const s
     } break;
 
     case SBC: {
-        result = value + C;
+        result = value - C;
         N = is_negative(result);
         Z = is_zero(result);
         V = is_overflow(value, C, value - C);

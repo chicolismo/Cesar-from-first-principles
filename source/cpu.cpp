@@ -98,7 +98,7 @@ bool Cpu::read_memory_from_binary_file(const std::string &filename) {
 void Cpu::push(const std::int16_t word) {
     const auto unsigned_word = static_cast<std::uint16_t>(word);
     const std::int8_t a = (unsigned_word >> 8u);
-    const std::int8_t b = (unsigned_word & 0x0Fu);
+    const std::int8_t b = (unsigned_word & 0x00FFu);
     SP -= 2;
     memory[SP] = a;
     memory[SP + 1] = b;

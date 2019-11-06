@@ -18,25 +18,15 @@
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cesar.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cesar.cbp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/compile_commands.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/source/alu.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/source/alu.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/constants.h" beforeDir="false" afterPath="$PROJECT_DIR$/source/constants.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/source/cpu.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/source/cpu.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/gui/buttons.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/gui/buttons.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/gui/gui.h" beforeDir="false" afterPath="$PROJECT_DIR$/source/gui/gui.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/gui/main_window.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/source/gui/main_window.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/gui/main_window.h" beforeDir="false" afterPath="$PROJECT_DIR$/source/gui/main_window.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/source/gui/panels.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/source/gui/panels.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/source/gui/panels.h" beforeDir="false" afterPath="$PROJECT_DIR$/source/gui/panels.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/gui/tables.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/source/gui/tables.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/gui/tables.h" beforeDir="false" afterPath="$PROJECT_DIR$/source/gui/tables.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/gui/text_display.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/source/gui/text_display.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/gui/text_display.h" beforeDir="false" afterPath="$PROJECT_DIR$/source/gui/text_display.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/gui/windows.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/gui/windows.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/hardware.h" beforeDir="false" afterPath="$PROJECT_DIR$/source/hardware.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/gui/side_windows.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/source/gui/side_windows.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/source/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/source/main.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/test.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/source/test.cpp" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -93,6 +83,9 @@
       <item itemvalue="CMake Application.gtest" />
       <item itemvalue="Google Test.run_tests" />
     </list>
+  </component>
+  <component name="StructureViewFactory">
+    <option name="ACTIVE_ACTIONS" value=",ALPHA_COMPARATOR" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
