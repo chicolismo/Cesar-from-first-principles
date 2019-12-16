@@ -1,5 +1,5 @@
-#ifndef GUI_H
-#define GUI_H
+#ifndef CESAR_GUI_GUI_H
+#define CESAR_GUI_GUI_H
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
@@ -7,9 +7,12 @@
 #include <wx/wxprec.h>
 #endif
 
-#include "../hardware.h"
+#include "../hardware/hardware.h"
 
 #include <wx/event.h>
+
+namespace cesar::gui {
+    using Cpu = cesar::hardware::Cpu;
 
 enum Base { Decimal, Hexadecimal };
 
@@ -30,4 +33,7 @@ enum {
     ID_Run,
     ID_Next,
 };
+
+} // namespace cesar::gui
+
 #endif // GUI_H

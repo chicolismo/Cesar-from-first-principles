@@ -1,8 +1,10 @@
-#ifndef PANELS_H
-#define PANELS_H
+#ifndef CESAR_GUI_PANELS_H
+#define CESAR_GUI_PANELS_H
 
 #include "gui.h"
 #include <wx/tglbtn.h>
+
+namespace cesar::gui {
 
 struct DigitalDisplay : public wxWindow {
     constexpr static int BASE_VALUE[] = {[Decimal] = 10, [Hexadecimal] = 16};
@@ -32,7 +34,7 @@ struct DigitalDisplay : public wxWindow {
 
     void SetBase(Base new_base);
 
-wxDECLARE_EVENT_TABLE();
+    wxDECLARE_EVENT_TABLE();
 };
 
 struct BinaryDisplay : public wxWindow {
@@ -55,7 +57,7 @@ struct BinaryDisplay : public wxWindow {
 
     void SetValue(uint16_t unsigned_word);
 
-wxDECLARE_EVENT_TABLE();
+    wxDECLARE_EVENT_TABLE();
 };
 
 struct RegisterPanel : public wxPanel {
@@ -99,7 +101,7 @@ struct Led : public wxWindow {
 
     void SetTurnedOn(bool should_turn_on);
 
-wxDECLARE_EVENT_TABLE();
+    wxDECLARE_EVENT_TABLE();
 };
 
 struct ConditionPanel : public wxPanel {
@@ -110,8 +112,8 @@ struct ConditionPanel : public wxPanel {
 
 
 struct ButtonPanel : public wxPanel {
-    wxBitmapToggleButton *btn_decimal;
-    wxBitmapToggleButton *btn_hexadecimal;
+    wxToggleButton *btn_decimal;
+    wxToggleButton *btn_hexadecimal;
     wxBitmapToggleButton *btn_run;
     wxBitmapButton *btn_next;
 
@@ -119,7 +121,9 @@ struct ButtonPanel : public wxPanel {
 
     void OnChangeBase(wxCommandEvent &event);
 
-wxDECLARE_EVENT_TABLE();
+    wxDECLARE_EVENT_TABLE();
 };
 
-#endif // PANELS_H
+} // namespace cesar::gui
+
+#endif

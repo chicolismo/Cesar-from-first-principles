@@ -18,23 +18,25 @@
 #include "images/cesar_f.xpm"
 #include "images/cesar_null.xpm"
 #include "images/config.xpm"
-#include "images/decimal.xpm"
-#include "images/hexadecimal.xpm"
+//#include "images/decimal.xpm"
+//#include "images/hexadecimal.xpm"
 #include "images/light_off.xpm"
 #include "images/light_on.xpm"
 #include "images/mini_led_0.xpm"
 #include "images/mini_led_1.xpm"
 #include "images/tools.xpm"
 #include "main_window.h"
+#include <wx/anybutton.h>
+
+namespace cesar::gui {
 
 // ===========================================================================
 // DigitalDisplay
 // ===========================================================================
 
 wxBEGIN_EVENT_TABLE(DigitalDisplay, wxPanel)
-        EVT_PAINT(DigitalDisplay::OnPaint)
+    EVT_PAINT(DigitalDisplay::OnPaint)
 wxEND_EVENT_TABLE()
-
 
 DigitalDisplay::DigitalDisplay(wxWindow *parent)
     : wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(width, height)) {
@@ -58,9 +60,8 @@ DigitalDisplay::DigitalDisplay(wxWindow *parent)
 
     value = 0;
     current_base = Base::Decimal;
-    number_of_digits = 4;
+    number_of_digits = 5;
 }
-
 
 void DigitalDisplay::Render(wxDC &dc) {
     dc.SetBrush(*black_brush);
@@ -95,7 +96,6 @@ void DigitalDisplay::Render(wxDC &dc) {
     }
 }
 
-
 void DigitalDisplay::SetBase(Base new_base) {
     if (current_base != new_base) {
         current_base = new_base;
@@ -109,18 +109,15 @@ void DigitalDisplay::SetBase(Base new_base) {
     }
 }
 
-
 void DigitalDisplay::SetValue(const uint16_t unsigned_word) {
     this->value = unsigned_word;
     PaintNow();
 }
 
-
 void DigitalDisplay::PaintNow() {
     wxClientDC dc(this);
     Render(dc);
 }
-
 
 void DigitalDisplay::OnPaint(wxPaintEvent &event) {
     wxPaintDC dc(this);
@@ -133,9 +130,8 @@ void DigitalDisplay::OnPaint(wxPaintEvent &event) {
 // ===========================================================================
 
 wxBEGIN_EVENT_TABLE(BinaryDisplay, wxPanel)
-        EVT_PAINT(BinaryDisplay::OnPaint)
+    EVT_PAINT(BinaryDisplay::OnPaint)
 wxEND_EVENT_TABLE()
-
 
 BinaryDisplay::BinaryDisplay(wxWindow *parent)
     : wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(width, height)) {
@@ -143,7 +139,6 @@ BinaryDisplay::BinaryDisplay(wxWindow *parent)
     images[0] = wxImage(mini_led_0);
     images[1] = wxImage(mini_led_1);
 }
-
 
 void BinaryDisplay::Render(wxDC &dc) {
     SetBackgroundColour(*wxWHITE);
@@ -158,19 +153,16 @@ void BinaryDisplay::Render(wxDC &dc) {
     }
 }
 
-
 void BinaryDisplay::PaintNow() {
     wxClientDC dc(this);
     Render(dc);
 }
-
 
 void BinaryDisplay::OnPaint(wxPaintEvent &event) {
     wxPaintDC dc(this);
     Render(dc);
     event.Skip();
 }
-
 
 void BinaryDisplay::SetValue(const uint16_t unsigned_word) {
     this->value = unsigned_word;
@@ -181,23 +173,22 @@ void BinaryDisplay::SetValue(const uint16_t unsigned_word) {
 // RegisterPanel
 // ===========================================================================
 
-//wxBEGIN_EVENT_TABLE(RegisterPanel, wxPanel)
-//EVT_LEFT_DCLICK(RegisterPanel::OnDoubleClick)
-//wxEND_EVENT_TABLE()
-
-RegisterPanel::RegisterPanel(wxWindow *parent, int number, const wxString &title)
-    : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize), register_number(number) {
+RegisterPanel::RegisterPanel(
+    wxWindow *parent, int number, const wxString &title)
+    : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize),
+      register_number(number) {
 
     auto *box = new wxStaticBoxSizer(wxVERTICAL, this, title);
-    auto *inner_panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(80, 32));
-    box->Add(inner_panel);
 
     current_value = 0;
     current_base = Base::Decimal;
-    digital_display = new DigitalDisplay(inner_panel);
-    digital_display->SetPosition(wxPoint(2, 0));
-    binary_display = new BinaryDisplay(inner_panel);
-    binary_display->SetPosition(wxPoint(0, 27));
+
+    digital_display = new DigitalDisplay(this);
+    binary_display = new BinaryDisplay(this);
+
+    box->Add(digital_display, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 4);
+    box->Add(binary_display, 0,
+        wxALIGN_CENTER_HORIZONTAL | wxLEFT | wxBOTTOM | wxRIGHT, 4);
 
     digital_display->Bind(
         wxEVT_LEFT_DCLICK, &RegisterPanel::OnDoubleClick, this);
@@ -205,18 +196,14 @@ RegisterPanel::RegisterPanel(wxWindow *parent, int number, const wxString &title
     binary_display->Bind(
         wxEVT_LEFT_DCLICK, &RegisterPanel::OnDoubleClick, this);
 
-    SetSizer(box);
-    Fit();
-    Layout();
+    SetSizerAndFit(box);
 }
-
 
 void RegisterPanel::Update() {
     const std::uint16_t word = static_cast<std::uint16_t>(GetValue());
     digital_display->SetValue(word);
     binary_display->SetValue(word);
 }
-
 
 void RegisterPanel::SetValue(const std::int16_t word) {
     if (current_value != word) {
@@ -227,11 +214,7 @@ void RegisterPanel::SetValue(const std::int16_t word) {
     }
 }
 
-
-std::int16_t RegisterPanel::GetValue() const {
-    return current_value;
-}
-
+std::int16_t RegisterPanel::GetValue() const { return current_value; }
 
 void RegisterPanel::SetBase(Base new_base) {
     if (current_base != new_base) {
@@ -239,7 +222,6 @@ void RegisterPanel::SetBase(Base new_base) {
         digital_display->SetBase(new_base);
     }
 }
-
 
 void RegisterPanel::OnDoubleClick(wxMouseEvent &event) {
     auto parent = static_cast<MainWindow *>(GetParent());
@@ -258,10 +240,11 @@ ExecutionPanel::ExecutionPanel(wxWindow *parent) : wxPanel(parent, wxID_ANY) {
     instruction_display = new DigitalDisplay(this);
     instruction_display->number_of_digits = 5;
 
-    auto *access_label = new wxStaticText(this, wxID_ANY, wxT("Acessos: "));
-    auto *instruction_label = new wxStaticText(this, wxID_ANY, wxT("Instruções: "));
+    auto *access_label = new wxStaticText(this, wxID_ANY, wxT("Acessos:"));
+    auto *instruction_label =
+        new wxStaticText(this, wxID_ANY, wxT("Instruções:"));
 
-    auto *flex_grid = new wxFlexGridSizer(2, 2, 0, 0);
+    auto *flex_grid = new wxFlexGridSizer(2, 2, 4, 4);
     flex_grid->Add(access_label, 1, wxALIGN_CENTER_VERTICAL);
     flex_grid->Add(access_display);
     flex_grid->Add(instruction_label, 1, wxALIGN_CENTER_VERTICAL);
@@ -271,7 +254,7 @@ ExecutionPanel::ExecutionPanel(wxWindow *parent) : wxPanel(parent, wxID_ANY) {
     flex_grid->AddGrowableRow(1, 1);
 
     auto *sizer = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Execução:"));
-    sizer->Add(flex_grid, 0, wxALL, -2);
+    sizer->Add(flex_grid, 0, wxALL, 4);
     SetSizerAndFit(sizer);
 }
 
@@ -280,27 +263,24 @@ ExecutionPanel::ExecutionPanel(wxWindow *parent) : wxPanel(parent, wxID_ANY) {
 // ===========================================================================
 
 wxBEGIN_EVENT_TABLE(Led, wxPanel)
-        EVT_PAINT(Led::OnPaint)
+    EVT_PAINT(Led::OnPaint)
 wxEND_EVENT_TABLE()
 
-
-Led::Led(wxWindow *parent) : wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(15, 15)) {
-    turned_on = false;
+Led::Led(wxWindow *parent)
+    : wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(15, 15)),
+      turned_on(false) {
     images[0] = wxImage(light_off);
     images[1] = wxImage(light_on);
 }
-
 
 void Led::Render(wxDC &dc) {
     dc.DrawBitmap(images[turned_on ? 1 : 0], 0, 0, true);
 }
 
-
 void Led::PaintNow() {
     wxClientDC dc(this);
     Render(dc);
 }
-
 
 void Led::OnPaint(wxPaintEvent &event) {
     wxPaintDC dc(this);
@@ -308,20 +288,18 @@ void Led::OnPaint(wxPaintEvent &event) {
     event.Skip();
 }
 
-
 void Led::SetTurnedOn(bool should_turn_on) {
     turned_on = should_turn_on;
     PaintNow();
 }
 
-
-ConditionPanel::ConditionPanel(wxWindow *parent, const wxString &label) : wxPanel(parent) {
+ConditionPanel::ConditionPanel(wxWindow *parent, const wxString &label)
+    : wxPanel(parent) {
     led_display = new Led(this);
     auto sizer = new wxStaticBoxSizer(wxVERTICAL, this, label);
-    sizer->Add(led_display, 1, wxALIGN_CENTER_VERTICAL | wxALIGN_CENTER_HORIZONTAL | wxALL, -2);
-
-    SetSizer(sizer);
-    sizer->Fit(this);
+    sizer->Add(led_display, 1,
+        wxALL | wxALIGN_CENTER_VERTICAL | wxALIGN_CENTER_HORIZONTAL, 5);
+    SetSizerAndFit(sizer);
 }
 
 // ===========================================================================
@@ -329,14 +307,16 @@ ConditionPanel::ConditionPanel(wxWindow *parent, const wxString &label) : wxPane
 // ===========================================================================
 
 wxBEGIN_EVENT_TABLE(ButtonPanel, wxPanel)
-        EVT_TOGGLEBUTTON(ID_Decimal, ButtonPanel::OnChangeBase)
-        EVT_TOGGLEBUTTON(ID_Hexadecimal, ButtonPanel::OnChangeBase)
+    EVT_TOGGLEBUTTON(ID_Decimal, ButtonPanel::OnChangeBase)
+    EVT_TOGGLEBUTTON(ID_Hexadecimal, ButtonPanel::OnChangeBase)
 wxEND_EVENT_TABLE()
 
-
 ButtonPanel::ButtonPanel(wxWindow *parent) : wxPanel(parent, wxID_ANY) {
-    btn_decimal = new wxBitmapToggleButton(this, ID_Decimal, wxImage(decimal));
-    btn_hexadecimal = new wxBitmapToggleButton(this, ID_Hexadecimal, wxImage(hexadecimal));
+    btn_decimal = new wxToggleButton(this, ID_Decimal, wxT("Dec"),
+        wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT);
+    btn_hexadecimal = new wxToggleButton(this, ID_Hexadecimal, wxT("Hex"),
+        wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT);
+
     btn_run = new wxBitmapToggleButton(this, ID_Run, wxImage(config));
     btn_next = new wxBitmapButton(this, ID_Next, wxImage(tools));
 
@@ -347,26 +327,30 @@ ButtonPanel::ButtonPanel(wxWindow *parent) : wxPanel(parent, wxID_ANY) {
     hbox->Add(btn_decimal, 0, wxALIGN_CENTER_VERTICAL);
     hbox->Add(btn_hexadecimal, 0, wxALIGN_CENTER_VERTICAL);
     hbox->AddStretchSpacer();
-    hbox->Add(btn_run, 0, wxALIGN_RIGHT);
-    hbox->Add(btn_next, 0, wxALIGN_RIGHT);
+    // hbox->Add(btn_run, 0, wxALIGN_RIGHT);
+    // hbox->Add(btn_next, 0, wxALIGN_RIGHT);
+    hbox->Add(btn_run, 0);
+    hbox->Add(btn_next, 0);
     SetSizerAndFit(hbox);
 }
 
-
 void ButtonPanel::OnChangeBase(wxCommandEvent &event) {
-    MainWindow *parent = static_cast<MainWindow *>(GetParent());
+    auto *parent = static_cast<MainWindow *>(GetParent());
 
     switch (event.GetId()) {
-    case ID_Decimal:
-        btn_decimal->SetValue(true);
-        btn_hexadecimal->SetValue(false);
-        parent->SetBase(Base::Decimal);
-        break;
-    case ID_Hexadecimal:
-        btn_hexadecimal->SetValue(true);
-        btn_decimal->SetValue(false);
-        parent->SetBase(Base::Hexadecimal);
+        case ID_Decimal:
+            btn_decimal->SetValue(true);
+            btn_hexadecimal->SetValue(false);
+            parent->SetBase(Base::Decimal);
+            break;
+        case ID_Hexadecimal:
+            btn_hexadecimal->SetValue(true);
+            btn_decimal->SetValue(false);
+            parent->SetBase(Base::Hexadecimal);
+            break;
     }
 
     event.Skip();
 }
+
+} // namespace cesar::gui

@@ -1,10 +1,12 @@
-#include "hardware.h"
+#include "hardware/hardware.h"
 #include <gtest/gtest.h>
+
+using namespace cesar::hardware;
 
 Cpu cpu;
 Alu &alu = *(cpu.alu);
 
-TEST(Cpu, std::int8_tsTostd::int16_t) {
+TEST(Cpu, BytesToWord) {
     std::int8_t a = 0x01;
     std::int8_t b = 0x10;
     std::int16_t y = 0x0110;

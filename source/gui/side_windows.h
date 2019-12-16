@@ -1,11 +1,12 @@
-#ifndef SIDE_WINDOWS_H
-#define SIDE_WINDOWS_H
+#ifndef CESAR_GUI_SIDE_WINDOWS_H
+#define CESAR_GUI_SIDE_WINDOWS_H
 
-#include "../hardware.h"
 #include "gui.h"
 #include "tables.h"
 
 #include <wx/dialog.h>
+
+namespace cesar::gui {
 
 struct ProgramWindow : public wxDialog {
     Cpu *cpu;
@@ -54,4 +55,6 @@ struct DataWindow : public wxDialog {
 wxDECLARE_EVENT_TABLE();
 };
 
-#endif // SIDE_WINDOWS_H
+}
+
+#endif

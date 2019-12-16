@@ -1,5 +1,5 @@
-#ifndef WINDOWS_H
-#define WINDOWS_H
+#ifndef CESAR_GUI_WINDOWS_H
+#define CESAR_GUI_WINDOWS_H
 
 #include "gui.h"
 #include "panels.h"
@@ -7,9 +7,11 @@
 #include "tables.h"
 #include "text_display.h"
 
+#include <atomic>
 #include <wx/filedlg.h>
 #include <wx/thread.h>
-#include <atomic>
+
+namespace cesar::gui {
 
 struct MainWindow;
 struct ProgramWindow;
@@ -18,9 +20,13 @@ struct DataWindow;
 wxDECLARE_EVENT(wxEVT_THREAD_UPDATE, wxThreadEvent);
 
 struct MainWindow : public wxFrame, public wxThreadHelper {
+
+    // O tempo entre frames em segundos, para 60 frames por segundo.
+    constexpr static double frame_time = (1.0 / 60.0);
+
     Cpu cpu;
 
-    wxCriticalSection cpu_cs;
+    wxSemaphore semaphore;
 
     ProgramWindow *program_window;
 
@@ -43,7 +49,7 @@ struct MainWindow : public wxFrame, public wxThreadHelper {
     // Esta flag evita uma recursão de OnActivate.
     bool should_raise_windows;
 
-    std::atomic<bool> thread_should_run;
+    std::atomic<bool> thread_is_running;
 
     MainWindow(const wxString &title, const wxPoint &pos, const wxSize &size);
 
@@ -84,5 +90,5 @@ struct MainWindow : public wxFrame, public wxThreadHelper {
     wxDECLARE_EVENT_TABLE();
 };
 
-
+} // namespace cesar::gui
 #endif

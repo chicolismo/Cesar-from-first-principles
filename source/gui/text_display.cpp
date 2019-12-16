@@ -100,6 +100,8 @@
 #include "images/character_94.xpm"
 // }}}
 
+namespace cesar::gui {
+
 // ===========================================================================
 // TextDisplay
 // ===========================================================================
@@ -109,115 +111,118 @@ wxBEGIN_EVENT_TABLE(TextDisplay, wxDialog)
 wxEND_EVENT_TABLE();
 
 TextDisplay::TextDisplay(wxWindow *parent, Cpu *cpu)
-    : wxDialog(
-          parent, wxID_ANY, wxT("Visor"), wxDefaultPosition, wxSize(width, height), wxCAPTION) {
-    this->cpu = cpu;
+    : wxDialog(parent, wxID_ANY, wxT("Visor"), wxDefaultPosition,
+          wxSize(width, height), wxCAPTION | wxRESIZE_BORDER),
+      cpu(cpu) {
 
-    this->SetClientSize(width, height);
+    SetClientSize(width, height);
+    SetMaxSize(GetSize());
 
-    this->display_start = &(cpu->memory[Cpu::BEGIN_DISPLAY_ADDRESS]);
-    this->display_end = &(cpu->memory[Cpu::END_DISPLAY_ADDRESS + 1]);
+    display_start = &(cpu->memory[Cpu::BEGIN_DISPLAY_ADDRESS]);
+    display_end = &(cpu->memory[Cpu::END_DISPLAY_ADDRESS + 1]);
 
-    this->images[0] = wxImage(character_00);
-    this->images[1] = wxImage(character_01);
-    this->images[2] = wxImage(character_02);
-    this->images[3] = wxImage(character_03);
-    this->images[4] = wxImage(character_04);
-    this->images[5] = wxImage(character_05);
-    this->images[6] = wxImage(character_06);
-    this->images[7] = wxImage(character_07);
-    this->images[8] = wxImage(character_08);
-    this->images[9] = wxImage(character_09);
-    this->images[10] = wxImage(character_10);
-    this->images[11] = wxImage(character_11);
-    this->images[12] = wxImage(character_12);
-    this->images[13] = wxImage(character_13);
-    this->images[14] = wxImage(character_14);
-    this->images[15] = wxImage(character_15);
-    this->images[16] = wxImage(character_16);
-    this->images[17] = wxImage(character_17);
-    this->images[18] = wxImage(character_18);
-    this->images[19] = wxImage(character_19);
-    this->images[20] = wxImage(character_20);
-    this->images[21] = wxImage(character_21);
-    this->images[22] = wxImage(character_22);
-    this->images[23] = wxImage(character_23);
-    this->images[24] = wxImage(character_24);
-    this->images[25] = wxImage(character_25);
-    this->images[26] = wxImage(character_26);
-    this->images[27] = wxImage(character_27);
-    this->images[28] = wxImage(character_28);
-    this->images[29] = wxImage(character_29);
-    this->images[30] = wxImage(character_30);
-    this->images[31] = wxImage(character_31);
-    this->images[32] = wxImage(character_32);
-    this->images[33] = wxImage(character_33);
-    this->images[34] = wxImage(character_34);
-    this->images[35] = wxImage(character_35);
-    this->images[36] = wxImage(character_36);
-    this->images[37] = wxImage(character_37);
-    this->images[38] = wxImage(character_38);
-    this->images[39] = wxImage(character_39);
-    this->images[40] = wxImage(character_40);
-    this->images[41] = wxImage(character_41);
-    this->images[42] = wxImage(character_42);
-    this->images[43] = wxImage(character_43);
-    this->images[44] = wxImage(character_44);
-    this->images[45] = wxImage(character_45);
-    this->images[46] = wxImage(character_46);
-    this->images[47] = wxImage(character_47);
-    this->images[48] = wxImage(character_48);
-    this->images[49] = wxImage(character_49);
-    this->images[50] = wxImage(character_50);
-    this->images[51] = wxImage(character_51);
-    this->images[52] = wxImage(character_52);
-    this->images[53] = wxImage(character_53);
-    this->images[54] = wxImage(character_54);
-    this->images[55] = wxImage(character_55);
-    this->images[56] = wxImage(character_56);
-    this->images[57] = wxImage(character_57);
-    this->images[58] = wxImage(character_58);
-    this->images[59] = wxImage(character_59);
-    this->images[60] = wxImage(character_60);
-    this->images[61] = wxImage(character_61);
-    this->images[62] = wxImage(character_62);
-    this->images[63] = wxImage(character_63);
-    this->images[64] = wxImage(character_64);
-    this->images[65] = wxImage(character_65);
-    this->images[66] = wxImage(character_66);
-    this->images[67] = wxImage(character_67);
-    this->images[68] = wxImage(character_68);
-    this->images[69] = wxImage(character_69);
-    this->images[70] = wxImage(character_70);
-    this->images[71] = wxImage(character_71);
-    this->images[72] = wxImage(character_72);
-    this->images[73] = wxImage(character_73);
-    this->images[74] = wxImage(character_74);
-    this->images[75] = wxImage(character_75);
-    this->images[76] = wxImage(character_76);
-    this->images[77] = wxImage(character_77);
-    this->images[78] = wxImage(character_78);
-    this->images[79] = wxImage(character_79);
-    this->images[80] = wxImage(character_80);
-    this->images[81] = wxImage(character_81);
-    this->images[82] = wxImage(character_82);
-    this->images[83] = wxImage(character_83);
-    this->images[84] = wxImage(character_84);
-    this->images[85] = wxImage(character_85);
-    this->images[86] = wxImage(character_86);
-    this->images[87] = wxImage(character_87);
-    this->images[88] = wxImage(character_88);
-    this->images[89] = wxImage(character_89);
-    this->images[90] = wxImage(character_90);
-    this->images[91] = wxImage(character_91);
-    this->images[92] = wxImage(character_92);
-    this->images[93] = wxImage(character_93);
-    this->images[94] = wxImage(character_94);
+    images[0] = wxImage(character_00);
+    images[1] = wxImage(character_01);
+    images[2] = wxImage(character_02);
+    images[3] = wxImage(character_03);
+    images[4] = wxImage(character_04);
+    images[5] = wxImage(character_05);
+    images[6] = wxImage(character_06);
+    images[7] = wxImage(character_07);
+    images[8] = wxImage(character_08);
+    images[9] = wxImage(character_09);
+    images[10] = wxImage(character_10);
+    images[11] = wxImage(character_11);
+    images[12] = wxImage(character_12);
+    images[13] = wxImage(character_13);
+    images[14] = wxImage(character_14);
+    images[15] = wxImage(character_15);
+    images[16] = wxImage(character_16);
+    images[17] = wxImage(character_17);
+    images[18] = wxImage(character_18);
+    images[19] = wxImage(character_19);
+    images[20] = wxImage(character_20);
+    images[21] = wxImage(character_21);
+    images[22] = wxImage(character_22);
+    images[23] = wxImage(character_23);
+    images[24] = wxImage(character_24);
+    images[25] = wxImage(character_25);
+    images[26] = wxImage(character_26);
+    images[27] = wxImage(character_27);
+    images[28] = wxImage(character_28);
+    images[29] = wxImage(character_29);
+    images[30] = wxImage(character_30);
+    images[31] = wxImage(character_31);
+    images[32] = wxImage(character_32);
+    images[33] = wxImage(character_33);
+    images[34] = wxImage(character_34);
+    images[35] = wxImage(character_35);
+    images[36] = wxImage(character_36);
+    images[37] = wxImage(character_37);
+    images[38] = wxImage(character_38);
+    images[39] = wxImage(character_39);
+    images[40] = wxImage(character_40);
+    images[41] = wxImage(character_41);
+    images[42] = wxImage(character_42);
+    images[43] = wxImage(character_43);
+    images[44] = wxImage(character_44);
+    images[45] = wxImage(character_45);
+    images[46] = wxImage(character_46);
+    images[47] = wxImage(character_47);
+    images[48] = wxImage(character_48);
+    images[49] = wxImage(character_49);
+    images[50] = wxImage(character_50);
+    images[51] = wxImage(character_51);
+    images[52] = wxImage(character_52);
+    images[53] = wxImage(character_53);
+    images[54] = wxImage(character_54);
+    images[55] = wxImage(character_55);
+    images[56] = wxImage(character_56);
+    images[57] = wxImage(character_57);
+    images[58] = wxImage(character_58);
+    images[59] = wxImage(character_59);
+    images[60] = wxImage(character_60);
+    images[61] = wxImage(character_61);
+    images[62] = wxImage(character_62);
+    images[63] = wxImage(character_63);
+    images[64] = wxImage(character_64);
+    images[65] = wxImage(character_65);
+    images[66] = wxImage(character_66);
+    images[67] = wxImage(character_67);
+    images[68] = wxImage(character_68);
+    images[69] = wxImage(character_69);
+    images[70] = wxImage(character_70);
+    images[71] = wxImage(character_71);
+    images[72] = wxImage(character_72);
+    images[73] = wxImage(character_73);
+    images[74] = wxImage(character_74);
+    images[75] = wxImage(character_75);
+    images[76] = wxImage(character_76);
+    images[77] = wxImage(character_77);
+    images[78] = wxImage(character_78);
+    images[79] = wxImage(character_79);
+    images[80] = wxImage(character_80);
+    images[81] = wxImage(character_81);
+    images[82] = wxImage(character_82);
+    images[83] = wxImage(character_83);
+    images[84] = wxImage(character_84);
+    images[85] = wxImage(character_85);
+    images[86] = wxImage(character_86);
+    images[87] = wxImage(character_87);
+    images[88] = wxImage(character_88);
+    images[89] = wxImage(character_89);
+    images[90] = wxImage(character_90);
+    images[91] = wxImage(character_91);
+    images[92] = wxImage(character_92);
+    images[93] = wxImage(character_93);
+    images[94] = wxImage(character_94);
+
+    DoLayout();
 }
 
 void TextDisplay::Render(wxDC &dc) {
-    wxBrush brush{ *wxBLACK };
-    wxPen pen{ *wxBLACK };
+    wxBrush brush{*wxBLACK};
+    wxPen pen{*wxBLACK};
     dc.SetPen(pen);
     dc.SetBrush(brush);
     dc.DrawRectangle(0, 0, width, height);
@@ -238,12 +243,14 @@ void TextDisplay::Render(wxDC &dc) {
 }
 
 void TextDisplay::PaintNow() {
-    wxClientDC dc{ this };
+    wxClientDC dc{this};
     Render(dc);
 }
 
 void TextDisplay::OnPaint(wxPaintEvent &event) {
-    wxPaintDC dc{ this };
+    wxPaintDC dc{this};
     Render(dc);
     event.Skip();
 }
+
+} // namespace cesar::gui

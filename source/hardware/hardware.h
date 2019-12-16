@@ -1,5 +1,5 @@
-#ifndef HARDWARE_H
-#define HARDWARE_H
+#ifndef CESAR_HARDWARE_HARDWARE_H
+#define CESAR_HARDWARE_HARDWARE_H
 
 #include "constants.h"
 
@@ -8,6 +8,8 @@
 #include <functional>
 #include <memory>
 #include <string>
+
+namespace cesar::hardware {
 
 struct Cpu;
 struct Alu;
@@ -20,7 +22,8 @@ struct Cpu {
     static const std::size_t BEGIN_DISPLAY_ADDRESS;
     static const std::size_t END_DISPLAY_ADDRESS;
 
-    std::unique_ptr<Alu> alu;
+    //std::unique_ptr<Alu> alu;
+    Alu *alu;
 
     bool halted = false;
 
@@ -57,6 +60,7 @@ struct Cpu {
     // ==============================================================
 
     Cpu();
+    ~Cpu();
 
 
     [[nodiscard]] inline std::int16_t bytes_to_word(const std::int8_t msb, const std::int8_t lsb) const { return (msb << 8) | lsb; }
@@ -113,15 +117,13 @@ struct Alu {
     [[nodiscard]] inline bool is_carry(std::int16_t a, std::int16_t b, CarryOperation operation) const {
         const auto ua = static_cast<std::uint16_t>(a);
         const auto ub = static_cast<std::uint16_t>(b);
-        switch (operation) {
-        case Plus: {
+        if (operation == Plus) {
             uint32_t result = ua + ub;
             return (result & 0x10000u) > 0;
         }
-        case Minus: {
+        else {
             uint32_t result = ua - ub;
             return (result & 0x10000u) > 0;
-        }
         }
     }
 
@@ -156,5 +158,7 @@ struct Alu {
 
     std::int16_t bitwise_or(std::int16_t src, std::int16_t dst);
 };
+
+}
 
 #endif

@@ -1,12 +1,20 @@
 #include "main_window.h"
-
 #include "panels.h"
+#include "utils.h"
 
+#include <chrono>
+#include <cstdint>
+#include <mutex>
+#include <thread>
+#include <wx/event.h>
 #include <wx/msgdlg.h>
+#include <wx/sizer.h>
 
-#define IS_DISPLAY_ADDRESS(address) \
-    (address) >= Cpu::BEGIN_DISPLAY_ADDRESS && (address) <= Cpu::END_DISPLAY_ADDRESS
+namespace cesar::gui {
 
+#define IS_DISPLAY_ADDRESS(address)                                            \
+    (address) >= Cpu::BEGIN_DISPLAY_ADDRESS &&                                 \
+        (address) <= Cpu::END_DISPLAY_ADDRESS
 
 // ===========================================================================
 // MainWindow
@@ -23,17 +31,12 @@ wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_ACTIVATE(MainWindow::OnActivate)
 wxEND_EVENT_TABLE()
 
-static wxMutex *mutex = new wxMutex();
-static wxSemaphore *s = new wxSemaphore(1, 1);
-
-MainWindow::MainWindow(const wxString &title, const wxPoint &pos, const wxSize &size)
+MainWindow::MainWindow(
+    const wxString &title, const wxPoint &pos, const wxSize &size)
     : wxFrame(nullptr, wxID_ANY, title, pos, size,
-          wxDEFAULT_FRAME_STYLE & ~(wxMAXIMIZE_BOX | wxRESIZE_BORDER)) {
+          wxDEFAULT_FRAME_STYLE & ~(wxMAXIMIZE_BOX | wxRESIZE_BORDER)),
+      semaphore(1, 1), should_raise_windows(true), thread_is_running(false) {
 
-    should_raise_windows = true;
-    thread_should_run = false;
-
-    // this->Bind(wxEVT_THREAD_UPDATE, &MainWindow::OnThreadUpdate, this);
     this->Bind(wxEVT_THREAD, &MainWindow::OnThreadUpdate, this);
 
     // Inicializando as janelas laterais
@@ -63,16 +66,16 @@ MainWindow::MainWindow(const wxString &title, const wxPoint &pos, const wxSize &
     register_panels[6] = new RegisterPanel(this, 6, wxT("R6: (SP)"));
     register_panels[7] = new RegisterPanel(this, 7, wxT("R7: (PC)"));
 
-    auto *grid = new wxGridSizer(3, 3, 0, 0);
-    grid->Add(register_panels[0], 0, wxALL, -2);
-    grid->Add(register_panels[1], 0, wxALL, -2);
-    grid->Add(register_panels[2], 0, wxALL, -2);
-    grid->Add(register_panels[3], 0, wxALL, -2);
-    grid->Add(register_panels[4], 0, wxALL, -2);
-    grid->Add(register_panels[5], 0, wxALL, -2);
-    grid->Add(register_panels[6], 0, wxALL, -2);
-    grid->AddStretchSpacer();
-    grid->Add(register_panels[7], 0, wxALL, -2);
+    auto *register_grid = new wxFlexGridSizer(3, 3, 4, 4);
+    register_grid->Add(register_panels[0], 1, wxEXPAND);
+    register_grid->Add(register_panels[1], 1, wxEXPAND);
+    register_grid->Add(register_panels[2], 1, wxEXPAND);
+    register_grid->Add(register_panels[3], 1, wxEXPAND);
+    register_grid->Add(register_panels[4], 1, wxEXPAND);
+    register_grid->Add(register_panels[5], 1, wxEXPAND);
+    register_grid->Add(register_panels[6], 1, wxEXPAND);
+    register_grid->AddStretchSpacer();
+    register_grid->Add(register_panels[7], 1, wxEXPAND);
 
     // Painéis de condições
     condition_panels[0] = new ConditionPanel(this, wxT("N"));
@@ -80,14 +83,35 @@ MainWindow::MainWindow(const wxString &title, const wxPoint &pos, const wxSize &
     condition_panels[2] = new ConditionPanel(this, wxT("V"));
     condition_panels[3] = new ConditionPanel(this, wxT("C"));
     auto condition_box = new wxBoxSizer(wxHORIZONTAL);
-    for (auto &cb : condition_panels) {
-        condition_box->Add(cb, 0, wxALL, -2);
-    }
+    condition_box->Add(condition_panels[0]);
+    condition_box->AddStretchSpacer();
+    condition_box->Add(condition_panels[1]);
+    condition_box->AddStretchSpacer();
+    condition_box->Add(condition_panels[2]);
+    condition_box->AddStretchSpacer();
+    condition_box->Add(condition_panels[3]);
 
     // Painel de execuções
     execution_panel = new ExecutionPanel(this);
     // Painel de botões
     button_panel = new ButtonPanel(this);
+
+    auto *middle_right_sizer = new wxBoxSizer(wxVERTICAL);
+    middle_right_sizer->Add(condition_box, 0, wxEXPAND);
+    middle_right_sizer->AddStretchSpacer();
+    middle_right_sizer->Add(button_panel, 0, wxEXPAND);
+
+    auto *middle_sizer = new wxBoxSizer(wxHORIZONTAL);
+    middle_sizer->Add(execution_panel);
+    middle_sizer->Add(middle_right_sizer);
+
+    auto *main_sizer = new wxBoxSizer(wxVERTICAL);
+
+    main_sizer->Add(register_grid, 1, wxALL | wxEXPAND, 10);
+    main_sizer->Add(
+        middle_sizer, 1, wxEXPAND | wxLEFT | wxBOTTOM | wxRIGHT, 10);
+
+    SetSizerAndFit(main_sizer);
 
     // Criando o menu
     auto *menu_file = new wxMenu;
@@ -99,37 +123,30 @@ MainWindow::MainWindow(const wxString &title, const wxPoint &pos, const wxSize &
     menu_bar->Append(menu_file, "&Arquivo");
     SetMenuBar(menu_bar);
 
-    auto *middle_right_sizer = new wxBoxSizer(wxVERTICAL);
-    middle_right_sizer->Add(condition_box);
-    middle_right_sizer->AddStretchSpacer();
-    middle_right_sizer->Add(button_panel, 0, wxEXPAND);
-
-    auto *middle_sizer = new wxBoxSizer(wxHORIZONTAL);
-    middle_sizer->Add(execution_panel);
-    middle_sizer->Add(middle_right_sizer, 0, wxEXPAND);
-
-    auto *top_sizer = new wxBoxSizer(wxVERTICAL);
-    top_sizer->Add(grid, 0, wxLEFT | wxTOP | wxRIGHT, 10);
-    top_sizer->Add(middle_sizer, 0, wxLEFT | wxBOTTOM | wxRIGHT, 10);
-    SetSizerAndFit(top_sizer);
-
     Center(wxBOTH);
 }
-
 
 void MainWindow::UpdateSubwindowsPositions() {
     const unsigned gap = 10;
     const wxSize size = GetSize();
     const wxPoint pos = GetPosition();
     const wxSize pwsize = program_window->GetSize();
-    program_window->SetPosition(wxPoint(pos.x - pwsize.GetWidth() - gap, pos.y));
-    data_window->SetPosition(wxPoint(pos.x + size.GetWidth() + gap, pos.y));
-    text_display->SetPosition(
-        wxPoint(program_window->GetPosition().x, gap + pos.y + size.GetHeight()));
-    program_window->SetSize(program_window->GetSize().GetWidth(), size.GetHeight());
-    data_window->SetSize(data_window->GetSize().GetWidth(), size.GetHeight());
-}
 
+    program_window->SetPosition(
+        wxPoint(pos.x - pwsize.GetWidth() - gap, pos.y));
+
+    data_window->SetPosition(wxPoint(pos.x + size.GetWidth() + gap, pos.y));
+
+    text_display->SetPosition(wxPoint(
+        program_window->GetPosition().x, gap + pos.y + size.GetHeight()));
+
+    program_window->SetSize(
+        program_window->GetSize().GetWidth(), size.GetHeight());
+
+    data_window->SetSize(data_window->GetSize().GetWidth(), size.GetHeight());
+
+    // text_display->SetSize(text_display->GetClientSize());
+}
 
 void MainWindow::UpdatePanels() {
     for (std::size_t i = 0; i < 8; ++i) {
@@ -141,8 +158,8 @@ void MainWindow::UpdatePanels() {
     condition_panels[3]->led_display->SetTurnedOn(cpu.condition.carry == 1);
 }
 
-
-void MainWindow::SetAddressValueAndUpdateTables(const long address, const std::int8_t value) {
+void MainWindow::SetAddressValueAndUpdateTables(
+    const long address, const std::int8_t value) {
     const auto unsigned_address = static_cast<std::uint16_t>(address);
     cpu.memory[unsigned_address] = value;
     program_window->table->RefreshItem(address);
@@ -151,7 +168,6 @@ void MainWindow::SetAddressValueAndUpdateTables(const long address, const std::i
         text_display->PaintNow();
     }
 }
-
 
 void MainWindow::SetBase(const Base new_base) {
     current_base = new_base;
@@ -162,9 +178,9 @@ void MainWindow::SetBase(const Base new_base) {
     data_window->SetBase(new_base);
 }
 
-
 void MainWindow::OnFileOpen(wxCommandEvent &WXUNUSED(event)) {
-    // TODO: Testar se os dados do arquivo atual foram alterados e exibir diálogo apropriado.
+    // TODO: Testar se os dados do arquivo atual foram alterados e exibir
+    // diálogo apropriado.
 
     wxFileDialog dialog(this, _("Abrir arquivos .MEM do Cesar"), "", "",
         "Arquivos MEM (*.mem)|*mem", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
@@ -173,7 +189,7 @@ void MainWindow::OnFileOpen(wxCommandEvent &WXUNUSED(event)) {
         return; // Abertura de arquivo cancelada.
     }
 
-    const std::string filename(dialog.GetPath().mb_str());
+    const std::string filename(dialog.GetPath().mb_str(wxConvUTF8));
 
     // TODO: Enviar para o cpu ler os dados.
     if (cpu.read_memory_from_binary_file(filename)) {
@@ -181,16 +197,11 @@ void MainWindow::OnFileOpen(wxCommandEvent &WXUNUSED(event)) {
     }
 }
 
-
 void MainWindow::OnMove(wxMoveEvent &WXUNUSED(event)) {
     UpdateSubwindowsPositions();
 }
 
-
-void MainWindow::OnExit(wxCommandEvent &WXUNUSED(event)) {
-    Close(true);
-}
-
+void MainWindow::OnExit(wxCommandEvent &WXUNUSED(event)) { Close(true); }
 
 void MainWindow::OnClose(wxCloseEvent &WXUNUSED(event)) {
     while (GetThread() && GetThread()->IsRunning()) {
@@ -200,37 +211,54 @@ void MainWindow::OnClose(wxCloseEvent &WXUNUSED(event)) {
     Destroy(); // Destroi a janela principal
 }
 
-
 void MainWindow::OnRunButtonToggle(wxCommandEvent &event) {
-    auto *button = static_cast<wxBitmapToggleButton *>(event.GetEventObject());
-    if (button->GetValue() && !thread_should_run) {
-        thread_should_run = true;
+    auto *toggle_button =
+        static_cast<wxBitmapToggleButton *>(event.GetEventObject());
+    if (toggle_button->GetValue() && !thread_is_running) {
+        cpu.halted = false;
+        thread_is_running = true;
         StartThread();
     }
     else {
-        thread_should_run = false;
+        thread_is_running = false;
     }
 }
 
-
 void MainWindow::OnNextButtonClick(wxCommandEvent &WXUNUSED(event)) {
-    // wxCriticalSectionLocker lock(cpu_cs);
-    RunNextInstruction();
-    UpdatePanels();
+    if (!thread_is_running) {
+        RunNextInstruction();
+        UpdatePanels();
+    }
 }
 
+void MainWindow::RunNextInstruction() { cpu.execute_next_instruction(); }
 
-void MainWindow::RunNextInstruction() {
-    cpu.execute_next_instruction();
+void MainWindow::OnRegisterPanelDoubleClick(int register_number) {
+    RegisterPanel *panel = register_panels[register_number];
+    std::uint16_t value = panel->current_value;
+    wxString current_value;
+    if (current_base == Base::Decimal) {
+        current_value.Printf("%d", value);
+    }
+    else {
+        current_value.Printf("%x", value);
+    }
+    wxString message;
+    message.Printf("Digite novo valor para o registrador %d", register_number);
+    wxTextEntryDialog dialog(this, message, wxT("Novo valor"), current_value,
+        wxTextEntryDialogStyle, panel->GetPosition());
+    if (dialog.ShowModal() == wxID_OK) {
+        bool is_valid_number;
+        std::string input(dialog.GetValue());
+        std::int16_t value =
+            TryConvertToWord(input, current_base, &is_valid_number);
+        if (is_valid_number) {
+            cpu.registers[register_number] = value;
+            panel->SetValue(static_cast<std::uint16_t>(value));
+            panel->Refresh();
+        }
+    }
 }
-
-
-void MainWindow::OnRegisterPanelDoubleClick([[maybe_unused]] int register_number) {
-    // TODO
-    // Exibir diálogo para ler o novo valor do registrador.
-    // Apenas valores no formato correto da base serão aceitos.
-}
-
 
 void MainWindow::OnActivate(wxActivateEvent &event) {
     if (event.GetActive()) {
@@ -246,12 +274,6 @@ void MainWindow::OnActivate(wxActivateEvent &event) {
         }
     }
     event.Skip();
-}
-
-
-void MainWindow::OnThreadUpdate(wxThreadEvent &WXUNUSED(event)) {
-    RefreshPanels();
-    s->Post();
 }
 
 void MainWindow::StartThread() {
@@ -279,17 +301,47 @@ void MainWindow::RefreshPanels() {
     condition_panels[3]->led_display->Refresh();
 }
 
+void MainWindow::OnThreadUpdate(wxThreadEvent &WXUNUSED(event)) {
+    // Atualiza a interface e libera o semáforo.
+    UpdatePanels();
+    RefreshPanels();
+    semaphore.Post();
+}
+
 wxThread::ExitCode MainWindow::Entry() {
+    auto start = std::chrono::system_clock::now();
+
     while (!GetThread()->TestDestroy()) {
-        s->Wait();
-        wxMutexGuiEnter();
         RunNextInstruction();
-        UpdatePanels();
-        wxMutexGuiLeave();
-        wxQueueEvent(GetEventHandler(), new wxThreadEvent());
-        if (!thread_should_run) {
+
+        auto now = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed_seconds = now - start;
+
+        // Notifica a thread principal para atualizar a interface 60 vezes por
+        // segundo.
+        if (elapsed_seconds.count() > frame_time) {
+            start = now;
+            wxQueueEvent(GetEventHandler(), new wxThreadEvent());
+            semaphore.Wait();
+        }
+
+        if (cpu.halted) {
+            thread_is_running = false;
+            button_panel->btn_run->SetValue(false);
+            break;
+        }
+
+        if (!thread_is_running) {
             break;
         }
     }
+
+    // Antes de encerrar a thread, notifica um última vez para atualizar a
+    // interface.
+    wxQueueEvent(GetEventHandler(), new wxThreadEvent());
+    semaphore.Wait();
+
     return static_cast<wxThread::ExitCode>(0);
 }
+
+} // namespace cesar::gui

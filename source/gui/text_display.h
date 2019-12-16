@@ -1,18 +1,20 @@
-#ifndef TEXT_DISPLAY_H
-#define TEXT_DISPLAY_H
+#ifndef CESAR_GUI_TEXT_DISPLAY_H
+#define CESAR_GUI_TEXT_DISPLAY_H
 
+#include "gui.h"
 #include <wx/dialog.h>
 #include <wx/event.h>
 #include <wx/image.h>
-#include "../hardware.h"
+
+namespace cesar::gui {
 
 struct TextDisplay : public wxDialog {
-    static const std::size_t images_size{95u};
-    static const std::size_t n{36u};
-    static const std::size_t char_width{20u};
-    static const std::size_t char_height{28u};
-    static const std::size_t width = (n * char_width) + (n + 1u);
-    static const std::size_t height = char_height + 4u;
+    static const std::size_t images_size{95};
+    static const std::size_t n{36};
+    static const std::size_t char_width{20};
+    static const std::size_t char_height{28};
+    static const std::size_t width = (n * char_width) + (n + 1);
+    static const std::size_t height = char_height + 4;
 
     Cpu *cpu;
     wxImage images[images_size];
@@ -30,4 +32,6 @@ struct TextDisplay : public wxDialog {
     wxDECLARE_EVENT_TABLE();
 };
 
-#endif//TEXT_DISPLAY_H
+} // namespace cesar::gui
+
+#endif

@@ -3,20 +3,23 @@
 #include "main_window.h"
 
 #include "utils.h"
+#include <wx/toplevel.h>
+
+namespace cesar::gui {
 
 // ===========================================================================
 // ProgramWindow
 // ===========================================================================
 
 wxBEGIN_EVENT_TABLE(ProgramWindow, wxDialog)
-        EVT_CLOSE(ProgramWindow::OnClose)
-        EVT_LIST_ITEM_SELECTED(wxID_ANY, ProgramWindow::OnItemSelected)
-        EVT_TEXT_ENTER(ID_ValueInput, ProgramWindow::OnTextInputEnter)
+    EVT_CLOSE(ProgramWindow::OnClose)
+    EVT_LIST_ITEM_SELECTED(wxID_ANY, ProgramWindow::OnItemSelected)
+    EVT_TEXT_ENTER(ID_ValueInput, ProgramWindow::OnTextInputEnter)
 wxEND_EVENT_TABLE()
 
-
 ProgramWindow::ProgramWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
-    : wxDialog(parent, wxID_ANY, title) {
+    : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxRESIZE_BORDER) {
+    //: wxDialog(parent, wxID_ANY, title) {
 
     this->cpu = cpu;
     this->current_base = Base::Decimal;
@@ -25,20 +28,20 @@ ProgramWindow::ProgramWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
     table = new ProgramTable(this, cpu);
 
     label = new wxStaticText(this, wxID_ANY, wxT("0"), wxDefaultPosition,
-                             wxSize(60, wxDefaultSize.GetHeight()), wxALIGN_RIGHT);
+        wxSize(60, wxDefaultSize.GetHeight()), wxALIGN_RIGHT);
     label->Wrap(-1);
 
-    input = new wxTextCtrl(this, ID_ValueInput, wxEmptyString, wxDefaultPosition,
-                           wxSize(60, wxDefaultSize.GetHeight()), wxTE_PROCESS_ENTER);
+    input =
+        new wxTextCtrl(this, ID_ValueInput, wxEmptyString, wxDefaultPosition,
+            wxSize(60, wxDefaultSize.GetHeight()), wxTE_PROCESS_ENTER);
 
     auto *vbox = new wxBoxSizer(wxVERTICAL);
     auto *hbox = new wxBoxSizer(wxHORIZONTAL);
 
-    hbox->Add(label, 0, wxRIGHT | wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT, 10);
-    hbox->Add(input, 0, wxALL, 0);
-
+    hbox->Add(label, 0, wxRIGHT | wxALIGN_CENTER_VERTICAL, 10);
+    hbox->Add(input, 0, wxALL | wxALIGN_CENTER_VERTICAL, 0);
     vbox->Add(table, 1, wxEXPAND | wxALL, 4);
-    vbox->Add(hbox, 0, wxALIGN_RIGHT | wxALL, 4);
+    vbox->Add(hbox, 0, wxALL | wxALIGN_RIGHT, 4);
 
     SetSizer(vbox);
     Layout();
@@ -46,23 +49,20 @@ ProgramWindow::ProgramWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
     vbox->Fit(this);
 }
 
-
 void ProgramWindow::OnTextInputEnter(wxCommandEvent &WXUNUSED(event)) {
     std::string input_text{this->input->GetValue().mb_str()};
-
     bool is_valid_number;
-    std::int8_t value = TryConvertToNumber(input_text, this->current_base, &is_valid_number);
-
+    std::int8_t value =
+        TryConvertToByte(input_text, this->current_base, &is_valid_number);
     if (is_valid_number) {
-        ((MainWindow *) (this->GetParent()))->SetAddressValueAndUpdateTables(this->current_value, value);
+        ((MainWindow *) (this->GetParent()))
+            ->SetAddressValueAndUpdateTables(this->current_value, value);
     }
 }
-
 
 void ProgramWindow::OnClose(wxCloseEvent &event) {
     event.StopPropagation(); // Não pode fechar as janelas laterais.
 }
-
 
 void ProgramWindow::SetBase(Base new_base) {
     current_base = new_base;
@@ -71,7 +71,6 @@ void ProgramWindow::SetBase(Base new_base) {
     UpdateLabelAndInputValues();
 }
 
-
 void ProgramWindow::OnItemSelected(wxListEvent &event) {
     auto row = static_cast<std::size_t>(event.GetIndex());
     current_value = row;
@@ -79,7 +78,6 @@ void ProgramWindow::OnItemSelected(wxListEvent &event) {
     input->SetFocus();
     input->SetSelection(-1, -1);
 }
-
 
 void ProgramWindow::UpdateLabelAndInputValues() {
     std::int8_t value = cpu->memory[current_value];
@@ -102,14 +100,14 @@ void ProgramWindow::UpdateLabelAndInputValues() {
 // ===========================================================================
 
 wxBEGIN_EVENT_TABLE(DataWindow, wxDialog)
-        EVT_CLOSE(DataWindow::OnClose)
-        EVT_LIST_ITEM_SELECTED(wxID_ANY, DataWindow::OnItemSelected)
-        EVT_TEXT_ENTER(ID_ValueInput, DataWindow::OnTextInputEnter)
+    EVT_CLOSE(DataWindow::OnClose)
+    EVT_LIST_ITEM_SELECTED(wxID_ANY, DataWindow::OnItemSelected)
+    EVT_TEXT_ENTER(ID_ValueInput, DataWindow::OnTextInputEnter)
 wxEND_EVENT_TABLE()
 
-
 DataWindow::DataWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
-    : wxDialog(parent, wxID_ANY, title) {
+    : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxRESIZE_BORDER) {
+    //: wxDialog(parent, wxID_ANY, title) {
 
     this->cpu = cpu;
     this->current_base = Base::Decimal;
@@ -118,20 +116,20 @@ DataWindow::DataWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
     table = new DataTable(this, cpu);
 
     label = new wxStaticText(this, wxID_ANY, wxT("0"), wxDefaultPosition,
-                             wxSize(60, wxDefaultSize.GetHeight()), wxALIGN_RIGHT);
+        wxSize(60, wxDefaultSize.GetHeight()), wxALIGN_RIGHT);
     label->Wrap(-1);
 
-    input = new wxTextCtrl(this, ID_ValueInput, wxEmptyString, wxDefaultPosition,
-                           wxSize(60, wxDefaultSize.GetHeight()), wxTE_PROCESS_ENTER);
+    input =
+        new wxTextCtrl(this, ID_ValueInput, wxEmptyString, wxDefaultPosition,
+            wxSize(60, wxDefaultSize.GetHeight()), wxTE_PROCESS_ENTER);
 
     auto *vbox = new wxBoxSizer(wxVERTICAL);
     auto *hbox = new wxBoxSizer(wxHORIZONTAL);
 
-    hbox->Add(label, 0, wxRIGHT | wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT, 10);
-    hbox->Add(input, 0, wxALL, 0);
-
+    hbox->Add(label, 0, wxRIGHT | wxALIGN_CENTER_VERTICAL, 10);
+    hbox->Add(input, 0, wxALL | wxALIGN_CENTER_VERTICAL, 0);
     vbox->Add(table, 1, wxEXPAND | wxALL, 4);
-    vbox->Add(hbox, 0, wxALIGN_RIGHT | wxALL, 4);
+    vbox->Add(hbox, 0, wxALL | wxALIGN_RIGHT, 4);
 
     SetSizer(vbox);
     Layout();
@@ -139,21 +137,20 @@ DataWindow::DataWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
     vbox->Fit(this);
 }
 
-
 void DataWindow::OnTextInputEnter(wxCommandEvent &WXUNUSED(event)) {
     std::string input_text{this->input->GetValue().mb_str()};
     bool is_valid_number;
-    std::int8_t value = TryConvertToNumber(input_text, this->current_base, &is_valid_number);
+    std::int8_t value =
+        TryConvertToByte(input_text, this->current_base, &is_valid_number);
     if (is_valid_number) {
-        ((MainWindow *) (this->GetParent()))->SetAddressValueAndUpdateTables(this->current_value, value);
+        ((MainWindow *) (this->GetParent()))
+            ->SetAddressValueAndUpdateTables(this->current_value, value);
     }
 }
-
 
 void DataWindow::OnClose(wxCloseEvent &event) {
     event.StopPropagation(); // Não pode fechar as janelas laterais.
 }
-
 
 void DataWindow::SetBase(Base new_base) {
     current_base = new_base;
@@ -162,7 +159,6 @@ void DataWindow::SetBase(Base new_base) {
     UpdateLabelAndInputValues();
 }
 
-
 void DataWindow::OnItemSelected(wxListEvent &event) {
     auto row = static_cast<std::size_t>(event.GetIndex());
     current_value = row;
@@ -170,7 +166,6 @@ void DataWindow::OnItemSelected(wxListEvent &event) {
     input->SetFocus();
     input->SetSelection(-1, -1);
 }
-
 
 void DataWindow::UpdateLabelAndInputValues() {
     std::int8_t value = cpu->memory[current_value];
@@ -187,3 +182,5 @@ void DataWindow::UpdateLabelAndInputValues() {
     label->SetLabelText(new_label_value);
     input->SetValue(new_input_value);
 }
+
+} // namespace cesar::gui

@@ -1,8 +1,10 @@
-#ifndef TABLES_H
-#define TABLES_H
-#include "../hardware.h"
+#ifndef CESAR_GUI_TABLES_H
+#define CESAR_GUI_TABLES_H
+
 #include "gui.h"
 #include <wx/listctrl.h>
+
+namespace cesar::gui {
 
 struct ProgramTable;
 struct DataTable;
@@ -27,4 +29,6 @@ struct DataTable : public wxListCtrl {
     wxString OnGetItemText(long item, long column) const;
 };
 
-#endif//TABLES_H
+} // namespace cesar::gui
+
+#endif
