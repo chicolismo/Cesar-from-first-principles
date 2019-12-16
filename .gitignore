@@ -3,6 +3,7 @@ run_tests
 gtest/*
 CMakeCache.txt
 CMakeFiles/*
+cmake_install.cmake
 
 .DS_Store
 .clangd
