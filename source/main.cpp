@@ -12,7 +12,7 @@ bool Application::OnInit() {
     setlocale(LC_ALL, "pt_BR");
 
     auto *window =
-        new gui::MainWindow(wxT("Cesar"), wxDefaultPosition, wxSize(640, 480));
+        new gui::MainWindow(wxT("Cesar"));
     window->Center(wxBOTH);
     window->Show(true);
     SetTopWindow(window);

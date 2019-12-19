@@ -69,6 +69,5 @@ if (wxWidgets_FOUND)
 
     target_link_libraries(cesar -pthread ${wxWidgets_LIBRARIES} ${Threads_LIBRARIES})
     target_compile_options(cesar PRIVATE -g -Werror -Wall -Wextra)
-
 endif()
 

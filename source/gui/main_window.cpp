@@ -31,9 +31,8 @@ wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_ACTIVATE(MainWindow::OnActivate)
 wxEND_EVENT_TABLE()
 
-MainWindow::MainWindow(
-    const wxString &title, const wxPoint &pos, const wxSize &size)
-    : wxFrame(nullptr, wxID_ANY, title, pos, size,
+MainWindow::MainWindow(const wxString &title)
+    : wxFrame(nullptr, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
           wxDEFAULT_FRAME_STYLE & ~(wxMAXIMIZE_BOX | wxRESIZE_BORDER)),
       semaphore(1, 1), should_raise_windows(true), thread_is_running(false) {
 

@@ -51,7 +51,7 @@ struct MainWindow : public wxFrame, public wxThreadHelper {
 
     std::atomic<bool> thread_is_running;
 
-    MainWindow(const wxString &title, const wxPoint &pos, const wxSize &size);
+    MainWindow(const wxString &title);
 
     void UpdateSubwindowsPositions();
 
