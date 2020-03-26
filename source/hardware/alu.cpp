@@ -95,7 +95,7 @@ void Alu::conditional_branch(Instruction instruction, std::int8_t offset) {
 }
 
 std::int16_t Alu::one_operand_instruction(
-    const Instruction instruction, const std::int16_t value) {
+        const Instruction instruction, const std::int16_t value) {
     // TODO. Garantir que todos as condições foram testadas.
 
     std::int16_t result;
@@ -163,7 +163,7 @@ std::int16_t Alu::one_operand_instruction(
         case ROL: {
             const auto temp = static_cast<std::uint16_t>(value);
             const auto msb =
-                static_cast<std::uint16_t>((temp & 0x8000u) >> 15u);
+                    static_cast<std::uint16_t>((temp & 0x8000u) >> 15u);
             result = static_cast<std::int16_t>((temp << 1u) | msb);
             C = msb;
             N = is_negative(result);
@@ -238,7 +238,7 @@ void Alu::sob(const std::size_t register_number, const std::int8_t offset) {
 }
 
 void Alu::jsr(const AddressMode mode, const std::size_t sub_address,
-    const int register_number) {
+        const int register_number) {
     if (mode != REGISTER) {
         auto temp = sub_address - Cpu::MEMORY_OFFSET;
         cpu->push(cpu->registers[register_number]);
@@ -304,8 +304,7 @@ std::int16_t Alu::bitwise_or(const std::int16_t src, const std::int16_t dst) {
 }
 
 std::int16_t Alu::two_operand_instruction(const Instruction instruction,
-    const std::int16_t src, const std::int16_t dst) {
-
+        const std::int16_t src, const std::int16_t dst) {
     switch (instruction) {
         case MOV:
             return mov(src);

@@ -174,7 +174,6 @@ RegisterPanel::RegisterPanel(
         wxWindow *parent, int number, const wxString &title)
         : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize),
           register_number(number) {
-
     auto *box = new wxStaticBoxSizer(wxVERTICAL, this, title);
 
     current_value = 0;

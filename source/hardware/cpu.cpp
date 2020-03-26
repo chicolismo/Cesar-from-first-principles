@@ -17,10 +17,10 @@ namespace cesar::hardware {
 #define IS_REGISTER_ADDRESS(address) (address) < MEMORY_OFFSET
 #define IS_TWO_OPERAND_INSTRUCTION(inst)                                       \
     (inst) == MOV || (inst) == ADD || (inst) == SUB || (inst) == CMP ||        \
-        (inst) == AND || (inst) == OR
+            (inst) == AND || (inst) == OR
 
 const std::size_t Cpu::MEMORY_OFFSET =
-    offsetof(Cpu, memory) - offsetof(Cpu, addressable_memory);
+        offsetof(Cpu, memory) - offsetof(Cpu, addressable_memory);
 const std::size_t Cpu::BEGIN_DISPLAY_ADDRESS = 65500;
 const std::size_t Cpu::END_DISPLAY_ADDRESS = 65535;
 
@@ -38,8 +38,8 @@ Cpu::~Cpu() { delete alu; }
 
 void Cpu::set_memory(const char *bytes, const std::size_t size) {
     const std::size_t offset{size - MEM_SIZE};
-    const std::size_t max_size{MEM_SIZE < size ? MEM_SIZE : size};
-    std::memcpy(memory, bytes + offset, max_size);
+    const std::size_t maxsize{MEM_SIZE < size ? MEM_SIZE : size};
+    std::memcpy(memory, bytes + offset, maxsize);
 }
 
 std::int8_t *Cpu::get_memory() { return memory; }
@@ -58,20 +58,20 @@ std::int16_t Cpu::get_word(std::int16_t address) const {
         // Se o endereço for um byte do display, retornar esse byte como
         // os bits menos significativos da palavra
         const auto lsb =
-            static_cast<std::uint8_t>(memory[unsigned_address + 1]);
+                static_cast<std::uint8_t>(memory[unsigned_address + 1]);
         return static_cast<std::int16_t>(0x00FFu & lsb);
     }
     else {
         const auto msb = static_cast<std::uint8_t>(memory[unsigned_address]);
         const auto lsb =
-            static_cast<std::uint8_t>(memory[unsigned_address + 1]);
+                static_cast<std::uint8_t>(memory[unsigned_address + 1]);
         return static_cast<std::int16_t>(msb << 8 | lsb);
     }
 }
 
 bool Cpu::read_memory_from_binary_file(const std::string &filename) {
     std::fstream input_file(
-        filename, std::ios::binary | std::ios::in | std::ios::ate);
+            filename, std::ios::binary | std::ios::in | std::ios::ate);
 
     if (!input_file.is_open()) {
         return false;
@@ -116,7 +116,7 @@ void Cpu::execute_next_instruction() {
     const auto unsigned_byte = static_cast<std::uint8_t>(get_byte(PC++));
 
     const Instruction instruction =
-        OPCODE_TO_INSTRUCTION.at(unsigned_byte >> 4u & 0x0Fu);
+            OPCODE_TO_INSTRUCTION.at(unsigned_byte >> 4u & 0x0Fu);
 
     if (instruction == NOP) {
         return;
@@ -129,16 +129,16 @@ void Cpu::execute_next_instruction() {
 
     if (instruction == CONDITIONAL_BRANCH) {
         const Instruction branch_instruction =
-            OPCODE_TO_INSTRUCTION.at(unsigned_byte);
+                OPCODE_TO_INSTRUCTION.at(unsigned_byte);
         const std::int8_t offset = get_byte(PC++);
         alu->conditional_branch(branch_instruction, offset);
     }
     else if (instruction == ONE_OPERAND_INSTRUCTION) {
         const Instruction one_op_instruction =
-            OPCODE_TO_INSTRUCTION.at(unsigned_byte);
+                OPCODE_TO_INSTRUCTION.at(unsigned_byte);
 
         const auto next_unsigned_byte =
-            static_cast<std::uint8_t>(get_byte(PC++));
+                static_cast<std::uint8_t>(get_byte(PC++));
         const int mmm = (next_unsigned_byte & 0b00111000) >> 3;
         const int rrr = (next_unsigned_byte & 0b00000111);
         const AddressMode address_mode = INT_TO_ADDRESSMODE[mmm];
@@ -160,12 +160,12 @@ void Cpu::execute_next_instruction() {
 
             case JMP: {
                 const auto next_unsigned_byte =
-                    static_cast<std::uint8_t>(get_byte(PC++));
+                        static_cast<std::uint8_t>(get_byte(PC++));
                 const int mmm = (next_unsigned_byte & 0b00111000) >> 3;
                 const int rrr = (next_unsigned_byte & 0b00000111);
                 const AddressMode mode = INT_TO_ADDRESSMODE[mmm];
                 const std::size_t absolute_address =
-                    get_absolute_address(mode, rrr);
+                        get_absolute_address(mode, rrr);
                 alu->jmp(mode, absolute_address);
             } break;
 
@@ -177,9 +177,9 @@ void Cpu::execute_next_instruction() {
 
             case JSR: {
                 const auto next_unsigned_byte =
-                    static_cast<std::uint8_t>(get_byte(PC++));
+                        static_cast<std::uint8_t>(get_byte(PC++));
                 const std::int16_t word =
-                    bytes_to_word(unsigned_byte, next_unsigned_byte);
+                        bytes_to_word(unsigned_byte, next_unsigned_byte);
                 const int reg = (word & (0b0000011100000000)) >> 8;
                 const int mmm = (word & (0b0000000000111000)) >> 3;
                 const int rrr = (word & (0b0000000000000111));
@@ -195,9 +195,9 @@ void Cpu::execute_next_instruction() {
             default: {
                 if (IS_TWO_OPERAND_INSTRUCTION(instruction)) {
                     const auto next_unsigned_byte =
-                        static_cast<std::uint8_t>(get_byte(PC++));
+                            static_cast<std::uint8_t>(get_byte(PC++));
                     const auto uword = static_cast<std::uint16_t>(
-                        (unsigned_byte << 8u) | next_unsigned_byte);
+                            (unsigned_byte << 8u) | next_unsigned_byte);
                     const int mmm1 = uword & (0b0000111000000000) >> 9;
                     const int rrr1 = uword & (0b0000000111000000) >> 6;
                     const int mmm2 = uword & (0b0000000000111000) >> 3;
@@ -205,16 +205,16 @@ void Cpu::execute_next_instruction() {
                     const AddressMode mode1 = INT_TO_ADDRESSMODE[mmm1];
                     const AddressMode mode2 = INT_TO_ADDRESSMODE[mmm2];
                     const std::size_t src_address =
-                        get_absolute_address(mode1, rrr1);
+                            get_absolute_address(mode1, rrr1);
                     const std::size_t dst_address =
-                        get_absolute_address(mode2, rrr2);
+                            get_absolute_address(mode2, rrr2);
 
                     const std::int16_t src =
-                        get_value_from_absolute_address(src_address);
+                            get_value_from_absolute_address(src_address);
                     const std::int16_t dst =
-                        get_value_from_absolute_address(dst_address);
+                            get_value_from_absolute_address(dst_address);
                     const std::int16_t value =
-                        alu->two_operand_instruction(instruction, src, dst);
+                            alu->two_operand_instruction(instruction, src, dst);
                     if (instruction != Instruction::CMP) {
                         // Não precisa escrever de volta o valor da comparação
                         set_value_to_absolute_address(value, dst_address);
@@ -243,7 +243,7 @@ std::int16_t Cpu::get_value_from_absolute_address(const std::size_t address) {
 }
 
 void Cpu::set_value_to_absolute_address(
-    const std::int16_t value, const std::size_t address) {
+        const std::int16_t value, const std::size_t address) {
     auto msb = static_cast<std::int8_t>((value & 0xFF00) >> 8);
     auto lsb = static_cast<std::int8_t>(value & 0x00FF);
     if (IS_REGISTER_ADDRESS(address - MEMORY_OFFSET)) {
@@ -257,7 +257,7 @@ void Cpu::set_value_to_absolute_address(
 }
 
 std::uint16_t Cpu::get_absolute_address(
-    const AddressMode mode, const int register_number) {
+        const AddressMode mode, const int register_number) {
     std::uint16_t address{0u};
 
     switch (mode) {
@@ -279,7 +279,7 @@ std::uint16_t Cpu::get_absolute_address(
             const std::int16_t next_word = get_word(PC);
             PC += 2;
             address = static_cast<std::uint16_t>(
-                registers[register_number] + next_word);
+                    registers[register_number] + next_word);
         } break;
 
         case AddressMode::REGISTER_INDIRECT: {
@@ -288,7 +288,7 @@ std::uint16_t Cpu::get_absolute_address(
 
         case AddressMode::POST_INCREMENTED_INDIRECT: {
             const auto operand_address =
-                static_cast<std::uint16_t>(registers[register_number]);
+                    static_cast<std::uint16_t>(registers[register_number]);
             registers[register_number] += 2;
             address = get_word(operand_address);
         } break;
@@ -296,7 +296,7 @@ std::uint16_t Cpu::get_absolute_address(
         case AddressMode::PRE_DECREMENTED_INDIRECT: {
             registers[register_number] -= 2;
             const auto operand_address =
-                static_cast<std::uint16_t>(registers[register_number]);
+                    static_cast<std::uint16_t>(registers[register_number]);
             address = get_word(operand_address);
         } break;
 
@@ -304,7 +304,7 @@ std::uint16_t Cpu::get_absolute_address(
             const std::int16_t next_word = get_word(PC);
             PC += 2;
             const auto operand_address = static_cast<std::uint16_t>(
-                next_word + registers[register_number]);
+                    next_word + registers[register_number]);
             address = get_word(operand_address);
         } break;
     }

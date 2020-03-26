@@ -16,15 +16,15 @@ namespace cesar::gui {
 // Program Table                                                              //
 //----------------------------------------------------------------------------//
 ProgramTable::ProgramTable(wxWindow *parent, Cpu *cpu)
-    : wxListCtrl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-          wxLC_VIRTUAL | wxLC_REPORT | wxLC_HRULES | wxLC_VRULES |
-              wxLC_SINGLE_SEL) {
+        : wxListCtrl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                  wxLC_VIRTUAL | wxLC_REPORT | wxLC_HRULES | wxLC_VRULES |
+                          wxLC_SINGLE_SEL) {
     current_base = Base::Decimal;
     this->cpu = cpu;
     this->data = cpu->memory;
     program_counter = 0;
     SetFont(wxFont(FONT_SIZE, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL,
-        wxFONTWEIGHT_NORMAL));
+            wxFONTWEIGHT_NORMAL));
     InsertColumn(0, wxT("PC"), LIST_STYLE, 32);
     InsertColumn(1, wxT("Endereço"), LIST_STYLE, 64);
     InsertColumn(2, wxT("Valor"), LIST_STYLE, 52);
@@ -56,11 +56,11 @@ wxString ProgramTable::OnGetItemText(long item, long column) const {
         case 2:
             if (current_base == Base::Decimal) {
                 buffer.Printf(
-                    "%d", static_cast<std::uint8_t>(cpu->memory[item]));
+                        "%d", static_cast<std::uint8_t>(cpu->memory[item]));
             }
             else {
                 buffer.Printf(
-                    "%x", static_cast<std::uint8_t>(cpu->memory[item]));
+                        "%x", static_cast<std::uint8_t>(cpu->memory[item]));
             }
             break;
         case 3:
@@ -82,14 +82,14 @@ void ProgramTable::SetProgramCounter(std::int16_t pc) {
 // Data Table                                                                 //
 //----------------------------------------------------------------------------//
 DataTable::DataTable(wxWindow *parent, Cpu *cpu)
-    : wxListCtrl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-          wxLC_VIRTUAL | wxLC_REPORT | wxLC_HRULES | wxLC_VRULES |
-              wxLC_SINGLE_SEL) {
+        : wxListCtrl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                  wxLC_VIRTUAL | wxLC_REPORT | wxLC_HRULES | wxLC_VRULES |
+                          wxLC_SINGLE_SEL) {
     current_base = Base::Decimal;
     this->cpu = cpu;
     this->data = cpu->memory;
     SetFont(wxFont(FONT_SIZE, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL,
-        wxFONTWEIGHT_NORMAL));
+            wxFONTWEIGHT_NORMAL));
     InsertColumn(0, wxT("Endereço"), LIST_STYLE, 64);
     InsertColumn(1, wxT("Valor"), LIST_STYLE, 52);
     SetScrollbar(wxHORIZONTAL, 0, 0, 0, true);

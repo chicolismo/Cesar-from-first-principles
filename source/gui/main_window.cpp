@@ -14,7 +14,7 @@ namespace cesar::gui {
 
 #define IS_DISPLAY_ADDRESS(address)                                            \
     (address) >= Cpu::BEGIN_DISPLAY_ADDRESS &&                                 \
-        (address) <= Cpu::END_DISPLAY_ADDRESS
+            (address) <= Cpu::END_DISPLAY_ADDRESS
 
 // ===========================================================================
 // MainWindow
@@ -32,10 +32,10 @@ wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
 wxEND_EVENT_TABLE()
 
 MainWindow::MainWindow(const wxString &title)
-    : wxFrame(nullptr, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
-          wxDEFAULT_FRAME_STYLE & ~(wxMAXIMIZE_BOX | wxRESIZE_BORDER)),
-      semaphore(1, 1), should_raise_windows(true), thread_is_running(false) {
-
+        : wxFrame(nullptr, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
+                  wxDEFAULT_FRAME_STYLE & ~(wxMAXIMIZE_BOX | wxRESIZE_BORDER)),
+          semaphore(1, 1), should_raise_windows(true),
+          thread_is_running(false) {
     this->Bind(wxEVT_THREAD, &MainWindow::OnThreadUpdate, this);
 
     // Inicializando as janelas laterais
@@ -108,7 +108,7 @@ MainWindow::MainWindow(const wxString &title)
 
     main_sizer->Add(register_grid, 1, wxALL | wxEXPAND, 10);
     main_sizer->Add(
-        middle_sizer, 1, wxEXPAND | wxLEFT | wxBOTTOM | wxRIGHT, 10);
+            middle_sizer, 1, wxEXPAND | wxLEFT | wxBOTTOM | wxRIGHT, 10);
 
     SetSizerAndFit(main_sizer);
 
@@ -132,15 +132,15 @@ void MainWindow::UpdateSubwindowsPositions() {
     const wxSize pwsize = program_window->GetSize();
 
     program_window->SetPosition(
-        wxPoint(pos.x - pwsize.GetWidth() - gap, pos.y));
+            wxPoint(pos.x - pwsize.GetWidth() - gap, pos.y));
 
     data_window->SetPosition(wxPoint(pos.x + size.GetWidth() + gap, pos.y));
 
     text_display->SetPosition(wxPoint(
-        program_window->GetPosition().x, gap + pos.y + size.GetHeight()));
+            program_window->GetPosition().x, gap + pos.y + size.GetHeight()));
 
     program_window->SetSize(
-        program_window->GetSize().GetWidth(), size.GetHeight());
+            program_window->GetSize().GetWidth(), size.GetHeight());
 
     data_window->SetSize(data_window->GetSize().GetWidth(), size.GetHeight());
 
@@ -158,7 +158,7 @@ void MainWindow::UpdatePanels() {
 }
 
 void MainWindow::SetAddressValueAndUpdateTables(
-    const long address, const std::int8_t value) {
+        const long address, const std::int8_t value) {
     const auto unsigned_address = static_cast<std::uint16_t>(address);
     cpu.memory[unsigned_address] = value;
     program_window->table->RefreshItem(address);
@@ -182,7 +182,7 @@ void MainWindow::OnFileOpen(wxCommandEvent &WXUNUSED(event)) {
     // diálogo apropriado.
 
     wxFileDialog dialog(this, _("Abrir arquivos .MEM do Cesar"), "", "",
-        "Arquivos MEM (*.mem)|*mem", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+            "Arquivos MEM (*.mem)|*mem", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
     if (dialog.ShowModal() == wxID_CANCEL) {
         return; // Abertura de arquivo cancelada.
@@ -212,7 +212,7 @@ void MainWindow::OnClose(wxCloseEvent &WXUNUSED(event)) {
 
 void MainWindow::OnRunButtonToggle(wxCommandEvent &event) {
     auto *toggle_button =
-        static_cast<wxBitmapToggleButton *>(event.GetEventObject());
+            static_cast<wxBitmapToggleButton *>(event.GetEventObject());
     if (toggle_button->GetValue() && !thread_is_running) {
         cpu.halted = false;
         thread_is_running = true;
@@ -245,12 +245,12 @@ void MainWindow::OnRegisterPanelDoubleClick(int register_number) {
     wxString message;
     message.Printf("Digite novo valor para o registrador %d", register_number);
     wxTextEntryDialog dialog(this, message, wxT("Novo valor"), current_value,
-        wxTextEntryDialogStyle, panel->GetPosition());
+            wxTextEntryDialogStyle, panel->GetPosition());
     if (dialog.ShowModal() == wxID_OK) {
         bool is_valid_number;
         std::string input(dialog.GetValue());
         std::int16_t value =
-            TryConvertToWord(input, current_base, &is_valid_number);
+                TryConvertToWord(input, current_base, &is_valid_number);
         if (is_valid_number) {
             cpu.registers[register_number] = value;
             panel->SetValue(static_cast<std::uint16_t>(value));
@@ -298,6 +298,7 @@ void MainWindow::RefreshPanels() {
     condition_panels[1]->led_display->Refresh();
     condition_panels[2]->led_display->Refresh();
     condition_panels[3]->led_display->Refresh();
+    text_display->Refresh();
 }
 
 void MainWindow::OnThreadUpdate(wxThreadEvent &WXUNUSED(event)) {

@@ -18,7 +18,8 @@ wxBEGIN_EVENT_TABLE(ProgramWindow, wxDialog)
 wxEND_EVENT_TABLE()
 
 ProgramWindow::ProgramWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
-    : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxRESIZE_BORDER) {
+        : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
+                  wxRESIZE_BORDER) {
     //: wxDialog(parent, wxID_ANY, title) {
 
     this->cpu = cpu;
@@ -28,12 +29,12 @@ ProgramWindow::ProgramWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
     table = new ProgramTable(this, cpu);
 
     label = new wxStaticText(this, wxID_ANY, wxT("0"), wxDefaultPosition,
-        wxSize(60, wxDefaultSize.GetHeight()), wxALIGN_RIGHT);
+            wxSize(60, wxDefaultSize.GetHeight()), wxALIGN_RIGHT);
     label->Wrap(-1);
 
-    input =
-        new wxTextCtrl(this, ID_ValueInput, wxEmptyString, wxDefaultPosition,
-            wxSize(60, wxDefaultSize.GetHeight()), wxTE_PROCESS_ENTER);
+    input = new wxTextCtrl(this, ID_ValueInput, wxEmptyString,
+            wxDefaultPosition, wxSize(60, wxDefaultSize.GetHeight()),
+            wxTE_PROCESS_ENTER);
 
     auto *vbox = new wxBoxSizer(wxVERTICAL);
     auto *hbox = new wxBoxSizer(wxHORIZONTAL);
@@ -53,10 +54,10 @@ void ProgramWindow::OnTextInputEnter(wxCommandEvent &WXUNUSED(event)) {
     std::string input_text{this->input->GetValue().mb_str()};
     bool is_valid_number;
     std::int8_t value =
-        TryConvertToByte(input_text, this->current_base, &is_valid_number);
+            TryConvertToByte(input_text, this->current_base, &is_valid_number);
     if (is_valid_number) {
         ((MainWindow *) (this->GetParent()))
-            ->SetAddressValueAndUpdateTables(this->current_value, value);
+                ->SetAddressValueAndUpdateTables(this->current_value, value);
     }
 }
 
@@ -106,7 +107,8 @@ wxBEGIN_EVENT_TABLE(DataWindow, wxDialog)
 wxEND_EVENT_TABLE()
 
 DataWindow::DataWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
-    : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxRESIZE_BORDER) {
+        : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
+                  wxRESIZE_BORDER) {
     //: wxDialog(parent, wxID_ANY, title) {
 
     this->cpu = cpu;
@@ -116,12 +118,12 @@ DataWindow::DataWindow(wxWindow *parent, Cpu *cpu, const wxString &title)
     table = new DataTable(this, cpu);
 
     label = new wxStaticText(this, wxID_ANY, wxT("0"), wxDefaultPosition,
-        wxSize(60, wxDefaultSize.GetHeight()), wxALIGN_RIGHT);
+            wxSize(60, wxDefaultSize.GetHeight()), wxALIGN_RIGHT);
     label->Wrap(-1);
 
-    input =
-        new wxTextCtrl(this, ID_ValueInput, wxEmptyString, wxDefaultPosition,
-            wxSize(60, wxDefaultSize.GetHeight()), wxTE_PROCESS_ENTER);
+    input = new wxTextCtrl(this, ID_ValueInput, wxEmptyString,
+            wxDefaultPosition, wxSize(60, wxDefaultSize.GetHeight()),
+            wxTE_PROCESS_ENTER);
 
     auto *vbox = new wxBoxSizer(wxVERTICAL);
     auto *hbox = new wxBoxSizer(wxHORIZONTAL);
@@ -141,10 +143,10 @@ void DataWindow::OnTextInputEnter(wxCommandEvent &WXUNUSED(event)) {
     std::string input_text{this->input->GetValue().mb_str()};
     bool is_valid_number;
     std::int8_t value =
-        TryConvertToByte(input_text, this->current_base, &is_valid_number);
+            TryConvertToByte(input_text, this->current_base, &is_valid_number);
     if (is_valid_number) {
         ((MainWindow *) (this->GetParent()))
-            ->SetAddressValueAndUpdateTables(this->current_value, value);
+                ->SetAddressValueAndUpdateTables(this->current_value, value);
     }
 }
 

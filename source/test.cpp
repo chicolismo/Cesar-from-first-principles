@@ -144,7 +144,8 @@ TEST(Cpu, Jump) {
     AddressMode mode = INDEXED;
     alu.jmp(mode, address);
 
-    EXPECT_EQ(cpu.registers[7], static_cast<std::int16_t>(2000 - Cpu::MEMORY_OFFSET));
+    EXPECT_EQ(cpu.registers[7],
+            static_cast<std::int16_t>(2000 - Cpu::MEMORY_OFFSET));
 
     const std::int8_t jump_byte = 0b000001001;
     std::size_t mmm = (jump_byte & 0b00111000) >> 3;

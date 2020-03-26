@@ -111,10 +111,9 @@ wxBEGIN_EVENT_TABLE(TextDisplay, wxDialog)
 wxEND_EVENT_TABLE();
 
 TextDisplay::TextDisplay(wxWindow *parent, Cpu *cpu)
-    : wxDialog(parent, wxID_ANY, wxT("Visor"), wxDefaultPosition,
-          wxSize(width, height), wxCAPTION | wxRESIZE_BORDER),
-      cpu(cpu) {
-
+        : wxDialog(parent, wxID_ANY, wxT("Visor"), wxDefaultPosition,
+                  wxSize(width, height), wxCAPTION | wxRESIZE_BORDER),
+          cpu(cpu) {
     SetClientSize(width, height);
     SetMaxSize(GetSize());
 
